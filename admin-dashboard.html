@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Notifeye</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,
+wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Admin Dashboard</h1>
+            <img src="equity-logo.png" alt="Equity Bank Rwanda" class="logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="admin-dashboard.html">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="login.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="select-group">
+            <label for="birthdayFilter">Filter Birthdays:</label>
+            <select id="birthdayFilter" onchange="filterTable(this.value)">
+                <option value="current">Current Birthdays</option>
+                <option value="nextDay">Next Day Birthdays</option>
+                <option value="oneWeek">One Week Birthdays</option>
+                <option value="next30Days">Next 30 Days Birthdays</option>
+            </select>
+        </div>
+        <div class="table-container">
+
+            <!-- Floating Add Button -->
+            <div class="floating-button">
+                <button onclick="openAddModal()">+</button>
+            </div>
+
+            <!-- Add Employee Modal -->
+            <div id="addModal" class="modal">
+                <div class="modal-content">
+                    <span id="close">&times;</span>
+                    <h2>Add Employee</h2>
+                    <form id="addForm">
+                        <div class="form-group">
+                            <label for="add-pf_number">PF Number:</label>
+                            <input type="text" id="add-pf_number" name="pf_number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender:</label>
+                            <input type="radio" id="add-gender-male" name="add-gender" value="Male" required>
+                            <label for="add-gender-male">Male</label>
+                            <input type="radio" id="add-gender-female" name="add-gender" value="Female" required>
+                            <label for="add-gender-female">Female</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-first_name">First Name:</label>
+                            <input type="text" id="add-first_name" name="first_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add-last_name">Last Name:</label>
+                            <input type="text" id="add-last_name" name="last_name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add-date_of_birth">Date of Birth:</label>
+                            <input type="date" id="add-date_of_birth" name="date_of_birth" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add-email">Email:</label>
+                            <input type="email" id="add-email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add-phone_number">Phone Number:</label>
+                            <input type="text" id="add-phone_number" name="phone_number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="add-preferred_notification_method">Preferred Notification Method:</label>
+                            <select id="add-preferred_notification_method" name="preferred_notification_method"
+                                required>
+                                <option value="Email">Email</option>
+                                <option value="SMS">SMS</option>
+                                <option value="Both">Both</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="add-department">Department:</label>
+                            <input type="text" id="add-department" name="department" required>
+                        </div>
+                        <button type="submit">Add Employee</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <table id="employeeTable">
+                <thead>
+                    <tr>
+                        <th>PF Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Preferred Notification Method</th>
+                        <th>Department</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Employee rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <!-- Edit Form Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span id="close">&times;</span>
+                <h2>Edit Employee</h2>
+                <form id="editForm">
+                    <!-- <input type="hidden" id="edit-pf_number"> -->
+                    <!-- <div class="form-group"> -->
+                    <!-- <label for="edit-pf_number">PF Number:</label> -->
+                    <!-- <input type="text" id="edit-pf_number" pattern="\d{5}"
+                            title="PF Number must be exactly 5 digits" required> -->
+                    <!-- <input id="edit-pf_number"> -->
+                    <!-- </div> -->
+                    <div class="form-group">
+                        <label for="edit-pf_number">PF Number:</label>
+                        <input type="text" id="edit-pf_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-first_name">First Name:</label>
+                        <input type="text" id="edit-first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-last_name">Last Name:</label>
+                        <input type="text" id="edit-last_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-gender">Gender:</label>
+                        <input type="radio" id="edit-gender-male" name="edit-gender" value="Male" required>
+                        <label for="edit-gender-male">Male</label>
+                        <input type="radio" id="edit-gender-female" name="edit-gender" value="Female">
+                        <label for="edit-gender-female">Female</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-date_of_birth">Date of Birth:</label>
+                        <input type="date" id="edit-date_of_birth" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Email:</label>
+                        <input type="email" id="edit-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-phone_number">Phone Number:</label>
+                        <input type="tel" id="edit-phone_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-preferred_notification_method">Preferred Notification Method:</label>
+                        <select id="edit-preferred_notification_method" name="preferred_notification_method" required>
+                            <option value="Email">Email</option>
+                            <option value="SMS">SMS</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-department">Department:</label>
+                        <input type="text" id="edit-department" required>
+                    </div>
+                    <button type="submit">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+
+
+    </main>
+    <footer>
+        <p>&copy; 2024 Equity Bank Rwanda. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>

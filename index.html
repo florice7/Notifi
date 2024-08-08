@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifeye</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,
+wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <img src="equity-logo.png" alt="Company Logo" class="logo">
+            <h1 class="notifeye-title">NotiFï</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#flashcards" onclick="revealFlashcards()">Overview</a></li>
+                    <li><span class="nav-separator">|</span></li>
+                    <li><a href="#">Features</a></li>
+                    <li><span class="nav-separator">|</span></li>
+                    <li><a href="#contact-us">Contact Us</a></li>
+                </ul>
+                <ul class="nav-icons">
+                    <li><a href="#" class="nav-icon" id="login-icon"><i class="fas fa-user"></i></a></li>
+                </ul>
+
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="reveal-section">
+            <img src="body.png" alt="Click to reveal features" class="trigger-image" onclick="revealFlashcards()">
+            <i class="fas fa-times close-icon" onclick="hideFlashcards()"></i>
+            <div id="flashcards" class="flashcards-container hidden">
+                <div class="flashcard">
+                    <img src="notific.png" alt="Feature 1" class="flashcard-image">
+                    <h3>Personalized Notifications</h3>
+                    <p>Send notifications tailored to each employee's preferences and needs.</p>
+                </div>
+                <div class="flashcard">
+                    <img src="remind.png" alt="Feature 2" class="flashcard-image">
+                    <h3>Automated Reminders</h3>
+                    <p>Never miss an important date with our automated reminders system.</p>
+                </div>
+                <div class="flashcard">
+                    <img src="update.png" alt="Feature 3" class="flashcard-image">
+                    <h3>Real-Time Updates</h3>
+                    <p>Stay informed with real-time updates and notifications about key events.</p>
+                </div>
+            </div>
+        </section>
+        <section class="intro">
+            <button id="open-login-modal">Get Started</button>
+        </section>
+
+        <!-- Modal (Login Page) -->
+        <div id="login-modal" class="overlay">
+            <div class="login-popup">
+                <span class="close-btn" id="close-login-modal">&times;</span>
+                <div class="login-content">
+                    <div id="form-container" class="login-left sign-in">
+                        <!-- Sign In Form -->
+                        <img src="equity-logo.png" class="logo" alt="equity Logo">
+                        <h1>Sign In to NotiFï</h1>
+                        <form>
+                            <div class="input-container">
+                                <input type="email" placeholder="Email">
+                            </div>
+                            <div class="input-container">
+                                <input type="password" placeholder="Password">
+                            </div>
+                            <button type="submit">Sign In</button>
+                            <a href="#" class="forgot-password">Forgot Password?</a>
+                        </form>
+                    </div>
+                    <div id="image-container" class="login-right">
+                        <img src="body.png" alt="Login Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer id="contact-us">
+        <div class="footer-content">
+            <p class="footer-email">Email us at: <a href="mailto:info@equitybank.rw">info@equitybank.rw</a></p>
+            <p>&copy; 2024 Equity Bank Rwanda.</p>
+        </div>
+    </footer>
+    <script src="login.js"></script>
+</body>
+
+</html>
