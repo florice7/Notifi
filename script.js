@@ -2,10 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/employees')
         .then(response => response.json())
         .then(data => {
+            console.log("Fetched employee data:", data); // Log the fetched data
+
             const tableBody = document.querySelector('#employeeTable tbody');
+
             tableBody.innerHTML = data.map(employee => {
-                // Format the date of birth
-                const formattedDate = new Date(employee.date_of_birth).toISOString().split('T')[0];
+                // Manually format the date of birth to avoid timezone issues
+                const formattedDate = employee.date_of_birth;
+
+                console.log(`Employee PF: ${employee.pf_number}, DOB: ${formattedDate}`); // Log the PF number and DOB
                 return `
                     <tr>
                         <td>${employee.pf_number}</td>
@@ -27,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }).join('');
 
+            // Add event listeners for the edit and delete buttons
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', handleEdit);
             });
@@ -37,6 +43,61 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching data:', error));
 });
+
+
+// Function to format the date manually
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Returns the date part in YYYY-MM-DD format
+}
+
+
+function filterTable(filter) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    const nextWeek = new Date(today);
+    const nextMonth = new Date(today);
+
+    tomorrow.setDate(today.getDate() + 1);
+    nextWeek.setDate(today.getDate() + 7);
+    nextMonth.setDate(today.getDate() + 30);
+
+    const tableBody = document.querySelector('#employeeTable tbody');
+    const rows = tableBody.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        const dobCell = row.querySelector('td:nth-child(5)'); // Assuming DOB is the 5th column
+        const dob = new Date(dobCell.textContent.trim());
+
+        const isToday = dob.getDate() === today.getDate() && dob.getMonth() === today.getMonth();
+        const isTomorrow = dob.getDate() === tomorrow.getDate() && dob.getMonth() === tomorrow.getMonth();
+        const isNextWeek = dob.getDate() === nextWeek.getDate() && dob.getMonth() === nextWeek.getMonth();
+        const isNext30Days = dob >= today && dob <= nextMonth;
+
+        let showRow = false;
+
+        switch (filter) {
+            case 'all':
+                showRow = true;
+                break;
+            case 'current':
+                showRow = isToday;
+                break;
+            case 'nextDay':
+                showRow = isTomorrow;
+                break;
+            case 'oneWeek':
+                showRow = isNextWeek;
+                break;
+            case 'next30Days':
+                showRow = isNext30Days;
+                break;
+        }
+
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+
 
 
 // // Validation function for PF number
@@ -64,7 +125,10 @@ function handleEdit(event) {
             document.querySelector('#edit-first_name').value = employee.first_name;
             document.querySelector('#edit-last_name').value = employee.last_name;
             document.querySelector(`input[name="edit-gender"][value="${employee.gender}"]`).checked = true;
-            document.querySelector('#edit-date_of_birth').value = employee.date_of_birth.split('T')[0]; // Format the date
+
+            
+            document.querySelector('#edit-date_of_birth').value = employee.date_of_birth;
+
             document.querySelector('#edit-email').value = employee.email;
             document.querySelector('#edit-phone_number').value = employee.phone_number;
             document.querySelector('#edit-preferred_notification_method').value = employee.preferred_notification_method;
@@ -86,6 +150,16 @@ function handleEdit(event) {
         })
         .catch(error => console.error('Error fetching employee data:', error));
 }
+
+// Function to format the date manually (same as before)
+// function formatDate(dateString) {
+//     const date = new Date(dateString);
+//     const year = date.getUTCFullYear();
+//     const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+//     const day = String(date.getUTCDate()).padStart(2, '0');
+//     return `${year}-${month}-${day}`;
+// }
+
 
 // Function to validate the PF number
 function validatePFNumber(pfNumber) {

@@ -18,22 +18,36 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 <body>
     <header>
         <div class="header-content">
-            <h1>Admin Dashboard</h1>
             <img src="equity-logo.png" alt="Equity Bank Rwanda" class="logo">
+            <!-- <div class="nav-icons">
+                <a href="#"><i class="fas fa-file-alt"></i> Report</a>
+                <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
+                <a href="#"><i class="fas fa-user-circle"></i> Profile</a>
+            </div> -->
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#"><i class="fas fa-file-alt"></i> Report</a></li>
+                    <li><span class="nav-separator">|</span></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                    <li><span class="nav-separator">|</span></li>
+                    <li><a href="#contact-us"><i class="fas fa-user-circle"></i> Profile</a></li>
+                </ul>
+            </nav>
         </div>
-        <nav>
-            <ul>
-                <li><a href="admin-dashboard.html">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="login.html">Logout</a></li>
-            </ul>
-        </nav>
     </header>
     <main>
+        <div class="main-header">
+            <h1>Dashboard</h1>
+            <div class="search-container">
+                <input type="text" placeholder="Search...">
+                <button type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
         <div class="select-group">
             <label for="birthdayFilter">Filter Birthdays:</label>
             <select id="birthdayFilter" onchange="filterTable(this.value)">
+                <option value="all">All</option>
                 <option value="current">Current Birthdays</option>
                 <option value="nextDay">Next Day Birthdays</option>
                 <option value="oneWeek">One Week Birthdays</option>
