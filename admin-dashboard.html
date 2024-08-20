@@ -19,39 +19,37 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
     <header>
         <div class="header-content">
             <img src="equity-logo.png" alt="Equity Bank Rwanda" class="logo">
-            <!-- <div class="nav-icons">
-                <a href="#"><i class="fas fa-file-alt"></i> Report</a>
-                <a href="#"><i class="fas fa-chart-bar"></i> Analytics</a>
-                <a href="#"><i class="fas fa-user-circle"></i> Profile</a>
-            </div> -->
+            <h1 class="notifeye-title">NotiFï</h1>
 
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="#"><i class="fas fa-file-alt"></i> Report</a></li>
-                    <li><span class="nav-separator">|</span></li>
-                    <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-                    <li><span class="nav-separator">|</span></li>
-                    <li><a href="#contact-us"><i class="fas fa-user-circle"></i> Profile</a></li>
-                </ul>
-            </nav>
+           <nav>
+    <ul class="nav-links">
+        <li><a href="#"><i class="fas fa-tachometer-alt" aria-hidden="true" title="Dashboard"></i><span class="sr-only">Dashboard</span></a></li>
+        <li><a href="#"><i class="fas fa-file-alt" aria-hidden="true" title="Report"></i><span class="sr-only">Report</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar" aria-hidden="true" title="Analytics"></i><span class="sr-only">Analytics</span></a></li>
+        <li><a href="#contact-us"><i class="fas fa-user" aria-hidden="true" title="Profile"></i><span class="sr-only">Profile</span></a></li>
+    </ul>
+    
+</nav>
+
         </div>
     </header>
     <main>
         <div class="main-header">
-            <h1>Dashboard</h1>
+            <i class="fas fa-tachometer-alt dashboard-icon"></i>
             <div class="search-container">
-                <input type="text" placeholder="Search...">
-                <button type="button"><i class="fas fa-search"></i></button>
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button type="button" id="searchButton"><i class="fas fa-search search-icon"></i></button>
             </div>
         </div>
+
         <div class="select-group">
             <label for="birthdayFilter">Filter Birthdays:</label>
             <select id="birthdayFilter" onchange="filterTable(this.value)">
-                <option value="all">All</option>
-                <option value="current">Current Birthdays</option>
-                <option value="nextDay">Next Day Birthdays</option>
-                <option value="oneWeek">One Week Birthdays</option>
-                <option value="next30Days">Next 30 Days Birthdays</option>
+                <option value="all" selected>All</option>
+                <option value="current">Today's Birthdays</option>
+                <option value="nextDay">Tomorrow's Birthdays</option>
+                <option value="oneWeek">Next week's Birthdays</option>
+                <!-- <option value="next30Days">Next 30 Days Birthdays</option> -->
             </select>
         </div>
         <div class="table-container">
@@ -60,12 +58,18 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <div class="floating-button">
                 <button onclick="openAddModal()">+</button>
             </div>
-
+            <button id="sendBirthdayWishesButton">Send Birthday Wishes</button>
+            <button id="sendBirthdayRemindersButton">Send Birthday Reminders</button>
             <!-- Add Employee Modal -->
             <div id="addModal" class="modal">
                 <div class="modal-content">
                     <span id="close">&times;</span>
-                    <h2>Add Employee</h2>
+                    <!-- Company logo at the top left -->
+                    <div class="logo-container">
+                        <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+                    </div>
+
+                    <h2>Register User</h2>
                     <form id="addForm">
                         <div class="form-group">
                             <label for="add-pf_number">PF Number:</label>
@@ -104,7 +108,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         </div>
 
                         <div class="form-group">
-                            <label for="add-preferred_notification_method">Preferred Notification Method:</label>
+                            <label for="add-preferred_notification_method">Notification Method:</label>
                             <select id="add-preferred_notification_method" name="preferred_notification_method"
                                 required>
                                 <option value="Email">Email</option>
@@ -113,14 +117,21 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="add-department">Department:</label>
+                            <label for="add-department">Department/Branch:</label>
                             <input type="text" id="add-department" name="department" required>
                         </div>
-                        <button type="submit">Add Employee</button>
+                        <button type="submit">Register</button>
                     </form>
                 </div>
             </div>
-
+ <!-- Custom Confirmation Dialog -->
+ <div id="confirmationDialog" class="custom-dialog">
+    <div class="dialog-content">
+        <p id="confirmationMessage"></p>
+        <button id="confirmYes" class="dialog-button">Yes</button>
+        <button id="confirmNo" class="dialog-button">No</button>
+    </div>
+</div>
 
             <table id="employeeTable">
                 <thead>
@@ -132,7 +143,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         <th>Date of Birth</th>
                         <th>Email</th>
                         <th>Phone Number</th>
-                        <th>Preferred Notification Method</th>
+                        <th>Notification Method</th>
                         <th>Department</th>
                         <th>Actions</th>
                     </tr>
@@ -146,13 +157,17 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         <div id="editModal" class="modal">
             <div class="modal-content">
                 <span id="close">&times;</span>
-                <h2>Edit Employee</h2>
+                <div class="logo-container">
+                    <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+                </div>
+
+                <h2>Edit user</h2>
                 <form id="editForm">
                     <!-- <input type="hidden" id="edit-pf_number"> -->
                     <!-- <div class="form-group"> -->
                     <!-- <label for="edit-pf_number">PF Number:</label> -->
                     <!-- <input type="text" id="edit-pf_number" pattern="\d{5}"
-                            title="PF Number must be exactly 5 digits" required> -->
+                        title="PF Number must be exactly 5 digits" required> -->
                     <!-- <input id="edit-pf_number"> -->
                     <!-- </div> -->
                     <div class="form-group">
@@ -203,11 +218,12 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             </div>
         </div>
 
-
-
     </main>
-    <footer>
-        <p>&copy; 2024 Equity Bank Rwanda. All rights reserved.</p>
+    <footer id="contact-us">
+        <div class="footer-content">
+            <p class="footer-email">Email us at: <a href="mailto:info@equitybank.rw">info@equitybank.rw</a></p>
+            <p>&copy; 2024 Equity Bank Rwanda.</p>
+        </div>
     </footer>
     <script src="script.js"></script>
 </body>

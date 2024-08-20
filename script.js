@@ -1,38 +1,85 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Populate the table with all employees by default
+    populateTable('all');
+
+    // Add event listener for the filter dropdown
+    const filterDropdown = document.getElementById('birthdayFilter');
+    filterDropdown.addEventListener('change', (e) => {
+        const selectedFilter = e.target.value;
+
+        resetTable();
+        
+        populateTable(selectedFilter);
+    });
+});
+
+
+
+function populateTable(filter = 'all') {
     fetch('/employees')
         .then(response => response.json())
         .then(data => {
-            console.log("Fetched employee data:", data); // Log the fetched data
+            const today = new Date();
+            const tomorrow = new Date(today);
+            const nextWeek = new Date(today);
+
+            tomorrow.setDate(today.getDate() + 1);
+            nextWeek.setDate(today.getDate() + 7);
 
             const tableBody = document.querySelector('#employeeTable tbody');
 
-            tableBody.innerHTML = data.map(employee => {
-                // Manually format the date of birth to avoid timezone issues
-                const formattedDate = employee.date_of_birth;
+            tableBody.innerHTML = data
+                .map(employee => {
+                    const dob = new Date(employee.date_of_birth);
+                    const isToday = dob.getDate() === today.getDate() && dob.getMonth() === today.getMonth();
+                    const isTomorrow = dob.getDate() === tomorrow.getDate() && dob.getMonth() === tomorrow.getMonth();
 
-                console.log(`Employee PF: ${employee.pf_number}, DOB: ${formattedDate}`); // Log the PF number and DOB
-                return `
-                    <tr>
-                        <td>${employee.pf_number}</td>
-                        <td>${employee.first_name}</td>
-                        <td>${employee.last_name}</td>
-                        <td>${employee.gender}</td>
-                        <td>${formattedDate}</td>
-                        <td>${employee.email}</td>
-                        <td>${employee.phone_number}</td>
-                        <td>${employee.preferred_notification_method}</td>
-                        <td>${employee.department}</td>
-                        <td>
-                        <div class="table-buttons">
-                            <button class="edit-btn" data-id="${employee.pf_number}">Edit</button>
-                            <button class="delete-btn" data-id="${employee.pf_number}">Delete</button>
-                        </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+                    // Check if the employee's birthday falls within the next 7 days
+                    const dobThisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+                    const isNextWeek = dobThisYear >= today && dobThisYear <= nextWeek;
 
-            // Add event listeners for the edit and delete buttons
+                    let showRow = false;
+
+                    switch (filter) {
+                        case 'all':
+                            showRow = true;
+                            break;
+                        case 'current':
+                            showRow = isToday;
+                            break;
+                        case 'nextDay':
+                            showRow = isTomorrow;
+                            break;
+                        case 'oneWeek':
+                            showRow = isNextWeek;
+                            break;
+                    }
+                    
+                    if (showRow) {
+                        return `
+                            <tr>
+                                <td>${employee.pf_number}</td>
+                                <td>${employee.first_name}</td>
+                                <td>${employee.last_name}</td>
+                                <td>${employee.gender}</td>
+                                <td>${employee.date_of_birth}</td>
+                                <td>${employee.email}</td>
+                                <td>${employee.phone_number}</td>
+                                <td>${employee.preferred_notification_method}</td>
+                                <td>${employee.department}</td>
+                                <td>
+                                    <div class="table-buttons">
+                                        <button class="edit-btn" data-id="${employee.pf_number}">Edit</button>
+                                        <button class="delete-btn" data-id="${employee.pf_number}">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                })
+                .join('');
+
+            // Reattach event listeners for the edit and delete buttons
             document.querySelectorAll('.edit-btn').forEach(button => {
                 button.addEventListener('click', handleEdit);
             });
@@ -42,61 +89,71 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })
         .catch(error => console.error('Error fetching data:', error));
+}
+
+
+
+
+function resetTable() {
+    const searchInput = document.getElementById('searchInput');
+    const filterDropdown = document.getElementById('birthdayFilter');
+    populateTable('all');  // Re-populate the table with the default filter
+}
+
+
+document.querySelectorAll('.filter-option').forEach(option => {
+    option.addEventListener('change', (e) => {
+        const selectedFilter = e.target.value;
+        populateTable(selectedFilter);
+    });
 });
 
 
-// Function to format the date manually
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Returns the date part in YYYY-MM-DD format
-}
+// function filterTable(filter) {
+//     const today = new Date();
+//     const tomorrow = new Date(today);
+//     const nextWeek = new Date(today);
+//     const nextMonth = new Date(today);
 
+//     tomorrow.setDate(today.getDate() + 1);
+//     nextWeek.setDate(today.getDate() + 7);
+//     nextMonth.setDate(today.getDate() + 30);
 
-function filterTable(filter) {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    const nextWeek = new Date(today);
-    const nextMonth = new Date(today);
+//     const tableBody = document.querySelector('#employeeTable tbody');
+//     const rows = tableBody.querySelectorAll('tr');
 
-    tomorrow.setDate(today.getDate() + 1);
-    nextWeek.setDate(today.getDate() + 7);
-    nextMonth.setDate(today.getDate() + 30);
+//     rows.forEach(row => {
+//         const dobCell = row.querySelector('td:nth-child(5)'); // Assuming DOB is the 5th column
+//         const dob = new Date(dobCell.textContent.trim());
 
-    const tableBody = document.querySelector('#employeeTable tbody');
-    const rows = tableBody.querySelectorAll('tr');
+//         const isToday = dob.getDate() === today.getDate() && dob.getMonth() === today.getMonth();
+//         const isTomorrow = dob.getDate() === tomorrow.getDate() && dob.getMonth() === tomorrow.getMonth();
+//         const isNextWeek = dob.getDate() === nextWeek.getDate() && dob.getMonth() === nextWeek.getMonth();
+//         const isNext30Days = dob >= today && dob <= nextMonth;
 
-    rows.forEach(row => {
-        const dobCell = row.querySelector('td:nth-child(5)'); // Assuming DOB is the 5th column
-        const dob = new Date(dobCell.textContent.trim());
+//         let showRow = false;
 
-        const isToday = dob.getDate() === today.getDate() && dob.getMonth() === today.getMonth();
-        const isTomorrow = dob.getDate() === tomorrow.getDate() && dob.getMonth() === tomorrow.getMonth();
-        const isNextWeek = dob.getDate() === nextWeek.getDate() && dob.getMonth() === nextWeek.getMonth();
-        const isNext30Days = dob >= today && dob <= nextMonth;
+//         switch (filter) {
+//             case 'all':
+//                 showRow = true;
+//                 break;
+//             case 'current':
+//                 showRow = isToday;
+//                 break;
+//             case 'nextDay':
+//                 showRow = isTomorrow;
+//                 break;
+//             case 'oneWeek':
+//                 showRow = isNextWeek;
+//                 break;
+//             case 'next30Days':
+//                 showRow = isNext30Days;
+//                 break;
+//         }
 
-        let showRow = false;
-
-        switch (filter) {
-            case 'all':
-                showRow = true;
-                break;
-            case 'current':
-                showRow = isToday;
-                break;
-            case 'nextDay':
-                showRow = isTomorrow;
-                break;
-            case 'oneWeek':
-                showRow = isNextWeek;
-                break;
-            case 'next30Days':
-                showRow = isNext30Days;
-                break;
-        }
-
-        row.style.display = showRow ? '' : 'none';
-    });
-}
+//         row.style.display = showRow ? '' : 'none';
+//     });
+// }
 
 
 
@@ -239,22 +296,79 @@ document.querySelector('#editForm').addEventListener('submit', async (event) => 
 });
 
 
+// Get elements
+const confirmationDialog = document.getElementById('confirmationDialog');
+const confirmationMessage = document.getElementById('confirmationMessage');
+const confirmYes = document.getElementById('confirmYes');
+const confirmNo = document.getElementById('confirmNo');
 
-function handleDelete(event) {
-    const pfNumber = event.target.dataset.id;
+// Function to show the custom confirmation dialog
+function showCustomConfirm(message, callback) {
+    console.log('Custom confirm triggered'); // Check if this logs
+    confirmationMessage.textContent = message;
+    confirmationDialog.style.display = 'flex'; // Ensure display is set to 'flex'
+    console.log('Dialog displayed'); // Check if this logs
 
-    fetch(`/employees/${pfNumber}`, {
-        method: 'DELETE'
-    })
-    .then(response => {
-        if (response.ok) {
-            event.target.closest('tr').remove();
-        } else {
-            console.error('Failed to delete employee');
-        }
-    })
-    .catch(error => console.error('Error deleting employee:', error));
+    confirmYes.onclick = () => {
+        confirmationDialog.style.display = 'none';
+        callback(true);
+    };
+
+    confirmNo.onclick = () => {
+        confirmationDialog.style.display = 'none';
+        callback(false);
+    };
 }
+
+
+// Example usage with the handleDelete function
+function handleDelete(event) {
+    const row = event.target.closest('tr');
+    const pfNumber = event.target.dataset.id;
+    const firstName = row.querySelector('td:nth-child(2)').textContent;
+    const lastName = row.querySelector('td:nth-child(3)').textContent;
+
+    showCustomConfirm(`Are you sure you want to delete ${firstName} ${lastName}?`, confirmed => {
+        if (confirmed) {
+            fetch(`/employees/${pfNumber}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    row.remove();
+                } else {
+                    console.error('Failed to delete employee');
+                }
+            })
+            .catch(error => console.error('Error deleting employee:', error));
+        }
+    });
+}
+
+
+// function handleDelete(event) {
+//     const row = event.target.closest('tr'); // Get the closest table row
+//     const pfNumber = event.target.dataset.id;
+//     const firstName = row.querySelector('td:nth-child(2)').textContent;
+//     const lastName = row.querySelector('td:nth-child(3)').textContent;
+
+//     const confirmation = confirm(`Are you sure you want to delete ${firstName} ${lastName}?`);
+
+//     if (confirmation) {
+//         fetch(`/employees/${pfNumber}`, {
+//             method: 'DELETE'
+//         })
+//         .then(response => {
+//             if (response.ok) {
+//                 row.remove(); // Remove the row from the table
+//             } else {
+//                 console.error('Failed to delete employee');
+//             }
+//         })
+//         .catch(error => console.error('Error deleting employee:', error));
+//     }
+// }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const addModal = document.getElementById('addModal');
@@ -339,3 +453,129 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function resetDropdown() {
+    const filterDropdown = document.getElementById('birthdayFilter');
+    filterDropdown.selectedIndex = 0;  // Reset to the first option
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+
+    searchButton.addEventListener('click', () => {
+        const searchQuery = searchInput.value.trim();
+
+        if (searchButton.classList.contains('clear-button')) {
+            // Reset the table if the clear button is clicked
+            resetDropdown();
+            resetTable();
+            
+            searchButton.innerHTML = '<i class="fas fa-search"></i>'; // Change back to search icon
+            searchButton.classList.remove('clear-button');
+        } else {
+            // Fetch and filter employees based on the search query
+            if (searchQuery) {
+                fetch('/employees')
+                    .then(response => response.json())
+                    .then(data => {
+                        const filteredEmployees = data.filter(employee => {
+                            const pfMatch = String(employee.pf_number).startsWith(searchQuery);
+                            const firstNameMatch = employee.first_name.toLowerCase().includes(searchQuery.toLowerCase());
+                            const lastNameMatch = employee.last_name.toLowerCase().includes(searchQuery.toLowerCase());
+
+                            return pfMatch || firstNameMatch || lastNameMatch;
+                        });
+
+                        resetDropdown();
+                        populateTableWithFilteredEmployees(filteredEmployees);
+
+                        // Change the search button to a clear button
+                        searchButton.innerHTML = '&times;'; // Change the icon to a cross
+                        searchButton.classList.add('clear-button'); // Add a class to identify the clear state
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+            } else {
+                alert("Please enter a search term.");
+            }
+        }
+    });
+});
+
+function populateTableWithFilteredEmployees(employees) {
+    const tableBody = document.querySelector('#employeeTable tbody');
+
+    tableBody.innerHTML = employees.map(employee => `
+        <tr>
+            <td>${employee.pf_number}</td>
+            <td>${employee.first_name}</td>
+            <td>${employee.last_name}</td>
+            <td>${employee.gender}</td>
+            <td>${employee.date_of_birth}</td>
+            <td>${employee.email}</td>
+            <td>${employee.phone_number}</td>
+            <td>${employee.preferred_notification_method}</td>
+            <td>${employee.department}</td>
+            <td>
+                <div class="table-buttons">
+                    <button class="edit-btn" data-id="${employee.pf_number}">Edit</button>
+                    <button class="delete-btn" data-id="${employee.pf_number}">Delete</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+
+    // Add event listeners for the edit and delete buttons
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', handleEdit);
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', handleDelete);
+    });
+}
+
+function resetTable() {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = '';  // Clear the search input
+
+    // Clear the table before repopulating
+    const tableBody = document.querySelector('#employeeTable tbody');
+    tableBody.innerHTML = '';  // Clear existing rows
+
+    // Repopulate the table with all employees
+    populateTable('all');
+}
+
+document.getElementById('sendBirthdayWishesButton').addEventListener('click', () => {
+    fetch('/send-birthday-wishes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+    })
+    .catch(error => {
+        console.error('Error sending birthday wishes:', error);
+        alert('Failed to send birthday wishes.');
+    });
+});
+
+
+document.getElementById('sendBirthdayRemindersButton').addEventListener('click', function() {
+    fetch('/send-birthday-reminders', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message); // Show a message when the reminders have been sent
+    })
+    .catch(error => {
+        console.error('Error sending birthday reminders:', error);
+    });
+});

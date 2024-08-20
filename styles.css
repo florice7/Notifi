@@ -2,22 +2,15 @@ html, body {
     height: 100%;
     margin: 0;
     font-family: "Poppins", sans-serif;
-    /* font-weight: 300; */
+  
 }
 
 body {
     display: flex;
     flex-direction: column;
-    /* font-family: "Poppins", sans-serif; */
     background-color: #ffffff;
     color: #000000;
 }
-
-/* .poppins-regular {
-    font-family: "Poppins", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-  } */
 
   header {
     background-color: #ffffff;
@@ -26,13 +19,19 @@ body {
     box-shadow: 2px 2px 8px 2px gray;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    position: relative;
+    position: fixed; /* Keeps the header fixed at the top */
+    top: 0; /* Positions the header at the top of the viewport */
+    left: 0; /* Aligns the header to the left */
+    width: 100%; /* Ensures the header spans the full width */
+    z-index: 2; /* Ensures the header stays above other elements */
+    height: 50px; /* Set a specific height for the header */
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    
 }
 
 
@@ -60,10 +59,15 @@ nav ul {
     display: flex;
     align-items: center;
 }
+/* Space between items */
+nav ul li {
+    margin: 0 1rem; /* Adjust the space as needed */
+}
+
 
 .nav-links {
     gap: 1rem;
-    margin-right: 3rem; /* Add margin to the right to separate from the user icon */
+    margin-right: 2rem; /* Add margin to the right to separate from the user icon */
 }
 
 .nav-icons {
@@ -78,7 +82,7 @@ nav ul {
 }
 
 .nav-icons a i {
-    margin-right: 0.5rem;
+    margin-right: 2rem;
 }
 nav ul li {
     display: inline;
@@ -103,18 +107,21 @@ nav ul li a:hover, .nav-icon:hover {
     color: #555;
 }
 
+
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background-color: #f4f4f4; /* Light grey background */
-    border-top: 2px solid #e0e0e0; /* Light grey border */
+    background-color: #ffffff; 
+    border-top: 2px solid #e0e0e0; 
+    margin-top: 80px; 
 }
 
-.main-header h1 {
-    margin: 0;
-    color: #000000; /* Black text color */
+.dashboard-icon {
+    font-size: 36px; /* Larger size for the dashboard icon */
+    color: #000000; /* Icon color */
+    margin: 0; /* Remove any default margins */
 }
 
 .search-container {
@@ -122,29 +129,18 @@ nav ul li a:hover, .nav-icon:hover {
     align-items: center;
     position: relative;
 }
-/* .select-group select {
-    padding: 0.5rem 1rem;
-    font-family: "Poppins", sans-serif;
-    font-size: 1rem;
-    border-radius: 7px;
-    border: 1px solid rgba(160, 8, 8, 1);
-    background-color: #ffffff;
-    color: #000000;
-    cursor: pointer;
-} */
+
 .search-container input {
     padding: 0.5rem 1rem;/* Add extra padding on the left for icon */
     font-family: "Poppins", sans-serif;
     border: 1px solid rgba(160, 8, 8, 1);
-    border-radius: 7px;
+    border-radius: 10px;
+    height: 10px;
     outline: none;
     font-size: 1rem;
     transition: border-color 0.3s ease;
 }
 
-/* .search-container input:focus { */
-    /* border-color: #007bff; Blue border on focus */
-/* } */
 
 .search-container button {
     position: absolute;
@@ -160,9 +156,14 @@ nav ul li a:hover, .nav-icon:hover {
 .search-container button i {
     pointer-events: none; /* Ensure the button is not clickable over the input field */
 }
+.search-icon {
+    font-size: 12px; /* Smaller size for the search icon */
+    color: #000000; /* Icon color */
+    pointer-events: none; /* Ensure the button is not clickable over the input field */
+}
 
 
-
+/*index, notifeye content*/
 main {
     flex: 1;
     display: flex;
@@ -239,13 +240,29 @@ main {
     height: auto;
     border-radius: 8px;
     transition: opacity 0.3s ease;
+    animation: scaleUpDown 10s infinite ease-in-out; /* Add the animation */
+    margin-top: 5rem;
 }
 
+/* Hover effect to change opacity */
 .trigger-image:hover {
     opacity: 0.8;
 }
 
-/* Close icon */
+/* Keyframes for scaling the image */
+@keyframes scaleUpDown {
+    0% {
+        transform: scale(1); /* Original size */
+    }
+    50% {
+        transform: scale(0.9); /* Slightly increased size */
+    }
+    100% {
+        transform: scale(1); /* Back to original size */
+    }
+}
+
+/* Close icon at home page image*/
 .close-icon {
     font-size: 24px;
     color: darkred;
@@ -257,7 +274,7 @@ main {
 .flashcards-container {
     display: flex;
     justify-content: space-around;
-    gap: 2rem;
+    gap: 1rem;
     margin-top: 2rem;
     transition: opacity 0.5s ease;
 }
@@ -277,7 +294,7 @@ main {
     border: 1px solid #dddddd;
     border-radius: 8px;
     padding: 1rem;
-    width: 250px;
+    width: 300px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -344,6 +361,7 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+/*login modal at landing page */
 
 .open-login-modal {
     padding: 10px 20px;
@@ -510,25 +528,35 @@ footer a:hover {
     height: 9px;
     outline: none;
 }
-
-.button-container button {
-    background-color: rgba(160, 8, 8, 1); /* Equity Bank red */
-    color: #ffffff;
-    border-radius: 7px;
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1rem;
+/* Base styles for the radio buttons */
+input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 12px !important;
+    height: 12px !important;
+    border: 1px solid black; /* Blue border when unselected */
+    border-radius: 50%;
+    outline: none;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 2cm ;
-    font-family: "Poppins", sans-serif;
+    position: relative;
+    margin-right: 5px;
 }
 
-.button-container button:hover {
-    opacity: 0.9;
+/* The inside dot when selected */
+input[type="radio"]:checked::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: red; /* Red when selected */
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
 }
 
 
+/*admin dashboard select*/
 .select-group {
     display: flex;
     justify-content: center;
@@ -543,10 +571,11 @@ footer a:hover {
 }
 
 .select-group select {
-    padding: 0.5rem 1rem;
+    padding: 0.2rem 1rem;
     font-family: "Poppins", sans-serif;
     font-size: 1rem;
-    border-radius: 7px;
+    border-radius: 10px;
+    height: 30px;
     border: 1px solid rgba(160, 8, 8, 1);
     background-color: #ffffff;
     color: #000000;
@@ -554,18 +583,23 @@ footer a:hover {
 }
 
 .table-container {
-    width: 90%;
+    width: 60%;
     height: 90%;
-    margin: 1rem auto; /* Centers the container horizontally */
-    overflow-x: scroll;
-    overflow-y: scroll;
+    margin: 0 auto; /* Centers the container horizontally */
+    /* Optional: to ensure proper layout */
+    /* Ensures the container is treated as a block element */
 }
+
 
 
 table {
     width: 100%;
     border-collapse: collapse;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 25px; /* Rounded corners for the table */
+    overflow: hidden; /* Ensures rounded corners apply to table contents */
+    border: 1px solid #ddd;
+    
 }
 
 th, td {
@@ -587,11 +621,7 @@ th {
 }
 
 
-/* tbody tr:hover {
-    background-color: #f1f1f1;
-} */
 
-/* Floating button styling */
 .floating-button {
     position: fixed;
     bottom: 30px;
@@ -619,31 +649,73 @@ th {
 }
 
 .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 2; 
-    left: 0;
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 3;
     top: 0;
-    width: 100%; 
-    height: 100%; 
-    overflow: auto; 
-    background-color: rgb(0,0,0); 
-    background-color: rgba(0,0,0,0.4); 
-    padding-top: 60px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    backdrop-filter: blur(2px); /* Blurring effect */
+    justify-content: center;
+    align-items: center;
+
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
+    background-color: #ffffff;
+    margin: 10% auto;
+    padding: 2rem;
     border: 1px solid #888;
-    width: 80%;
+    border-radius: 40px;
+    width: 40%;
+    position: relative;
+}
+.logo-container {
+    position: absolute;
+    top: 20px; /* Adjust as needed to move the logo down */
+    left: 20px; /* Adjust as needed to move the logo to the left */
 }
 
+/* Style the logo */
+.company-logo {
+    width: 50px; /* Adjust as needed */
+    height:40px;
+}
+
+/* Centering the Add Employee Title */
+#addModal h2 {
+    text-align: center;
+    margin-top: 40px; /* Adjust as needed */
+    font-size: 1.5rem; /* Adjust font size as needed */
+}
+
+/* Centering the Add Employee Button */
+#addForm button[type="submit"] {
+    display: block;
+    margin: 20px auto; /* Adjust margin as needed */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    background-color: #6A040F; /* Your preferred color */
+    color: #fff;
+    cursor: pointer;
+    text-align: center; /* Ensure the text inside the button is centered */
+}
+
+#addForm button[type="submit"]:hover {
+    background-color: #4a030a;
+}
+
+
 #close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
+    color: rgba(160, 8, 8, 1);
+    position: absolute;
+    top: 8px;
+    right: 18px;
+    font-size: 30px;
     font-weight: bold;
     cursor: pointer;
 }
@@ -666,7 +738,7 @@ th {
 
 #close:hover,
 #close:focus {
-    color: black;
+    color: rgba(160, 8, 8, 1);
     text-decoration: none;
     cursor: pointer;
 }
@@ -683,12 +755,68 @@ th {
     margin-right: 0.1rem;
     font-family: "Poppins", sans-serif;
 }
+#editModal h2 {
+    text-align: center;
+    margin-top: 10px; /* Adjust as needed */
+    font-size: 1.8rem; /* Adjust font size as needed */
+}
+#editModal form button[type="submit"] {
+    display: block;
+    margin: 20px auto; /* Adjust margin as needed */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    background-color: #6A040F; /* Your preferred color */
+    color: #fff;
+    cursor: pointer;
+    text-align: center; /* Ensure the text inside the button is centered */
+}
 
-/* .edit-btn:hover, .delete-btn:hover {
-    opacity: 0.9;
-} */
+
+#editModal form button[type="submit"]:hover {
+    background-color: #4a030a;
+}
 
 
 .table-buttons {
     display: flex;
     }
+
+    /* Custom dialog box */
+
+    .custom-dialog {
+        display: none; /* Hidden by default */
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .dialog-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        width: 300px;
+    }
+    
+    .dialog-button {
+        background-color: #6A040F;; /* Primary color */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .dialog-button:hover {
+        background-color: #000000; /* Darker shade on hover */
+    }
+    
+    
