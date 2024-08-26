@@ -254,9 +254,9 @@ cron.schedule('30 09 * * *', () => {
     timezone: "Africa/Kigali" // Set to CAT (Central Africa Time)
 });
 
-function logEmailStatus(emailType, isSuccess) {
-    const query = 'INSERT INTO email_logs (email_type, is_success, timestamp) VALUES (?, ?, NOW())';
-    db.query(query, [emailType, isSuccess ? 1 : 0], (err, result) => {
+function logEmailStatus(email, emailType, isSuccess, responseMessage) {
+    const query = 'INSERT INTO email_logs (email, email_type, is_success, response_message) VALUES (?, ?, ?, ?)';
+    db.query(query, [email, emailType, isSuccess ? 1 : 0, responseMessage], (err, result) => {
         if (err) {
             console.error('Error logging email status:', err);
         } else {
