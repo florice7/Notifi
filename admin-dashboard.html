@@ -18,21 +18,29 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 <body>
     <header>
         <div class="header-content">
-            <img src="equity-logo.png" alt="Equity Bank Rwanda" class="logo">
+            <img src="equity-logo.png" alt="Company Logo" class="logo">
             <h1 class="notifeye-title">NotiFï</h1>
-
-           <nav>
-    <ul class="nav-links">
-        <li><a href="#"><i class="fas fa-tachometer-alt" aria-hidden="true" title="Dashboard"></i><span class="sr-only">Dashboard</span></a></li>
-        <li><a href="#"><i class="fas fa-file-alt" aria-hidden="true" title="Report"></i><span class="sr-only">Report</span></a></li>
-        <li><a href="#"><i class="fas fa-chart-bar" aria-hidden="true" title="Analytics"></i><span class="sr-only">Analytics</span></a></li>
-        <li><a href="#contact-us"><i class="fas fa-user" aria-hidden="true" title="Profile"></i><span class="sr-only">Profile</span></a></li>
-    </ul>
-    
-</nav>
-
+            </nav>
         </div>
     </header>
+
+
+    <div id="side-menu" class="side-menu">
+
+
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#admin-dashboard.html" title="DASHBOARD"><i class="fas fa-tachometer-alt"></i></a></li>
+                <li><a href="#" title="ANALYTICS"><i class="fas fa-chart-bar"></i></a></li>
+                <li><a href="#" title="SETTINGS"><i class="fas fa-cog"></i></a></li>
+                <li><a href="#" title="SIGN OUT"><i class="fas fa-sign-out-alt"></i></a></li>
+            </ul>
+        </nav>
+    </div>
+
+
+
     <main>
         <div class="main-header">
             <i class="fas fa-tachometer-alt dashboard-icon"></i>
@@ -52,14 +60,12 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <!-- <option value="next30Days">Next 30 Days Birthdays</option> -->
             </select>
         </div>
-        <div class="table-container">
-
             <!-- Floating Add Button -->
             <div class="floating-button">
                 <button onclick="openAddModal()">+</button>
             </div>
-            <button id="sendBirthdayWishesButton">Send Birthday Wishes</button>
-            <button id="sendBirthdayRemindersButton">Send Birthday Reminders</button>
+            <!-- <button id="sendBirthdayWishesButton">Send Birthday Wishes</button>
+            <button id="sendBirthdayRemindersButton">Send Birthday Reminders</button> -->
             <!-- Add Employee Modal -->
             <div id="addModal" class="modal">
                 <div class="modal-content">
@@ -70,153 +76,201 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     </div>
 
                     <h2>Register User</h2>
-                    <form id="addForm">
-                        <div class="form-group">
-                            <label for="add-pf_number">PF Number:</label>
-                            <input type="text" id="add-pf_number" name="pf_number" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Gender:</label>
-                            <input type="radio" id="add-gender-male" name="add-gender" value="Male" required>
-                            <label for="add-gender-male">Male</label>
-                            <input type="radio" id="add-gender-female" name="add-gender" value="Female" required>
-                            <label for="add-gender-female">Female</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="add-first_name">First Name:</label>
-                            <input type="text" id="add-first_name" name="first_name" required>
+                    <div class="form-container">
+                        <div class="form-content">
+                            <form id="addForm">
+                                <div class="form-group">
+                                    <label for="add-pf_number">PF Number:</label>
+                                    <input type="text" id="add-pf_number" name="pf_number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Gender:</label>
+                                    <input type="radio" id="add-gender-male" name="add-gender" value="Male" required>
+                                    <label for="add-gender-male">Male</label>
+                                    <input type="radio" id="add-gender-female" name="add-gender" value="Female"
+                                        required>
+                                    <label for="add-gender-female">Female</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="add-first_name">First Name:</label>
+                                    <input type="text" id="add-first_name" name="first_name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="add-last_name">Last Name:</label>
+                                    <input type="text" id="add-last_name" name="last_name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="add-date_of_birth">Date of Birth:</label>
+                                    <input type="date" id="add-date_of_birth" name="date_of_birth" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="add-email">Email:</label>
+                                    <input type="email" id="add-email" name="email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="add-phone_number">Phone Number:</label>
+                                    <input type="text" id="add-phone_number" name="phone_number" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="add-preferred_notification_method">Notification Method:</label>
+                                    <select id="add-preferred_notification_method" name="preferred_notification_method"
+                                        required>
+                                        <option value="Email">Email</option>
+                                        <option value="SMS">SMS</option>
+                                        <option value="Both">Both</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="add-department">Department/Branch:</label>
+                                    <input type="text" id="add-department" name="department" required>
+                                </div>
+                            </form>
                         </div>
 
-                        <div class="form-group">
-                            <label for="add-last_name">Last Name:</label>
-                            <input type="text" id="add-last_name" name="last_name" required>
+                        <div class="form-image">
+                            <img src="body.png" alt="image">
                         </div>
 
-                        <div class="form-group">
-                            <label for="add-date_of_birth">Date of Birth:</label>
-                            <input type="date" id="add-date_of_birth" name="date_of_birth" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="add-email">Email:</label>
-                            <input type="email" id="add-email" name="email" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="add-phone_number">Phone Number:</label>
-                            <input type="text" id="add-phone_number" name="phone_number" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="add-preferred_notification_method">Notification Method:</label>
-                            <select id="add-preferred_notification_method" name="preferred_notification_method"
-                                required>
-                                <option value="Email">Email</option>
-                                <option value="SMS">SMS</option>
-                                <option value="Both">Both</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="add-department">Department/Branch:</label>
-                            <input type="text" id="add-department" name="department" required>
-                        </div>
                         <button type="submit">Register</button>
-                    </form>
+
+                    </div>
                 </div>
             </div>
- <!-- Custom Confirmation Dialog -->
- <div id="confirmationDialog" class="custom-dialog">
-    <div class="dialog-content">
-        <p id="confirmationMessage"></p>
-        <button id="confirmYes" class="dialog-button">Yes</button>
-        <button id="confirmNo" class="dialog-button">No</button>
-    </div>
-</div>
-
-            <table id="employeeTable">
-                <thead>
-                    <tr>
-                        <th>PF Number</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Gender</th>
-                        <th>Date of Birth</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                        <th>Notification Method</th>
-                        <th>Department</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Employee rows will be inserted here -->
-                </tbody>
-            </table>
-        </div>
-        <!-- Edit Form Modal -->
-        <div id="editModal" class="modal">
-            <div class="modal-content">
-                <span id="close">&times;</span>
-                <div class="logo-container">
-                    <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+            <!-- Custom Confirmation Dialog -->
+            <div id="confirmationDialog" class="custom-dialog">
+                <div class="dialog-content">
+                    <p id="confirmationMessage"></p>
+                    <button id="confirmYes" class="dialog-button">Yes</button>
+                    <button id="confirmNo" class="dialog-button">No</button>
                 </div>
+            </div>
+            <div class="container">
+                <div class="table-container">
+                    <table id="employeeTable">
+                        <thead>
+                            <tr>
+                                <th>PF Number</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Gender</th>
+                                <th>Date of Birth</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Notification Method</th>
+                                <th>Department</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Employee rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="options-container">
 
-                <h2>Edit user</h2>
-                <form id="editForm">
-                    <!-- <input type="hidden" id="edit-pf_number"> -->
-                    <!-- <div class="form-group"> -->
-                    <!-- <label for="edit-pf_number">PF Number:</label> -->
-                    <!-- <input type="text" id="edit-pf_number" pattern="\d{5}"
-                        title="PF Number must be exactly 5 digits" required> -->
-                    <!-- <input id="edit-pf_number"> -->
-                    <!-- </div> -->
                     <div class="form-group">
-                        <label for="edit-pf_number">PF Number:</label>
-                        <input type="text" id="edit-pf_number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-first_name">First Name:</label>
-                        <input type="text" id="edit-first_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-last_name">Last Name:</label>
-                        <input type="text" id="edit-last_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-gender">Gender:</label>
-                        <input type="radio" id="edit-gender-male" name="edit-gender" value="Male" required>
-                        <label for="edit-gender-male">Male</label>
-                        <input type="radio" id="edit-gender-female" name="edit-gender" value="Female">
-                        <label for="edit-gender-female">Female</label>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-date_of_birth">Date of Birth:</label>
-                        <input type="date" id="edit-date_of_birth" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-email">Email:</label>
-                        <input type="email" id="edit-email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-phone_number">Phone Number:</label>
-                        <input type="tel" id="edit-phone_number" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-preferred_notification_method">Preferred Notification Method:</label>
-                        <select id="edit-preferred_notification_method" name="preferred_notification_method" required>
-                            <option value="Email">Email</option>
-                            <option value="SMS">SMS</option>
-                            <option value="Both">Both</option>
+
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender">
+                            <option value="">All</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
                         </select>
+
                     </div>
                     <div class="form-group">
-                        <label for="edit-department">Department:</label>
-                        <input type="text" id="edit-department" required>
+                        <label for="ageRangeStart">Age Range</label>
+                        <input type="number" id="ageRangeStart" placeholder="Start Age" min="0">
+                        <input type="number" id="ageRangeEnd" placeholder="End Age" min="0">
                     </div>
-                    <button type="submit">Save Changes</button>
-                </form>
+                    <div class="form-group">
+                        <label for="calendarStart">Start Date</label>
+                        <input type="date" id="calendarStart">
+                    </div>
+                    <div class="form-group">
+                        <label for="calendarEnd">End Date</label>
+                        <input type="date" id="calendarEnd">
+                    </div>
+                    <button type="button" id="extractButton"><i class="fas fa-download"></i> Extract
+                        Data</button>
+                </div>
             </div>
-        </div>
+
+            <!-- Edit Form Modal -->
+            <div id="editModal" class="modal">
+                <div class="modal-content">
+                    <span id="close">&times;</span>
+                    <div class="logo-container">
+                        <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+                    </div>
+
+                    <h2>Edit user</h2>
+
+                    <div class="form-container">
+                        <div class="form-content">
+                            <form id="editForm">
+                                <div class="form-group">
+                                    <label for="edit-pf_number">PF Number:</label>
+                                    <input type="text" id="edit-pf_number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-first_name">First Name:</label>
+                                    <input type="text" id="edit-first_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-last_name">Last Name:</label>
+                                    <input type="text" id="edit-last_name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-gender">Gender:</label>
+                                    <input type="radio" id="edit-gender-male" name="edit-gender" value="Male" required>
+                                    <label for="edit-gender-male">Male</label>
+                                    <input type="radio" id="edit-gender-female" name="edit-gender" value="Female">
+                                    <label for="edit-gender-female">Female</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-date_of_birth">Date of Birth:</label>
+                                    <input type="date" id="edit-date_of_birth" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-email">Email:</label>
+                                    <input type="email" id="edit-email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-phone_number">Phone Number:</label>
+                                    <input type="tel" id="edit-phone_number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-preferred_notification_method">Preferred Notification
+                                        Method:</label>
+                                    <select id="edit-preferred_notification_method" name="preferred_notification_method"
+                                        required>
+                                        <option value="Email">Email</option>
+                                        <option value="SMS">SMS</option>
+                                        <option value="Both">Both</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="edit-department">Department:</label>
+                                    <input type="text" id="edit-department" required>
+                                </div>
+                        </div>
+                        <div class="form-image">
+                            <img src="body.png" alt="image">
+                        </div>
+
+                        <button type="submit">Save Changes</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
 
     </main>
     <footer id="contact-us">

@@ -579,3 +579,5 @@ document.getElementById('sendBirthdayRemindersButton').addEventListener('click',
         console.error('Error sending birthday reminders:', error);
     });
 });
+
+

@@ -3,6 +3,8 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const path = require('path');
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
+// const fetch = require('node-fetch');
 
 
 // Initialize express app
@@ -214,6 +216,56 @@ function getEmployeesWithBirthdaysInRange(startDate, endDate, callback) {
     });
 }
 
+cron.schedule('30 09 * * *', () => {
+    console.log('Running automated tasks to send birthday wishes and reminders...');
+
+    // Fetching and sending birthday wishes
+    fetch('http://localhost:3000/send-birthday-wishes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Birthday wishes sent:', data.message);
+        logEmailStatus('Birthday Wishes', true);
+    })
+    .catch(error => {
+        console.error('Error sending birthday wishes:', error);
+        logEmailStatus('Birthday Wishes', false);
+    });
+
+    // Fetching and sending birthday reminders
+    fetch('http://localhost:3000/send-birthday-reminders', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Birthday reminders sent:', data.message);
+        logEmailStatus('Birthday Reminders', true);
+    })
+    .catch(error => {
+        console.error('Error sending birthday reminders:', error);
+        logEmailStatus('Birthday Reminders', false);
+    });
+}, {
+    scheduled: true,
+    timezone: "Africa/Kigali" // Set to CAT (Central Africa Time)
+});
+
+function logEmailStatus(emailType, isSuccess) {
+    const query = 'INSERT INTO email_logs (email_type, is_success, timestamp) VALUES (?, ?, NOW())';
+    db.query(query, [emailType, isSuccess ? 1 : 0], (err, result) => {
+        if (err) {
+            console.error('Error logging email status:', err);
+        } else {
+            console.log('Email status logged successfully');
+        }
+    });
+}
+
+
 // Function to send reminder emails
 function sendBirthdayReminders() {
     const today = new Date();
@@ -238,45 +290,79 @@ function sendBirthdayReminders() {
             getEmployeesWithBirthdaysInRange(todayStr, nextWeekStr, (error, nextWeekBirthdays) => {
                 if (error) return;
 
-                const recipientEmails = todaysBirthdays.map(emp => emp.email).concat(
-                    tomorrowsBirthdays.map(emp => emp.email),
-                    nextWeekBirthdays.map(emp => emp.email)
-                ).join(',');
+                // Exclude today's birthdays from the upcoming week list
+                const upcomingWithoutToday = nextWeekBirthdays.filter(emp => !todaysBirthdays.some(todayEmp => todayEmp.id === emp.id));
 
-                const mailOptions = {
-                    from: 'musafiriflorice@gmail.com',
-                    to: recipientEmails,
-                    subject: 'Birthday Reminders',
-                    text: `
-                        The following people have birthdays today. Wish them well:
-                        ${todaysBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
-                        
-                        The following people have birthdays tomorrow. Wish them well:
-                        ${tomorrowsBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
-                        
-                        The following people have birthdays in the next 7 days. Wish them well:
-                        ${nextWeekBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
-                    `
-                };
+                // Send personalized emails to today's birthday employees
+                todaysBirthdays.forEach(todayEmp => {
+                    const mailOptions = {
+                        from: 'musafiriflorice@gmail.com',
+                        to: todayEmp.email,
+                        subject: 'Birthday Reminder',
+                        text: `
+                            Happy Birthday, ${todayEmp.first_name} ${todayEmp.last_name}!
 
-                transporter.sendMail(mailOptions, (error, info) => {
-                    if (error) {
-                        console.log(`Error sending reminder emails: ${error}`);
-                    } else {
-                        console.log(`Reminder emails sent: ${info.response}`);
-                    }
+                            The following people also have birthdays today:
+                            ${todaysBirthdays.filter(emp => emp.id !== todayEmp.id).map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+
+                            The following people have birthdays tomorrow:
+                            ${tomorrowsBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+
+                            And here are the people with upcoming birthdays in the next 7 days:
+                            ${upcomingWithoutToday.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+                        `
+                    };
+
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        if (error) {
+                            console.log(`Error sending personalized reminder to ${todayEmp.email}: ${error}`);
+                        } else {
+                            console.log(`Personalized reminder sent to ${todayEmp.email}: ${info.response}`);
+                        }
+                    });
                 });
+
+                // Send a collective reminder to all other employees
+                const recipientEmails = upcomingWithoutToday.map(emp => emp.email).concat(
+                    tomorrowsBirthdays.map(emp => emp.email)
+                ).filter(email => !todaysBirthdays.map(emp => emp.email).includes(email)).join(',');
+
+                if (recipientEmails) {
+                    const collectiveMailOptions = {
+                        from: 'musafiriflorice@gmail.com',
+                        to: recipientEmails,
+                        subject: 'Birthday Reminders',
+                        text: `
+                            The following people have birthdays today:
+                            ${todaysBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+
+                            The following people have birthdays tomorrow:
+                            ${tomorrowsBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+
+                            And here are the people with upcoming birthdays in the next 7 days:
+                            ${upcomingWithoutToday.map(emp => `\n${emp.first_name} ${emp.last_name} - ${emp.birthdate}`).join('')}
+                        `
+                    };
+
+                    transporter.sendMail(collectiveMailOptions, (error, info) => {
+                        if (error) {
+                            console.log(`Error sending collective reminder emails: ${error}`);
+                        } else {
+                            console.log(`Collective reminder emails sent: ${info.response}`);
+                        }
+                    });
+                }
             });
         });
     });
 }
+
 
 // POST route to trigger birthday reminders
 app.post('/send-birthday-reminders', (req, res) => {
     sendBirthdayReminders();
     res.send({ message: 'Birthday reminders sent successfully!' });
 });
-
 
 
 // Start server
