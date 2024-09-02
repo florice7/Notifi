@@ -20,7 +20,59 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         <div class="header-content">
             <img src="equity-logo.png" alt="Company Logo" class="logo">
             <h1 class="notifeye-title">NotiFï</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li class="dropdown" id="import-dropdown">
+                        <a href="#" id="import-link">Import data</a>
+                        <div class="dropdown-content import-content">
+                            <form id="import-form">
+                                <div class="upload-container">
+                                    <label for="file-upload" class="custom-file-link">
+                                        <i class="fas fa-file-alt"></i> Select a file
+                                        <input type="file" id="file-upload" accept=".xlsx, .xls"/>
+                                    </label>
+                                    <span id="file-name" class="file-name"></span> <!-- Display selected file name here -->
+                                    <button type="button" id="remove-file" class="remove-file" style="display:none;">
+                                        <i class="fas fa-times"></i> Remove
+                                    </button>
+                                    <button type="submit" class="upload-button">
+                                        <i class="fas fa-upload"></i> Upload Files
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+                    
+                    <li class="dropdown" id="extract-dropdown">
+                        <a href="#">Extract data</a>
+                        <div class="dropdown-content extract-content">
+                            <form id="extract-form">
+                                <div class="form-group">
+                                    <label for="start-date">Start Date:</label>
+                                    <input type="date" id="start-date" name="start-date">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end-date">End Date:</label>
+                                    <input type="date" id="end-date" name="end-date">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Gender:</label>
+                                    <select id="gender" name="gender">
+                                        <option value="">All</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+                                <button>
+                                    <i class="fas fa-download"></i> Extract
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    
+                </ul>
             </nav>
+            
         </div>
     </header>
 
@@ -31,8 +83,8 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
         <nav>
             <ul class="nav-links">
-                <li><a href="#admin-dashboard.html" title="DASHBOARD"><i class="fas fa-tachometer-alt"></i></a></li>
-                <li><a href="#" title="ANALYTICS"><i class="fas fa-chart-bar"></i></a></li>
+                <li><a href="admin-dashboard.html" title="DASHBOARD"><i class="fas fa-tachometer-alt"></i></a></li>
+                <li><a href="data-analytics.html" title="ANALYTICS"><i class="fas fa-chart-bar"></i></a></li>
                 <li><a href="#" title="SETTINGS"><i class="fas fa-cog"></i></a></li>
                 <li><a href="#" title="SIGN OUT"><i class="fas fa-sign-out-alt"></i></a></li>
             </ul>
@@ -43,7 +95,11 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
     <main>
         <div class="main-header">
-            <i class="fas fa-tachometer-alt dashboard-icon"></i>
+            <span class="dashboard-wrapper">
+                <i class="fas fa-tachometer-alt dashboard-icon"></i>
+                <span class="dashboard-text">Dashboard</span>
+            </span>
+            
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Search...">
                 <button type="button" id="searchButton"><i class="fas fa-search search-icon"></i></button>
@@ -52,11 +108,11 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
         <div class="select-group">
             <label for="birthdayFilter">Filter Birthdays:</label>
-            <select id="birthdayFilter" onchange="filterTable(this.value)">
+            <select id="birthdayFilter" onchange="populateTable(this.value)">
                 <option value="all" selected>All</option>
                 <option value="current">Today's Birthdays</option>
                 <option value="nextDay">Tomorrow's Birthdays</option>
-                <option value="oneWeek">Next week's Birthdays</option>
+                <option value="oneWeek">Upcoming birthdays</option>
                 <!-- <option value="next30Days">Next 30 Days Birthdays</option> -->
             </select>
         </div>
@@ -64,8 +120,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <div class="floating-button">
                 <button onclick="openAddModal()">+</button>
             </div>
-            <!-- <button id="sendBirthdayWishesButton">Send Birthday Wishes</button>
-            <button id="sendBirthdayRemindersButton">Send Birthday Reminders</button> -->
+            
             <!-- Add Employee Modal -->
             <div id="addModal" class="modal">
                 <div class="modal-content">
@@ -83,14 +138,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                                     <label for="add-pf_number">PF Number:</label>
                                     <input type="text" id="add-pf_number" name="pf_number" required>
                                 </div>
-                                <div class="form-group">
-                                    <label>Gender:</label>
-                                    <input type="radio" id="add-gender-male" name="add-gender" value="Male" required>
-                                    <label for="add-gender-male">Male</label>
-                                    <input type="radio" id="add-gender-female" name="add-gender" value="Female"
-                                        required>
-                                    <label for="add-gender-female">Female</label>
-                                </div>
+                                
                                 <div class="form-group">
                                     <label for="add-first_name">First Name:</label>
                                     <input type="text" id="add-first_name" name="first_name" required>
@@ -99,6 +147,15 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                                 <div class="form-group">
                                     <label for="add-last_name">Last Name:</label>
                                     <input type="text" id="add-last_name" name="last_name" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Gender:</label>
+                                    <input type="radio" id="add-gender-male" name="add-gender" value="Male" required>
+                                    <label for="add-gender-male">Male</label>
+                                    <input type="radio" id="add-gender-female" name="add-gender" value="Female"
+                                        required>
+                                    <label for="add-gender-female">Female</label>
                                 </div>
 
                                 <div class="form-group">
@@ -126,7 +183,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="add-department">Department/Branch:</label>
+                                    <label for="add-department">Dept/Branch:</label>
                                     <input type="text" id="add-department" name="department" required>
                                 </div>
                             </form>
@@ -171,7 +228,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         </tbody>
                     </table>
                 </div>
-                <div class="options-container">
+                <!--<div class="options-container">
 
                     <div class="form-group">
 
@@ -199,7 +256,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     <button type="button" id="extractButton"><i class="fas fa-download"></i> Extract
                         Data</button>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Edit Form Modal -->
             <div id="editModal" class="modal">
@@ -272,6 +329,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 </div>
             </div>
 
+</div>
     </main>
     <footer id="contact-us">
         <div class="footer-content">

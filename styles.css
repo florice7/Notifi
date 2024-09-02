@@ -28,15 +28,18 @@ body {
     position: fixed; /* Keeps the header fixed at the top */ 
     width: 100%; /* Ensures the header spans the full width */
     z-index: 2; 
-    height: 5rem; 
+    height: 5rem;
+    padding: 0 1rem; /* Add padding to prevent content from touching the edges */
 }
 
 .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+    max-width: 1850px; /* Constrain the width on larger screens */
+    margin: 0 auto; /* Center content horizontally */
 }
+
 
 
 .logo {
@@ -49,20 +52,20 @@ body {
     font-size: 24px;
     margin: 0 auto;
 }
-/* Side Menu Styles */
+
 .side-menu {
-   height: auto;               /* Set height to adjust automatically based on content */
-    max-height: 500px;           /* Limit maximum height if needed */
-    width: 60px;                /* Fixed width for the side menu */
-    position: fixed;             /* Keep the side menu fixed */
-    top: 250px;                   /* Start the menu a little lower */
-    left: 0;                     /* Attach it to the left side */
-    background-color: #ffffff;   /* White background for the side menu */
+   height: auto;              
+    max-height: 500px;           
+    width: 60px;                
+    position: fixed;             
+    top: 250px;                   
+    left: 0;                     
+    background-color: #ffffff;   
     box-shadow: 2px 2px 8px 2px gray;
     z-index: 3;
-    padding: 0;                  /* No padding */
-    display: flex;               /* Flexbox to align content */
-    flex-direction: column;      /* Arrange items vertically */
+    padding: 0;                  
+    display: flex;               
+    flex-direction: column;      
     align-items: center; 
     border-radius: 35px;
     justify-content: space-between; /* Space items evenly, reducing bottom gap */
@@ -101,7 +104,7 @@ body {
 }
 
 .side-menu nav ul.nav-links li a:hover {
-    background-color:  #6A040F;   /* Add hover effect */
+    background-color:  #ffffff;   /* Add hover effect */
     border-radius: 20px;        /* Match border-radius to link */
     padding: 1rem;            /* Ensure padding remains consistent */
 }
@@ -110,6 +113,7 @@ body {
 nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 nav ul {
@@ -119,15 +123,16 @@ nav ul {
     display: flex;
     align-items: center;
 }
-/* Space between items */
+
 nav ul li {
-    margin: 0 1rem; /* Adjust the space as needed */
+    /* margin: 0 1rem;  */
+    display: inline;
 }
 
-
 .nav-links {
+    display: flex;
     gap: 1rem;
-    margin-right: 0.9rem; /* Add margin to the right to separate from the user icon */
+    margin-right: 1rem; /* Separate from the user icon */
 }
 
 .nav-icons {
@@ -144,6 +149,7 @@ nav ul li {
 .nav-icons a i {
     margin-right: 2rem;
 }
+
 nav ul li {
     display: inline;
 }
@@ -167,6 +173,77 @@ nav ul li a:hover, .nav-icon:hover {
     color: #555;
 }
 
+/* Dropdown Adjustments */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%; /* Positions the dropdown below the button */
+    right: 0; /* Aligns the dropdown to the right edge */
+    background-color: #ffffff;
+    border-radius: 25px;
+    min-width: 200px; /* Adjust width if needed */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1; /* Ensure it is above other content */
+    height: auto;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content form {
+    padding: 10px;
+}
+
+.dropdown-content  {
+    margin-bottom: 10px;
+}
+
+.dropdown-content  label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.dropdown-content  input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+/* Dropdown Adjustments */
+.dropdown-content  select {
+    width:100%;
+    height: auto;
+}
+
+.dropdown-content button {
+    background-color: #6A040F;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 10px;
+    cursor: pointer;
+    display: block; /* Makes the button behave like a block-level element */
+    margin: 10px auto; /* Centers the button horizontally */
+    text-align: center; /* Ensures the button text is centered */
+    width: fit-content; /* Button's width adjusts to the content */
+    font-size: 16px; /* Adjust font size */
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.dropdown-content button i {
+    font-size: 18px; /* Adjust the icon size */
+}
+
+.dropdown-content button:hover {
+    background-color: #000000;
+}
 
 .main-header {
     display: flex;
@@ -178,6 +255,15 @@ nav ul li a:hover, .nav-icon:hover {
     position: relative;
     width: 100%;
 }
+
+.dashboard-text {
+    font-weight: normal; /* Ensures the text is not bold */
+    text-transform: capitalize; /* Makes the first letter uppercase and the rest lowercase */
+    margin-left: 5px; /* Adds a little space between the icon and the text */
+    font-size: 20px; /* Adjust the size as needed */
+    color: #000; /* Text color */
+}
+
 
 .dashboard-icon {
     font-size: 38px; /* Larger size for the dashboard icon */
@@ -222,6 +308,7 @@ nav ul li a:hover, .nav-icon:hover {
     padding: 0.5rem;
     color: black;
     font-size: 1rem;
+    background-color: transparent;
     
 }
 
@@ -233,7 +320,6 @@ nav ul li a:hover, .nav-icon:hover {
     color: #000000; /* Icon color */
     pointer-events: none; /* Ensure the button is not clickable over the input field */
 }
-
 
 
 
@@ -461,13 +547,12 @@ footer a:hover {
     backdrop-filter: blur(2px); /* Blurring effect */
     justify-content: center;
     align-items: center;
-
 }
 
 .login-popup {
     display: flex;
     background: #fff;
-    width: 40%;
+    width: 50%;
     max-width: 800px;
     height: auto;
     border-radius: 25px;
@@ -493,7 +578,7 @@ footer a:hover {
 
 .login-left {
     flex: 1;
-    padding: 2rem;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -510,8 +595,10 @@ footer a:hover {
 }
 
 .login-left h1 {
-    margin-bottom: 1rem;
-    font-size: 1.8rem;
+    margin-top: 0.5rem;
+    margin-left: 10rem;
+    font-size: 1rem;
+    width: 100%;
 }
 
 .login-left form {
@@ -520,6 +607,7 @@ footer a:hover {
     width: 80%;
     max-width: 200px;
     align-items: center;
+    margin: 1rem;
 }
 
 .input-container {
@@ -529,13 +617,13 @@ footer a:hover {
 }
 
 .input-container input {
-    padding: 10px 10px 10px 40px; /* Adjust padding for icon */
+    padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 100%;
     font-size: 1rem;
     outline: none;
-    height: 10px;
+    height: 1rem;
 }
 
 .login-left button {
@@ -583,15 +671,7 @@ footer a:hover {
     object-fit: cover;
 }
 
-/* .form-container {
-    display: flex; 
-    flex-direction: row; 
-    justify-content: space-between; 
-    align-items: center;
-    gap: 10px; 
-    position: relative;
-    height: 470px;
-} */
+
 
 .form-container {
     display: flex; 
@@ -601,13 +681,13 @@ footer a:hover {
     gap: 10px; 
     position: relative;
     flex-wrap: wrap;
-    height: auto; /* Remove fixed height to allow content to expand naturally */
+    height: auto;
     padding-bottom: 5rem; /* Add padding to prevent the button from overlapping content */
 }
 
 .form-content {
     flex: 2; 
-    padding-right: 10px; 
+    padding-right: 1rem; 
 }
 
 .form-image {
@@ -642,13 +722,13 @@ footer a:hover {
 .form-group {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 0.3rem;
 }
 
 .form-group label {
     flex: 0 0 3rem; /* Fixed width for the label */
     margin-bottom: 0; /* Remove bottom margin */
-    margin-right: 10px;
+    /* margin-right: 10px; */
     color: rgba(0, 0, 0, 0.9);
     text-align: left;
 }
@@ -657,35 +737,34 @@ footer a:hover {
     padding: 7px;
     border: 1px solid rgb(210, 210, 210);
     border-radius: 5px;
-    height: 9px;
+    height: 1.8rem;
     outline: none;
 }
 
 .form-group input[type="radio"] {
     accent-color:  #6A040F; /* Dark red color */
-    margin-right: 2px; /* Reduce the margin between the radio button and label */
-    transform: scale(1.5); /* Increase the size of the radio button */
+    /* margin-right: 2px;  */
+    height: 0.8rem;
 }
 
 .form-group select {
-    /* padding: 0.4rem; */
     font-family: "Poppins", sans-serif;
+    font-size: 0.6rem;
     border-radius: 5px;
-    height: 20px;
+    height: 1.5rem;
     border: 1px solid  #6A040F;
     background-color: #ffffff;
     color: #000000;
     cursor: pointer;
-
+    padding: 0.1rem 0.7rem;
+    overflow: hidden; 
+    appearance: none; 
 }
 
 /* Additional styling if needed */
 .form-group input[type="radio"]:hover {
     cursor: pointer;
 }
-
-
-
 
 
 /*admin dashboard select*/
@@ -714,25 +793,25 @@ footer a:hover {
     cursor: pointer;
 }
 
+
+
 /* Container to hold options and table side by side */
 .container {
     justify-content: space-between;
     display: flex;
-    flex-direction: column-reverse; /* Stack elements vertically, options on top */
     gap: 20px;
     padding: 20px;
     box-sizing: border-box;
+    height: 50vh; 
 }
 
 .table-container {
-    /* width: 60%; */
-    height: 90%;
-    flex: 2;
-    order: 1;
-    width: 100%;
-    max-width: none;
-    overflow-x: auto; /* Allow horizontal scrolling for table */
-    margin-left: 5rem;
+    height: 70%;
+    width: 70%;
+    max-width: none; 
+    overflow: auto;
+    margin: 4rem 4rem 1rem 4rem;
+    /* background-color: #333333; */
 }
 
 
@@ -741,8 +820,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     box-shadow: 2px 2px 8px 2px gray;
-    border-radius: 25px; /* Rounded corners for the table */
-    overflow: hidden; /* Ensures rounded corners apply to table contents */
+    /* overflow: hidden; */
     border: 1px solid #ddd;
     min-width: 600px; 
 }
@@ -759,109 +837,21 @@ th, td {
 th {
     background:   #6A040F;
     color: #ffffff;
-    /* position: ; */
     position: sticky;
     top: 0;
     z-index: 1;
 }
 
+th:last-child {
+    border-top-right-radius: 25px; /* Rounded corners for the table */
+}
+
+th:first-child {
+    border-top-left-radius: 25px; /* Rounded corners for the table */
+}
 .table-buttons {
     display: flex;
     }
-
-/* Styles for the options container */
-.options-container {
-    flex: 1;
-    padding: 20px;
-    background: #fff;
-    border-radius: 30px;
-    box-shadow: 2px 2px 8px 2px gray;
-    order: 2; /* Ensures this container is on the right */
-    text-align: center; 
-    width: 100%;
-    max-width: none;
-    margin: 0;
-}
-
-/* Styles for form groups in the options container */
-.options-container .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.options-container label {
-    /* display: block; */
-    
-    font-weight: bold;
-
-    flex: 0 0 100%;
-    margin-bottom: 5px;
-}
-
-.options-container input[type="number"],
-.options-container input[type="date"] {
-    flex: 0 0 48%;
-}
-
-/* Size-specific styles for input containers */
-
-.options-container input[type="text"], 
-.options-container input[type="number"], 
-.options-container input[type="date"] {
-    width: 100%; /* Full width for consistent sizing */
-    padding: 15px; /* Adjust padding for better appearance */
-    margin: 5px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-
-.options-container input[type="number"] {
-    width: calc(50% - 10px); /* 50% width minus margin */
-    display: inline-block;
-    margin-right: 10px; /* Adds space between the two inputs */
-}
-
-.options-container input[type="number"]:last-child {
-    margin-right: 0; /* Removes margin on the last child */
-}
-
-.options-container select{
-    width:100%;
-    height: auto;
-}
-
-.options-container select,
-.options-container button {
-    width: 100%;
-}
-
-.options-container button {
-    width: 70%;
-    padding: 10px;
-    background-color:  #6A040F;
-    color: #fff;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 16px;
-    display: inline-flex; 
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-}
-
-.options-container button i {
-    margin-right: 2px;
-}
-
-.options-container button:hover {
-    background-color: #000000;
-}
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -889,11 +879,6 @@ th {
     .table-container {
         flex: 2;
         margin-right: 20px;
-    }
-
-    .options-container {
-        flex: 1;
-        max-width: 300px;
     }
 }
 
@@ -947,6 +932,7 @@ th {
     background-color:  #6A040F; 
 }
 
+/* Base modal styling */
 .modal {
     display: none; /* Hidden by default */
     position: fixed;
@@ -967,60 +953,87 @@ th {
     background-color: #ffffff;
     margin: 5% auto;
     padding: 2rem;
-    /* max-height: 630px; */
     border: 1px solid #888;
-    border-radius: 40px;
-    /* width: 30%; */
+    border-radius: 20px;
     max-width: 800px; /* Maximum width for larger screens */
-    width: 90%;
-
-    /* height:auto; */
-    max-width: 800px; /* Set a max-width for large screens */
-    position: relative;
-    /* overflow-y: auto;  */
+    width: 90%; /* Adjust width for responsiveness */
     box-sizing: border-box;
+    position: relative;
 }
-
 
 .logo-container {
     position: absolute;
-    top: 20px; /* Adjust as needed to move the logo down */
-    left: 20px; /* Adjust as needed to move the logo to the left */
+    top: 20px;
+    left: 20px;
 }
 
-/* Style the logo */
 .company-logo {
-    width: 50px; 
-    height:40px;
+    width: 50px;
+    height: 40px;
 }
 
-/* Centering the Add Employee Title */
-#addModal h2 {
+/* Modal title */
+.modal h2 {
     text-align: center;
-    margin-top: 40px; /* Adjust as needed */
-    font-size: 1.5rem; /* Adjust font size as needed */
+    margin-top: 40px;
+    font-size: 1.5rem;
 }
 
-/* Centering the Add Employee Button */
+/* Form container styling */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Space between form content and image */
+}
+
+/* Form content */
+.form-content {
+    width: 100%;
+}
+
+/* Form group styling */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+    /* padding: 0.5rem; */
+    /* border: 1px solid #6A040F; */
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Form image */
+.form-image {
+    display: none; /* Hide on smaller screens */
+}
+
 #addForm button[type="submit"] {
     display: block;
-    margin: 20px auto; /* Adjust margin as needed */
+    margin: 20px auto;
     padding: 10px 20px;
     border: none;
     border-radius: 50px;
-    background-color: #6A040F; /* Your preferred color */
+    background-color: #6A040F;
     color: #fff;
     cursor: pointer;
-    text-align: center; /* Ensure the text inside the button is centered */
+    text-align: center;
 }
 
 #addForm button[type="submit"]:hover {
-    background-color:  #6A040F;
+    background-color: #6A040F;
 }
 
-
 #close {
-    color:  #6A040F;
+    color: #6A040F;
     position: absolute;
     top: 8px;
     right: 18px;
@@ -1029,9 +1042,18 @@ th {
     cursor: pointer;
 }
 
+#close:hover,
+#close:focus {
+    color: #6A040F;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Media query for screens wider than 768px */
 @media screen and (min-width: 768px) {
     .form-container {
         flex-direction: row;
+        justify-content: space-between;
     }
 
     .form-content {
@@ -1052,7 +1074,7 @@ th {
 
     .form-group label {
         width: 40%;
-        text-align: lw;
+        text-align: left;
         margin-right: 10px;
     }
 
@@ -1062,7 +1084,45 @@ th {
     }
 }
 
+/* Media query for screens narrower than 768px */
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+    }
+    .form-group {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
 
+    .form-group label {
+        width: 40%;
+        /* margin-right: 10px; */
+        text-align: left; /* Align text to the left */
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 60%;
+    }
+
+    #addForm button[type="submit"] {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    .company-logo {
+        width: 40px;
+        height: 30px;
+    }
+
+    .modal h2 {
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+}
 
 #close:hover,
 #close:focus {
@@ -1071,23 +1131,39 @@ th {
     cursor: pointer;
 }
 
-.edit-btn, .delete-btn {
-    background-color: #ffffff;
-    color: black;
+
+
+.edit-btn {
+    /* background-color: #333333;
+    color: #f8f5f5; */
     height: 70%;
     border: none;
     padding: 0.3rem 0.6rem;
-    border-radius: 2px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     margin-right: 0.1rem;
     font-family: "Poppins", sans-serif;
 }
-#editModal h2 {
-    text-align: center;
-    margin-top: 10px; /* Adjust as needed */
-    font-size: 1.8rem; /* Adjust font size as needed */
+
+
+.delete-btn {
+    background-color: #6A040F;;
+    color: #f8f5f5;
+    height: 70%;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-right: 0.1rem;
+    font-family: "Poppins", sans-serif;
 }
+
+
+
     /* Custom dialog box */
 
     .custom-dialog {
@@ -1127,4 +1203,142 @@ th {
 
 
 
+    .upload-container {
+        text-align: center;
+        margin: 20px;
+    }
+    
+    /* Hide the default file input */
+    #file-upload {
+        display: none;
+    }
+    
+    /* Style the custom file upload label to look like a link */
+    .custom-file-link {
+        color: black; /* Black color for the link */
+        cursor: pointer;
+        font-size: 18px; /* Slightly larger font size */
+        font-family: Arial, sans-serif;
+        text-decoration: none; /* No underline by default */
+        transition: text-decoration 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 20px; /* Space below the label */
+    }
+    
+    .custom-file-link:hover {
+        text-decoration: underline; /* Underline on hover */
+    }
+    
+    .custom-file-link i {
+        margin-right: 8px; /* Space between icon and text */
+    }
+    
+    /* Style for displaying selected file name */
+    .file-name {
+        display: block;
+        font-size: 16px;
+        margin-top: 10px;
+        font-family: Arial, sans-serif;
+        color: #333;
+    }
+    
+    /* Style for the remove file button */
+    .remove-file {
+        display: inline-block;
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 3px;
+        margin-left: 10px;
+    }
+    
+    .remove-file i {
+        margin-right: 5px;
+    }
+    
+    .remove-file:hover {
+        background-color: #d32f2f;
+    }
+    
 
+
+    .analytics-form-container {
+        width: 30%;
+        max-width: 600px; /* Adjust as needed */
+        margin: 0 auto;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0px 8px 4px rgba(0, 0, 0, 0.2);
+        background-color: #fff;
+    }
+    
+    .analytics-form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .analytics-form-group label {
+        /* display: block; */
+        /* margin-bottom: 5px; */
+        font-weight: bold;
+    }
+    
+    
+    .analytics-form-container input[type="number"], input[type="date"], input[type="text"] {
+        height: 1.5rem;
+        border: 1px solid #6A040F;
+        border-radius: 5px;
+        padding: 0.5rem;
+        /* box-sizing: border-box; */
+        outline: none;
+        font-family: "Poppins", sans-serif;
+    }
+
+    .analytics-form-container select {
+        height: 1.5rem;
+        border: 1px solid #6A040F;
+        border-radius: 5px;
+        padding: 0 0.4rem 0;
+        outline: none;
+        font-family: "Poppins", sans-serif;
+    }
+
+    /* .analytics-form-container select option {
+        font-family: "Poppins", sans-serif;
+    } */
+    
+    .analytics-form-container input[type="radio"] {
+        margin-right: 5px;
+    }
+    
+    .analytics-form-container button[type="submit"] {
+        background-color: #6A040F;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        cursor: pointer;
+        display: block;
+        margin: 20px auto 0; /* Centers the button horizontally */
+    }
+    
+    .analytics-form-container button[type="submit"]:hover {
+        background-color: #8B1D24; /* Slightly lighter on hover */
+    }
+    
+    #dobInputs, #ageInputs {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .analytics-chart-container {
+        height: 25%;
+        /* background-color: #333; */
+        margin-bottom: 1rem;
+    }
+    
+    

@@ -13,7 +13,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('import-form').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent the form from submitting in the traditional way
 
+        const fileInput = document.getElementById('file-upload');
+        if (!fileInput.files.length) {
+            alert('Please select a file to upload.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        fetch('/import', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.duplicates && data.duplicates.length > 0) {
+                const confirmUpdate = confirm(`Some records already exist. Do you want to update them?`);
+                if (confirmUpdate) {
+                    fetch('/update', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(updateData => {
+                        alert(updateData.message);
+                    })
+                    .catch(error => {
+                        console.error('Error updating records:', error);
+                    });
+                }
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error importing file:', error);
+        });
+    });
+});
 
 function populateTable(filter = 'all') {
     fetch('/employees')
@@ -108,68 +150,6 @@ document.querySelectorAll('.filter-option').forEach(option => {
     });
 });
 
-
-// function filterTable(filter) {
-//     const today = new Date();
-//     const tomorrow = new Date(today);
-//     const nextWeek = new Date(today);
-//     const nextMonth = new Date(today);
-
-//     tomorrow.setDate(today.getDate() + 1);
-//     nextWeek.setDate(today.getDate() + 7);
-//     nextMonth.setDate(today.getDate() + 30);
-
-//     const tableBody = document.querySelector('#employeeTable tbody');
-//     const rows = tableBody.querySelectorAll('tr');
-
-//     rows.forEach(row => {
-//         const dobCell = row.querySelector('td:nth-child(5)'); // Assuming DOB is the 5th column
-//         const dob = new Date(dobCell.textContent.trim());
-
-//         const isToday = dob.getDate() === today.getDate() && dob.getMonth() === today.getMonth();
-//         const isTomorrow = dob.getDate() === tomorrow.getDate() && dob.getMonth() === tomorrow.getMonth();
-//         const isNextWeek = dob.getDate() === nextWeek.getDate() && dob.getMonth() === nextWeek.getMonth();
-//         const isNext30Days = dob >= today && dob <= nextMonth;
-
-//         let showRow = false;
-
-//         switch (filter) {
-//             case 'all':
-//                 showRow = true;
-//                 break;
-//             case 'current':
-//                 showRow = isToday;
-//                 break;
-//             case 'nextDay':
-//                 showRow = isTomorrow;
-//                 break;
-//             case 'oneWeek':
-//                 showRow = isNextWeek;
-//                 break;
-//             case 'next30Days':
-//                 showRow = isNext30Days;
-//                 break;
-//         }
-
-//         row.style.display = showRow ? '' : 'none';
-//     });
-// }
-
-
-
-// // Validation function for PF number
-// function validatePFNumber(pfNumber) {
-//     const pattern = /^\d{5}$/;
-//     return pattern.test(pfNumber);
-// }
-
-// // Check PF number uniqueness
-// async function isPFNumberUnique(pfNumber) {
-//     const response = await fetch(`/employees/pf_number/${pfNumber}`);
-//     return response.ok;
-// }
-
-// Validation function for PF number
 
 // Function to handle the edit button click
 function handleEdit(event) {
@@ -346,30 +326,6 @@ function handleDelete(event) {
 }
 
 
-// function handleDelete(event) {
-//     const row = event.target.closest('tr'); // Get the closest table row
-//     const pfNumber = event.target.dataset.id;
-//     const firstName = row.querySelector('td:nth-child(2)').textContent;
-//     const lastName = row.querySelector('td:nth-child(3)').textContent;
-
-//     const confirmation = confirm(`Are you sure you want to delete ${firstName} ${lastName}?`);
-
-//     if (confirmation) {
-//         fetch(`/employees/${pfNumber}`, {
-//             method: 'DELETE'
-//         })
-//         .then(response => {
-//             if (response.ok) {
-//                 row.remove(); // Remove the row from the table
-//             } else {
-//                 console.error('Failed to delete employee');
-//             }
-//         })
-//         .catch(error => console.error('Error deleting employee:', error));
-//     }
-// }
-
-
 document.addEventListener('DOMContentLoaded', () => {
     const addModal = document.getElementById('addModal');
     const closeAddModal = document.querySelector('#addModal #close');
@@ -455,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function resetDropdown() {
     const filterDropdown = document.getElementById('birthdayFilter');
-    filterDropdown.selectedIndex = 0;  // Reset to the first option
+    filterDropdown.selectedIndex = 0;  
 }
 
 
@@ -549,35 +505,105 @@ function resetTable() {
     populateTable('all');
 }
 
-document.getElementById('sendBirthdayWishesButton').addEventListener('click', () => {
-    fetch('/send-birthday-wishes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+
+// Handle opening and closing modals;;dropdown menu
+function openAddModal() {
+    document.getElementById('addModal').style.display = 'block';
+}
+
+document.getElementById('close').onclick = function() {
+    document.getElementById('addModal').style.display = 'none';
+}
+
+
+document.getElementById('addForm').onsubmit = function(event) {
+    event.preventDefault(); // Prevent form from submitting the default way
+    console.log('Form submitted');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle Import dropdown
+    document.getElementById('import-link').addEventListener('click', function(event) {
+        event.preventDefault(); 
+        const importDropdown = document.getElementById('import-dropdown');
+        const importContent = importDropdown.querySelector('.import-content');
+        importContent.style.display = (importContent.style.display === 'block') ? 'none' : 'block';
+    });
+
+    // Toggle Extract dropdown
+    document.querySelector('#extract-dropdown > a').addEventListener('click', function(event) {
+        event.preventDefault(); 
+        const extractDropdown = document.getElementById('extract-dropdown');
+        const extractContent = extractDropdown.querySelector('.extract-content');
+        extractContent.style.display = (extractContent.style.display === 'block') ? 'none' : 'block';
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const importDropdown = document.getElementById('import-dropdown');
+        const extractDropdown = document.getElementById('extract-dropdown');
+        
+        if (!importDropdown.contains(event.target) && !extractDropdown.contains(event.target)) {
+            importDropdown.querySelector('.import-content').style.display = 'none';
+            extractDropdown.querySelector('.extract-content').style.display = 'none';
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-    })
-    .catch(error => {
-        console.error('Error sending birthday wishes:', error);
-        alert('Failed to send birthday wishes.');
+    });
+
+    // Show the selected file name and remove button
+    document.getElementById('file-upload').addEventListener('change', function(event) {
+        const fileNameElement = document.getElementById('file-name');
+        const removeFileButton = document.getElementById('remove-file');
+        const fileInput = event.target;
+
+        if (fileInput.files.length > 0) {
+            fileNameElement.textContent = fileInput.files[0].name;
+            removeFileButton.style.display = 'inline-block';
+        } else {
+            fileNameElement.textContent = '';
+            removeFileButton.style.display = 'none';
+        }
+    });
+
+    // Remove the selected file
+    document.getElementById('remove-file').addEventListener('click', function() {
+        const fileInput = document.getElementById('file-upload');
+        const fileNameElement = document.getElementById('file-name');
+        const removeFileButton = document.getElementById('remove-file');
+
+        fileInput.value = ''; 
+        fileNameElement.textContent = '';
+        removeFileButton.style.display = 'none'; 
     });
 });
 
 
-document.getElementById('sendBirthdayRemindersButton').addEventListener('click', function() {
-    fetch('/send-birthday-reminders', {
-        method: 'POST'
+document.getElementById('extract-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const gender = document.getElementById('gender').value;
+
+    // Send the data to the server
+    fetch('/extract', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ startDate, endDate, gender })
     })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message); // Show a message when the reminders have been sent
+    .then(response => response.blob())
+    .then(blob => {
+        // Create a link element, trigger a download and then remove it
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Notifi_Birthday_Reports.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
     })
-    .catch(error => {
-        console.error('Error sending birthday reminders:', error);
-    });
+    .catch(error => console.error('Error extracting data:', error));
 });
 
 
