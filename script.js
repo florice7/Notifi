@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Populate the table with all employees by default
     populateTable('all');
-
+    fetchEmailStatus();
     // Add event listener for the filter dropdown
     const filterDropdown = document.getElementById('birthdayFilter');
     filterDropdown.addEventListener('change', (e) => {
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetTable();
         
         populateTable(selectedFilter);
+        fetchEmailStatus();
     });
 });
 
@@ -607,3 +608,74 @@ document.getElementById('extract-form').addEventListener('submit', function(even
 });
 
 
+function fetchEmailStatus() {
+    fetch('/email-status')
+        .then(response => response.json())
+        .then(data => {
+            updateEmailStatusChart(data);
+        })
+        .catch(error => console.error('Error fetching email status data:', error));
+}
+
+function updateEmailStatusChart(data) {
+    const ctx = document.getElementById('emailStatusChart').getContext('2d');
+
+    const emailData = {
+        labels: ['Successful Emails', 'Failed Emails'],
+        datasets: [{
+            data: [data.successful_emails, data.failed_emails],
+            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: emailData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            }
+        }
+    });
+}
+
+function fetchRetryStatus() {
+    fetch('/email-retry-status')
+        .then(response => response.json())
+        .then(data => {
+            updateRetryStatusChart(data);
+        })
+        .catch(error => console.error('Error fetching retry status data:', error));
+}
+
+function updateRetryStatusChart(data) {
+    const ctx = document.getElementById('retryStatusChart').getContext('2d');
+
+    const retryData = {
+        labels: ['Successful Retries', 'Failed Retries'],
+        datasets: [{
+            data: [data.successful_retries, data.failed_retries],
+            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 159, 64, 0.6)'],
+            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)'],
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: retryData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+            }
+        }
+    });
+}

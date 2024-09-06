@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 const pdf = require('pdfkit');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -164,55 +165,21 @@ app.delete('/employees/:id', (req, res) => {
 
 
 
-// Configure Nodemailer
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'musafiriflorice@gmail.com',
-        pass: 'qaku orgk uyhd dsai' // Your third-party app password
+        pass: 'qaku orgk uyhd dsai'
     }
-});
-
-// Function to send birthday wishes
-function sendBirthdayWishes(employees) {
-    employees.forEach(employee => {
-        const mailOptions = {
-            from: 'musafiriflorice@gmail.com',
-            to: employee.email,
-            subject: 'Happy Birthday!',
-            text: `Dear ${employee.first_name} ${employee.last_name},\n\nHappy Birthday! Wishing you a wonderful day filled with joy and success.\n\nBest regards,\nEquity Bank Rwanda PLC`
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(`Error sending email to ${employee.email}: ${error}`);
-            } else {
-                console.log(`Email sent to ${employee.email}: ${info.response}`);
-            }
-        });
-    });
-}
-
-// Route to send birthday wishes
-app.post('/send-birthday-wishes', (req, res) => {
-    const query = `SELECT * FROM employees WHERE MONTH(date_of_birth) = MONTH(CURDATE()) AND DAY(date_of_birth) = DAY(CURDATE())`;
-
-    db.query(query, (error, results) => {
-        if (error) {
-            console.error('Error fetching today\'s birthdays:', error);
-            res.status(500).json({ message: 'Error fetching today\'s birthdays' });
-        } else {
-            sendBirthdayWishes(results);
-            res.json({ message: 'Birthday wishes sent successfully!' });
-        }
-    });
 });
 
 
 // Function to get employees with birthdays in a given date range
 function getEmployeesWithBirthdaysInRange(startDate, endDate, callback) {
     const query = `
-        SELECT first_name, last_name, email, DATE_FORMAT(date_of_birth, '%d %M') AS birthdate 
+        SELECT first_name, last_name, email, department, 
+               DATE_FORMAT(date_of_birth, '%m-%d') AS birthdate
         FROM employees 
         WHERE DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN DATE_FORMAT(?, '%m-%d') AND DATE_FORMAT(?, '%m-%d')
     `;
@@ -225,41 +192,184 @@ function getEmployeesWithBirthdaysInRange(startDate, endDate, callback) {
     });
 }
 
-cron.schedule('07 09 * * *', () => {
-    console.log('Running automated tasks to send birthday reminders...');
+// Function to send a general email with birthday information
+function sendGeneralBirthdayEmail() {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    const nextWeek = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    nextWeek.setDate(today.getDate() + 7);
 
-    // Fetching and sending birthday reminders
-    fetch('http://localhost:3000/send-birthday-reminders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
+    const todayStr = today.toISOString().slice(0, 10);
+    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const nextWeekStr = nextWeek.toISOString().slice(0, 10);
+
+    getEmployeesWithBirthdaysInRange(todayStr, todayStr, (error, todaysBirthdays) => {
+        if (error) {
+            console.error("Error fetching today's birthdays:", error);
+            return;
         }
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Birthday reminders sent:', data.message);
-            logEmailStatus('Birthday Reminders', true);
-        })
-        .catch(error => {
-            console.error('Error sending birthday reminders:', error);
-            logEmailStatus('Birthday Reminders', false, error.message);
+
+        getEmployeesWithBirthdaysInRange(tomorrowStr, tomorrowStr, (error, tomorrowsBirthdays) => {
+            if (error) {
+                console.error("Error fetching tomorrow's birthdays:", error);
+                return;
+            }
+
+            getEmployeesWithBirthdaysInRange(todayStr, nextWeekStr, (error, nextWeekBirthdays) => {
+                if (error) {
+                    console.error("Error fetching upcoming birthdays:", error);
+                    return;
+                }
+
+                const subject = 'Birthday Reminders';
+                let text = 'Hello Team,\n\n';
+
+                if (todaysBirthdays.length > 0) {
+                    text += 'Today\'s Birthdays:\n';
+                    text += formatEmployeeList(todaysBirthdays);
+                    text += '\n';
+                }
+
+                if (tomorrowsBirthdays.length > 0) {
+                    text += 'Tomorrow\'s Birthdays:\n';
+                    text += formatEmployeeList(tomorrowsBirthdays);
+                    text += '\n';
+                }
+
+                if (nextWeekBirthdays.length > 0) {
+                    text += 'Upcoming Birthdays:\n';
+                    text += formatUpcomingBirthdays(nextWeekBirthdays);
+                    text += '\n';
+                }
+
+                text += 'Best regards,\nEquity Bank Rwanda PLC';
+
+                // Fetch all employee emails
+                db.query('SELECT email FROM employees', (err, results) => {
+                    if (err) {
+                        console.error('Error fetching employee emails:', err);
+                        return;
+                    }
+                
+                    const emailList = results.map(row => row.email);
+                
+                    const retryFailedEmails = (email, retries = 5, delay = 5 * 60 * 1000) => { // 5 retries with 5 minutes delay
+                        const mailOptions = {
+                            from: 'musafiriflorice@gmail.com',
+                            to: email,
+                            subject: subject,
+                            text: text
+                        };
+                
+                        const attemptToSend = () => {
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    if ((error.code === 'ETIMEDOUT' || error.message.includes('queryA ETIMEOUT')) && retries > 0) {
+                                        console.log(`Retrying for ${email}... (${retries} retries left)`);
+                                        setTimeout(() => retryFailedEmails(email, retries - 1, delay), delay); // Retry after delay
+                                    } else {
+                                        console.log(`Error sending email to ${email}: ${error.message}`);
+                                        logEmailStatus('Birthday Reminder', email, false, error.message); // Log failure
+                                    }
+                                } else {
+                                    console.log(`Birthday email sent to ${email}: ${info.response}`);
+                                    logEmailStatus('Birthday Reminder', email, true); // Log success
+                                }
+                            });
+                        };
+                
+                        attemptToSend(); // Initiate the first attempt
+                    };
+                
+                    // Send emails and retry if needed
+                    emailList.forEach(email => {
+                        retryFailedEmails(email);
+                    });
+                });
+                
+            });
         });
-}, {
-    scheduled: true,
-    timezone: "Africa/Kigali" // Set to CAT (Central Africa Time)
-});
+    });
+}
 
 
-function logEmailStatus(emailType, emailList, isSuccess, reason = null) {
-    // Ensure emailList is an array
+
+// Function to send birthday wishes with retry logic
+function sendBirthdayWishes() {
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+
+    getEmployeesWithBirthdaysInRange(todayStr, todayStr, (error, todaysBirthdays) => {
+        if (error) {
+            console.error("Error fetching today's birthdays:", error);
+            return;
+        }
+
+        function sendMailWithRetry(mailOptions, emailType, retries = 5, delay = 10 * 60 * 1000) {  // 10 minutes delay between retries
+            let attempts = 0;
+        
+            function attemptToSend() {
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error(`Error sending email to ${mailOptions.to}: ${error.message}`);
+        
+                        // Log the failure attempt
+                        logEmailStatus(emailType, mailOptions.to, false, error.message);
+        
+                        // Retry on connection-related errors
+                        if (error.code === 'ETIMEDOUT' || error.message.includes('queryA ETIMEOUT') || error.message.includes('connect ETIMEDOUT')) {
+                            attempts++;
+                            if (attempts < retries) {
+                                console.log(`Retrying... Attempt ${attempts} of ${retries}`);
+                                setTimeout(attemptToSend, delay); // Retry after delay
+                            } else {
+                                console.log(`Failed to send after ${retries} attempts.`);
+                            }
+                        } else {
+                            console.log(`Error is not retryable. Giving up.`);
+                        }
+                    } else {
+                        console.log(`Email sent successfully to ${mailOptions.to}: ${info.response}`);
+                        // Log the success
+                        logEmailStatus(emailType, mailOptions.to, true);
+                    }
+                });
+            }
+        
+            attemptToSend(); // Start the first attempt
+        }
+        
+
+        todaysBirthdays.forEach(emp => sendMailWithRetry(emp, 5)); // Retry up to 5 times
+    });
+}
+
+
+// Function to format employee list
+function formatEmployeeList(employeeList) {
+    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} (${emp.department || 'Unknown'})`).join('\n');
+}
+
+// Function to format upcoming birthdays
+function formatUpcomingBirthdays(employeeList) {
+    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} (${emp.birthdate || 'Unknown'}) (${emp.department || 'Unknown'})`).join('\n');
+}
+
+// Function to log email status
+function logEmailStatus(emailType, emailList, isSuccess, reason = null, isRetry = 0) {
+    if (!emailList || emailList.length === 0) {
+        console.log(`No emails to log for ${emailType}. Skipping log.`);
+        return; // Skip logging if no email was sent
+    }
+
     const emails = Array.isArray(emailList) ? emailList : [emailList];
+    const query = 'INSERT INTO email_logs (email_type, email_address, is_success, is_retry, timestamp, reason) VALUES (?, ?, ?, ?, NOW(), ?)';
 
-    // SQL query for logging a single email
-    const query = 'INSERT INTO email_logs (email_type, email_address, is_success, timestamp, reason) VALUES (?, ?, ?, NOW(), ?)';
-
-    // Loop through each email and log individually
     emails.forEach(email => {
-        db.query(query, [emailType, email, isSuccess ? 1 : 0, reason], (err, result) => {
+        const status = isSuccess ? 1 : 0;
+
+        db.query(query, [emailType, email, status, isRetry, reason], (err, result) => {
             if (err) {
                 console.error(`Error logging email status for ${email}:`, err);
             } else {
@@ -269,128 +379,65 @@ function logEmailStatus(emailType, emailList, isSuccess, reason = null) {
     });
 }
 
+app.get('/email-retry-status', (req, res) => {
+    const query = `
+        SELECT
+            COALESCE(SUM(is_success AND is_retry), 0) AS successful_retries,
+            COALESCE(SUM((NOT is_success) AND is_retry), 0) AS failed_retries
+        FROM
+            email_logs
+        WHERE
+            is_retry = 1;
+    `;
 
-
-function sendBirthdayReminders() {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(today.getDate() + 7);
-
-    const todayStr = today.toISOString().slice(0, 10);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-    const nextWeekStr = nextWeek.toISOString().slice(0, 10);
-
-    // Get employees with birthdays today
-    getEmployeesWithBirthdaysInRange(todayStr, todayStr, (error, todaysBirthdays) => {
-        if (error) {
-            console.error("Error fetching today's birthdays:", error);
-            return;
+    db.query(query, (err, result) => {
+        if (err) {
+            console.error('Error fetching retry status data:', err);
+            res.status(500).send('Error fetching retry status data');
+        } else {
+            res.json(result[0]);
         }
-
-        // Get employees with birthdays tomorrow
-        getEmployeesWithBirthdaysInRange(tomorrowStr, tomorrowStr, (error, tomorrowsBirthdays) => {
-            if (error) {
-                console.error("Error fetching tomorrow's birthdays:", error);
-                return;
-            }
-
-            // Get employees with birthdays in the next 7 days
-            getEmployeesWithBirthdaysInRange(tomorrowStr, nextWeekStr, (error, nextWeekBirthdays) => {
-                if (error) {
-                    console.error("Error fetching upcoming week's birthdays:", error);
-                    return;
-                }
-
-                console.log("Upcoming Without Today's Birthdays:", nextWeekBirthdays);
-
-                // Handle today's birthday employees with personalized emails
-                todaysBirthdays.forEach(todayEmp => {
-                    const personalizedText = `
-Dear ${todayEmp.first_name} ${todayEmp.last_name}, Happiest Birthday!
-Wishing you a wonderful day filled with Joy and success.
-Best regards,
-Equity Bank Rwanda PLC
-
-${todaysBirthdays.filter(emp => emp.id !== todayEmp.id).length > 0 ? `The following people also have birthdays today, wish them well:` : ``}
-${todaysBirthdays.filter(emp => emp.id !== todayEmp.id).map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-
-${tomorrowsBirthdays.length > 0 ? `The following people have birthdays tomorrow, wish them well:` : ``}
-${tomorrowsBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-
-${nextWeekBirthdays.length > 0 ? `Upcoming birthdays:` : ``}
-${nextWeekBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-`.trim();
-
-                    const mailOptions = {
-                        from: 'musafiriflorice@gmail.com',
-                        to: todayEmp.email,
-                        subject: 'Birthday Reminder',
-                        text: personalizedText.trim()
-                    };
-
-                    transporter.sendMail(mailOptions, (error, info) => {
-                        if (error) {
-                            console.log(`Error sending personalized reminder to ${todayEmp.email}: ${error}`);
-                        } else {
-                            console.log(`Personalized reminder sent to ${todayEmp.email}: ${info.response}`);
-                        }
-
-                        // Log the email status individually with reason if it fails
-                        logEmailStatus('Birthday Reminder', [todayEmp.email], !error, error ? error.message : null);
-                    });
-
-                });
-
-                // Handle collective reminder emails for everyone else
-                const collectiveText = `
-${todaysBirthdays.length > 0 ? `The following people have birthdays today, wish them well:` : ``}
-${todaysBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-
-${tomorrowsBirthdays.length > 0 ? `The following people have birthdays tomorrow, wish them well:` : ``}
-${tomorrowsBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-
-${nextWeekBirthdays.length > 0 ? `Upcoming birthdays:` : ``}
-${nextWeekBirthdays.map(emp => `\n${emp.first_name} ${emp.last_name}`).join('')}
-`.trim();
-
-                const recipientEmails = nextWeekBirthdays
-                    .map(emp => emp.email)
-                    .concat(tomorrowsBirthdays.map(emp => emp.email))
-                    .filter(email => !todaysBirthdays.map(emp => emp.email).includes(email));
-
-                if (recipientEmails.length > 0) {
-                    const collectiveMailOptions = {
-                        from: 'musafiriflorice@gmail.com',
-                        to: recipientEmails.join(','),
-                        subject: 'Birthday Reminders',
-                        text: collectiveText.trim()
-                    };
-
-                    transporter.sendMail(collectiveMailOptions, (error, info) => {
-                        if (error) {
-                            console.log(`Error sending collective reminder emails: ${error}`);
-                        } else {
-                            console.log(`Collective reminder emails sent: ${info.response}`);
-                        }
-
-                        // Log each email status individually with reason if it fails
-                        recipientEmails.forEach(email =>
-                            logEmailStatus('Birthday Reminder', [email], !error, error ? error.message : null)
-                        );
-                    });
-
-                }
-            });
-        });
     });
-}
+});
 
-// POST route to trigger birthday reminders
+
+
+
+// Schedule tasks
+cron.schedule('24 16 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
+cron.schedule('23 16 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
+
+// Route to fetch email status
+app.get('/email-status', (req, res) => {
+    const query = `
+        SELECT 
+            COALESCE(SUM(is_success), 0) AS successful_emails,
+            COALESCE(COUNT(*) - SUM(is_success), 0) AS failed_emails
+        FROM 
+            email_logs;
+    `;
+
+    db.query(query, (err, result) => {
+        if (err) {
+            console.error('Error fetching email status data:', err);
+            res.status(500).send('Error fetching email status data');
+        } else {
+            res.json(result[0]);
+        }
+    });
+});
+
+
+// POST route to manually trigger birthday reminders
 app.post('/send-birthday-reminders', (req, res) => {
-    sendBirthdayReminders();
-    res.send({ message: 'Birthday reminders sent successfully!' });
+    sendGeneralBirthdayEmail();
+    res.send({ message: 'General birthday reminders sent successfully!' });
+});
+
+// POST route to manually trigger birthday wishes
+app.post('/send-birthday-wishes', (req, res) => {
+    sendBirthdayWishes();
+    res.send({ message: 'Birthday wishes sent successfully!' });
 });
 
 

@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Open Login Modal
     openLoginModalButton?.addEventListener('click', function(event) {
         event.preventDefault();
-        showModal(loginModal);
+        showModal(signupModal);
     });
 
     // Open Signup Modal
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Open Signup Modal from the login icon
     loginIcon?.addEventListener('click', function(event) {
         event.preventDefault();
-        hideModal(loginModal);
-        showModal(signupModal);
+        showModal(loginModal);
+        hideModal(signupModal);
     });
 });
