@@ -29,7 +29,14 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <ul class="nav-links">
                 <li><a href="admin-dashboard.html" title="DASHBOARD"><i class="fas fa-tachometer-alt"></i></a></li>
                 <li><a href="data-analytics.html" title="ANALYTICS"><i class="fas fa-chart-bar"></i></a></li>
-                <li><a href="#" title="SETTINGS"><i class="fas fa-cog"></i></a></li>
+                <li class="dropdown">
+                    <a href="#" title="SETTINGS" class="settings-toggle"><i class="fas fa-cog"></i></a>
+                    <ul class="dropdown-menu settings-menu">
+                        <li><a href="#">Manage Account</a></li>
+                        <li><a href="manage-admins.html">Manage Admins</a></li>
+                        <li><a href="#">System Management</a></li>
+                    </ul>
+                </li>
                 <li><a href="#" title="SIGN OUT"><i class="fas fa-sign-out-alt"></i></a></li>
             </ul>
         </nav>

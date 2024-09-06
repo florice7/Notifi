@@ -223,24 +223,24 @@ function sendGeneralBirthdayEmail() {
                 }
 
                 const subject = 'Birthday Reminders';
-                let text = 'Hello Team,\n\n';
+                let text = 'Hello Team,\n Birthday Updates\n';
 
                 if (todaysBirthdays.length > 0) {
                     text += 'Today\'s Birthdays:\n';
                     text += formatEmployeeList(todaysBirthdays);
-                    text += '\n';
+                    text += '\n\n';
                 }
 
                 if (tomorrowsBirthdays.length > 0) {
                     text += 'Tomorrow\'s Birthdays:\n';
                     text += formatEmployeeList(tomorrowsBirthdays);
-                    text += '\n';
+                    text += '\n\n';
                 }
 
                 if (nextWeekBirthdays.length > 0) {
                     text += 'Upcoming Birthdays:\n';
                     text += formatUpcomingBirthdays(nextWeekBirthdays);
-                    text += '\n';
+                    text += '\n\n\n';
                 }
 
                 text += 'Best regards,\nEquity Bank Rwanda PLC';
@@ -254,7 +254,7 @@ function sendGeneralBirthdayEmail() {
                 
                     const emailList = results.map(row => row.email);
                 
-                    const retryFailedEmails = (email, retries = 5, delay = 5 * 60 * 1000) => { // 5 retries with 5 minutes delay
+                    const retryFailedEmails = (email, retries = 5, delay = 1 * 60 * 1000) => { // 5 retries with 5 minutes delay
                         const mailOptions = {
                             from: 'musafiriflorice@gmail.com',
                             to: email,
@@ -262,32 +262,41 @@ function sendGeneralBirthdayEmail() {
                             text: text
                         };
                 
+                        let attempts = 0; // Track number of attempts
+                        
                         const attemptToSend = () => {
                             transporter.sendMail(mailOptions, (error, info) => {
                                 if (error) {
-                                    if ((error.code === 'ETIMEDOUT' || error.message.includes('queryA ETIMEOUT')) && retries > 0) {
-                                        console.log(`Retrying for ${email}... (${retries} retries left)`);
-                                        setTimeout(() => retryFailedEmails(email, retries - 1, delay), delay); // Retry after delay
+                                    attempts++; // Increment the attempt count
+                                    console.error(`Error sending email to ${email}: ${error.message}`);
+                                    
+                                    // Log the failure attempt with retry count
+                                    logEmailStatus('Birthday Reminder', email, false, error.message, attempts);
+                                    
+                                    if (attempts < retries) { // Retry until attempts are exhausted
+                                        console.log(`Retrying for ${email}... Attempt ${attempts} of ${retries}`);
+                                        setTimeout(attemptToSend, delay); // Retry after delay
                                     } else {
-                                        console.log(`Error sending email to ${email}: ${error.message}`);
-                                        logEmailStatus('Birthday Reminder', email, false, error.message); // Log failure
+                                        console.log(`Failed to send email to ${email} after ${retries} attempts.`);
+                                        // Log the final failure after max retries
+                                        logEmailStatus('Birthday Reminder', email, false, `Failed after ${retries} attempts`, retries);
                                     }
                                 } else {
-                                    console.log(`Birthday email sent to ${email}: ${info.response}`);
-                                    logEmailStatus('Birthday Reminder', email, true); // Log success
+                                    console.log(`Birthday email sent successfully to ${email}: ${info.response}`);
+                                    // Log the success
+                                    logEmailStatus('Birthday Reminder', email, true);
                                 }
                             });
                         };
                 
-                        attemptToSend(); // Initiate the first attempt
+                        attemptToSend(); // Start the first attempt
                     };
                 
                     // Send emails and retry if needed
                     emailList.forEach(email => {
                         retryFailedEmails(email);
                     });
-                });
-                
+                });                
             });
         });
     });
@@ -306,28 +315,25 @@ function sendBirthdayWishes() {
             return;
         }
 
-        function sendMailWithRetry(mailOptions, emailType, retries = 5, delay = 10 * 60 * 1000) {  // 10 minutes delay between retries
+        function sendMailWithRetry(mailOptions, emailType, retries = 5, delay = 1 * 60 * 1000) {  // 1 minute delay between retries
             let attempts = 0;
-        
+
             function attemptToSend() {
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         console.error(`Error sending email to ${mailOptions.to}: ${error.message}`);
-        
+            
                         // Log the failure attempt
-                        logEmailStatus(emailType, mailOptions.to, false, error.message);
-        
-                        // Retry on connection-related errors
-                        if (error.code === 'ETIMEDOUT' || error.message.includes('queryA ETIMEOUT') || error.message.includes('connect ETIMEDOUT')) {
-                            attempts++;
-                            if (attempts < retries) {
-                                console.log(`Retrying... Attempt ${attempts} of ${retries}`);
-                                setTimeout(attemptToSend, delay); // Retry after delay
-                            } else {
-                                console.log(`Failed to send after ${retries} attempts.`);
-                            }
+                        logEmailStatus(emailType, mailOptions.to, false, error.message, attempts); // Log retry attempt
+            
+                        // Retry for every error, but stop after the max number of retries
+                        if (attempts < retries) {
+                            attempts++; // Increment attempts before retrying
+                            console.log(`Retrying... Attempt ${attempts} of ${retries}`);
+                            setTimeout(attemptToSend, delay); // Retry after delay
                         } else {
-                            console.log(`Error is not retryable. Giving up.`);
+                            console.log(`Failed to send after ${retries} attempts.`);
+                            logEmailStatus(emailType, mailOptions.to, false, `Failed after ${retries} attempts`, retries);
                         }
                     } else {
                         console.log(`Email sent successfully to ${mailOptions.to}: ${info.response}`);
@@ -336,24 +342,35 @@ function sendBirthdayWishes() {
                     }
                 });
             }
-        
+
             attemptToSend(); // Start the first attempt
         }
-        
 
-        todaysBirthdays.forEach(emp => sendMailWithRetry(emp, 5)); // Retry up to 5 times
+        // Loop through today's birthdays and send the emails
+        todaysBirthdays.forEach(emp => {
+            const text = `Dear ${emp.first_name || 'Employee'} ${emp.last_name || ''},\n\nHappiest Birthday!\nWishing you a wonderful day filled with joy\n\nBest regards,\nEquity Bank Rwanda PLC`;
+            const mailOptions = {
+                from: 'musafiriflorice@gmail.com',
+                to: emp.email,
+                subject: 'Happy Birthday!',
+                text: text
+            };
+
+            sendMailWithRetry(mailOptions, 'Birthday Wishes', 5); // Retry up to 5 times
+        });
     });
 }
 
 
+
 // Function to format employee list
 function formatEmployeeList(employeeList) {
-    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} (${emp.department || 'Unknown'})`).join('\n');
+    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} ${emp.email || 'Unknown'} (${emp.department || 'Unknown'})`).join('\n');
 }
 
 // Function to format upcoming birthdays
 function formatUpcomingBirthdays(employeeList) {
-    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} (${emp.birthdate || 'Unknown'}) (${emp.department || 'Unknown'})`).join('\n');
+    return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} (${emp.birthdate || 'Unknown'}) ${emp.email || 'Unknown'} (${emp.department || 'Unknown'})`).join('\n');
 }
 
 // Function to log email status
@@ -378,6 +395,8 @@ function logEmailStatus(emailType, emailList, isSuccess, reason = null, isRetry 
         });
     });
 }
+
+
 
 app.get('/email-retry-status', (req, res) => {
     const query = `
@@ -404,8 +423,8 @@ app.get('/email-retry-status', (req, res) => {
 
 
 // Schedule tasks
-cron.schedule('24 16 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
-cron.schedule('23 16 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
+cron.schedule('10 16 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
+cron.schedule('10 16 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
 
 // Route to fetch email status
 app.get('/email-status', (req, res) => {

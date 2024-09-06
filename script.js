@@ -624,8 +624,8 @@ function updateEmailStatusChart(data) {
         labels: ['Successful Emails', 'Failed Emails'],
         datasets: [{
             data: [data.successful_emails, data.failed_emails],
-            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+            backgroundColor: ['rgba(106, 4, 15, 1)', 'rgba(10, 10, 10, 1)'],
+            borderColor: ['rgba(106, 4, 15, 1)', 'rgba(10, 10, 10, 1)'],
             borderWidth: 1
         }]
     };

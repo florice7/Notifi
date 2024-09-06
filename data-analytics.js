@@ -158,12 +158,12 @@ function updatePieChart(filteredEmployees) {
             label: 'Gender Distribution',
             data: [genderCount.male, genderCount.female],
             backgroundColor: [
-                'rgba(255, 206, 100, 0.6)',
-                'rgba(255, 99, 132, 0.6)'
+                'rgba(10, 10, 10, 0.9)',
+                'rgba(106, 4, 15, 0.8)'
             ],
             borderColor: [
-                'rgba(255, 206, 100, 1)',
-                'rgba(255, 99, 132, 1)'
+                'rgba(10, 10, 10, 0.9)',
+                'rgba(106, 4, 15, 0.8)'
             ],
             borderWidth: 1
         }]
@@ -227,12 +227,12 @@ function updateAgePieChart(filteredEmployees) {
             label: 'Age Distribution',
             data: [aboveAverage, belowAverage],
             backgroundColor: [
-                'rgba(54, 162, 235, 0.6)', // Blue
-                'rgba(255, 159, 64, 0.6)'  // Orange
+                'rgba(106, 4, 15, 0.8)', // Blue
+                'rgba(10, 10, 10, 0.9)'  // Orange
             ],
             borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 159, 64, 1)'
+                'rgba(106, 4, 15, 0.8)',
+                'rgba(10, 10, 10, 0.9)'
             ],
             borderWidth: 1
         }]
@@ -271,8 +271,8 @@ function updateEmailStatusChart(data) {
         labels: ['Successful Emails', 'Failed Emails'],
         datasets: [{
             data: [data.successful_emails, data.failed_emails],
-            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
-            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+            backgroundColor: ['rgba(106, 4, 15, 0.8)', 'rgba(10, 10, 10, 0.9)'],
+            borderColor: ['rgba(106, 4, 15, 0.8)', 'rgba(10, 10, 10, 0.9)'],
             borderWidth: 1
         }]
     };
@@ -324,8 +324,8 @@ function updateRetryStatusChart(data) {
         labels: ['Successful Retries', 'Failed Retries'],
         datasets: [{
             data: [data.successful_retries, data.failed_retries],
-            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 159, 64, 0.6)'],
-            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)'],
+            backgroundColor: ['rgba(106, 4, 15, 0.8)', 'rgba(10, 10, 10, 0.9)'],
+            borderColor: ['rgba(106, 4, 15, 0.8)', 'rgba(10, 10, 10, 0.9)'],
             borderWidth: 1
         }]
     };

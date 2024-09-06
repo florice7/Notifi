@@ -86,7 +86,6 @@ header {
 
 .side-menu nav ul.nav-links {
     list-style-type: none;
-    /* Remove bullet points */
     padding: 0;
     margin: 0;
     display: flex;
@@ -134,6 +133,45 @@ header {
     /* Ensure padding remains consistent */
 }
 
+
+/* Hide the dropdown menu by default */
+.settings-menu {
+    display: none;
+    position: absolute;
+    top: 0; /* Align with the top of the dropdown container */
+    left: 100%; /* Position the dropdown to the right of the settings button */
+    margin-left: 10px; /* Optional: Adds space between the settings button and the dropdown menu */
+    background-color: #fff; /* Background color for the dropdown */
+    min-width: 160px; /* Minimum width of the dropdown */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); /* Shadow for dropdown */
+    z-index: 1; /* Ensures dropdown appears above other elements */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+    border-radius: 25px;
+}
+
+/* Style for dropdown items */
+.settings-menu li {
+    list-style-type: none; /* Remove default list styling */
+}
+
+/* Style for links within the dropdown */
+.settings-menu a {
+    color: #000; /* Text color */
+    padding: 12px 16px; /* Padding for each item */
+    text-decoration: none; /* Remove underline */
+    display: block; /* Make each item a block element */
+}
+
+/* Change background color on hover */
+.settings-menu a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Show the dropdown menu when hovering over the settings item */
+.dropdown:hover .settings-menu {
+    display: block;
+}
 
 nav {
     display: flex;
@@ -254,7 +292,7 @@ nav ul li a:hover,
 }
 
 .dropdown-content button {
-    background-color: #6A040F;
+    background-color: #6a040f;
     color: white;
     border: none;
     border-radius: 15px;
