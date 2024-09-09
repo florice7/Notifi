@@ -350,11 +350,9 @@ nav ul li a:hover,
 
 .dashboard-icon {
     font-size: 38px;
-    /* Larger size for the dashboard icon */
     color: #000000;
     /* Icon color */
     margin: 0;
-    /* Remove any default margins */
 }
 
 .report-icon {
