@@ -89,3 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
         hideModal(signupModal);
     });
 });
+window.addEventListener('DOMContentLoaded', () => {
+    const splashScreen = document.getElementById('splash-screen');
+    const mainContent = document.getElementById('main-content');
+
+    splashScreen.addEventListener('click', () => {
+        splashScreen.style.transform = 'translateY(-100%)';
+        mainContent.classList.add('active');
+    });
+});

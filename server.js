@@ -197,12 +197,14 @@ function sendGeneralBirthdayEmail() {
     const today = new Date();
     const tomorrow = new Date(today);
     const nextWeek = new Date(today);
+    const nextToTomorrow = new  Date(today);
     tomorrow.setDate(today.getDate() + 1);
     nextWeek.setDate(today.getDate() + 7);
-
+    nextToTomorrow.setDate(today.getDate() + 2);
     const todayStr = today.toISOString().slice(0, 10);
     const tomorrowStr = tomorrow.toISOString().slice(0, 10);
     const nextWeekStr = nextWeek.toISOString().slice(0, 10);
+    const nextToTomorrowStr = nextToTomorrow.toISOString().slice(0, 10);
 
     getEmployeesWithBirthdaysInRange(todayStr, todayStr, (error, todaysBirthdays) => {
         if (error) {
@@ -216,7 +218,7 @@ function sendGeneralBirthdayEmail() {
                 return;
             }
 
-            getEmployeesWithBirthdaysInRange(todayStr, nextWeekStr, (error, nextWeekBirthdays) => {
+            getEmployeesWithBirthdaysInRange(nextToTomorrowStr, nextWeekStr, (error, nextWeekBirthdays) => {
                 if (error) {
                     console.error("Error fetching upcoming birthdays:", error);
                     return;
@@ -254,7 +256,7 @@ function sendGeneralBirthdayEmail() {
                 
                     const emailList = results.map(row => row.email);
                 
-                    const retryFailedEmails = (email, retries = 5, delay = 1 * 60 * 1000) => { // 5 retries with 5 minutes delay
+                    const retryFailedEmails = (email, retries = 5, delay = 1 * 60 * 1000) => {
                         const mailOptions = {
                             from: 'musafiriflorice@gmail.com',
                             to: email,
@@ -262,29 +264,30 @@ function sendGeneralBirthdayEmail() {
                             text: text
                         };
                 
-                        let attempts = 0; // Track number of attempts
-                        
+                        let attempts = 0;
+                
                         const attemptToSend = () => {
                             transporter.sendMail(mailOptions, (error, info) => {
+                                attempts++; // Increment the attempt count
+                                
                                 if (error) {
-                                    attempts++; // Increment the attempt count
                                     console.error(`Error sending email to ${email}: ${error.message}`);
-                                    
-                                    // Log the failure attempt with retry count
-                                    logEmailStatus('Birthday Reminder', email, false, error.message, attempts);
-                                    
-                                    if (attempts < retries) { // Retry until attempts are exhausted
+                
+                                    // Log each failure attempt
+                                    logEmailStatus('Birthday Reminder', email, false, error.message, attempts, attempts > 1);
+                
+                                    if (attempts < retries) {
                                         console.log(`Retrying for ${email}... Attempt ${attempts} of ${retries}`);
-                                        setTimeout(attemptToSend, delay); // Retry after delay
+                                        setTimeout(attemptToSend, delay);
                                     } else {
                                         console.log(`Failed to send email to ${email} after ${retries} attempts.`);
                                         // Log the final failure after max retries
-                                        logEmailStatus('Birthday Reminder', email, false, `Failed after ${retries} attempts`, retries);
+                                        logEmailStatus('Birthday Reminder', email, false, `Failed after ${retries} attempts`, retries, true);
                                     }
                                 } else {
                                     console.log(`Birthday email sent successfully to ${email}: ${info.response}`);
                                     // Log the success
-                                    logEmailStatus('Birthday Reminder', email, true);
+                                    logEmailStatus('Birthday Reminder', email, true, null, attempts, attempts > 1);
                                 }
                             });
                         };
@@ -296,7 +299,8 @@ function sendGeneralBirthdayEmail() {
                     emailList.forEach(email => {
                         retryFailedEmails(email);
                     });
-                });                
+                });
+                                
             });
         });
     });
@@ -315,30 +319,30 @@ function sendBirthdayWishes() {
             return;
         }
 
-        function sendMailWithRetry(mailOptions, emailType, retries = 5, delay = 1 * 60 * 1000) {  // 1 minute delay between retries
+        function sendMailWithRetry(mailOptions, emailType, retries = 5, delay = 1 * 60 * 1000) { // 1 minute delay between retries
             let attempts = 0;
 
             function attemptToSend() {
+                attempts++; // Increment attempts at the start of each attempt
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         console.error(`Error sending email to ${mailOptions.to}: ${error.message}`);
             
-                        // Log the failure attempt
-                        logEmailStatus(emailType, mailOptions.to, false, error.message, attempts); // Log retry attempt
+                        // Log the failure attempt with retry information
+                        logEmailStatus(emailType, mailOptions.to, false, error.message, attempts, true); // Mark as retry attempt
             
                         // Retry for every error, but stop after the max number of retries
                         if (attempts < retries) {
-                            attempts++; // Increment attempts before retrying
                             console.log(`Retrying... Attempt ${attempts} of ${retries}`);
                             setTimeout(attemptToSend, delay); // Retry after delay
                         } else {
                             console.log(`Failed to send after ${retries} attempts.`);
-                            logEmailStatus(emailType, mailOptions.to, false, `Failed after ${retries} attempts`, retries);
+                            logEmailStatus(emailType, mailOptions.to, false, `Failed after ${retries} attempts`, attempts);
                         }
                     } else {
                         console.log(`Email sent successfully to ${mailOptions.to}: ${info.response}`);
                         // Log the success
-                        logEmailStatus(emailType, mailOptions.to, true);
+                        logEmailStatus(emailType, mailOptions.to, true, null, attempts, false); // Log as non-retry success
                     }
                 });
             }
@@ -348,7 +352,7 @@ function sendBirthdayWishes() {
 
         // Loop through today's birthdays and send the emails
         todaysBirthdays.forEach(emp => {
-            const text = `Dear ${emp.first_name || 'Employee'} ${emp.last_name || ''},\n\nHappiest Birthday!\nWishing you a wonderful day filled with joy\n\nBest regards,\nEquity Bank Rwanda PLC`;
+            const text = `Dear ${emp.first_name || 'Employee'} ${emp.last_name || ''},\n\nHappiest Birthday!\nWishing you a wonderful day filled with joy and success\n\nBest regards,\nEquity Bank Rwanda PLC`;
             const mailOptions = {
                 from: 'musafiriflorice@gmail.com',
                 to: emp.email,
@@ -363,6 +367,7 @@ function sendBirthdayWishes() {
 
 
 
+
 // Function to format employee list
 function formatEmployeeList(employeeList) {
     return employeeList.map(emp => `- ${emp.first_name || 'Unknown'} ${emp.last_name || 'Unknown'} ${emp.email || 'Unknown'} (${emp.department || 'Unknown'})`).join('\n');
@@ -374,64 +379,55 @@ function formatUpcomingBirthdays(employeeList) {
 }
 
 // Function to log email status
-function logEmailStatus(emailType, emailList, isSuccess, reason = null, isRetry = 0) {
-    if (!emailList || emailList.length === 0) {
-        console.log(`No emails to log for ${emailType}. Skipping log.`);
-        return; // Skip logging if no email was sent
-    }
-
-    const emails = Array.isArray(emailList) ? emailList : [emailList];
-    const query = 'INSERT INTO email_logs (email_type, email_address, is_success, is_retry, timestamp, reason) VALUES (?, ?, ?, ?, NOW(), ?)';
-
-    emails.forEach(email => {
-        const status = isSuccess ? 1 : 0;
-
-        db.query(query, [emailType, email, status, isRetry, reason], (err, result) => {
-            if (err) {
-                console.error(`Error logging email status for ${email}:`, err);
-            } else {
-                console.log(`Email status for ${email} logged successfully`);
-            }
-        });
+function logEmailStatus(emailType, email, isSuccess, reason = null, attemptNumber = 1, isRetry = false) {
+    const query = `
+        INSERT INTO email_logs (email_type, email_address, is_success, timestamp, reason, attempt_number, is_retry)
+        VALUES (?, ?, ?, NOW(), ?, ?, ?)
+    `;
+    
+    db.query(query, [emailType, email, isSuccess ? 1 : 0, reason, attemptNumber, isRetry ? 1 : 0], (err, result) => {
+        if (err) {
+            console.error(`Error logging email status for ${email}:`, err);
+        } else {
+            console.log(`Email status for ${email} logged successfully`);
+        }
     });
 }
 
+// app.get('/email-retry-status', (req, res) => {
+//     const query = `
+//         SELECT
+//             COALESCE(SUM(is_success AND is_retry), 0) AS successful_retries,
+//             COALESCE(SUM((NOT is_success) AND is_retry), 0) AS failed_retries
+//         FROM
+//             email_logs
+//         WHERE
+//             is_retry = 1;
+//     `;
 
-
-app.get('/email-retry-status', (req, res) => {
-    const query = `
-        SELECT
-            COALESCE(SUM(is_success AND is_retry), 0) AS successful_retries,
-            COALESCE(SUM((NOT is_success) AND is_retry), 0) AS failed_retries
-        FROM
-            email_logs
-        WHERE
-            is_retry = 1;
-    `;
-
-    db.query(query, (err, result) => {
-        if (err) {
-            console.error('Error fetching retry status data:', err);
-            res.status(500).send('Error fetching retry status data');
-        } else {
-            res.json(result[0]);
-        }
-    });
-});
-
-
+//     db.query(query, (err, result) => {
+//         if (err) {
+//             console.error('Error fetching retry status data:', err);
+//             res.status(500).send('Error fetching retry status data');
+//         } else {
+//             res.json(result[0]);
+//         }
+//     });
+// });
 
 
 // Schedule tasks
-cron.schedule('10 16 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
-cron.schedule('10 16 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
+cron.schedule('23 11 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
+cron.schedule('22 11 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
 
-// Route to fetch email status
 app.get('/email-status', (req, res) => {
     const query = `
         SELECT 
-            COALESCE(SUM(is_success), 0) AS successful_emails,
-            COALESCE(COUNT(*) - SUM(is_success), 0) AS failed_emails
+            COALESCE(SUM(CASE WHEN is_success = 1 AND is_retry = 0 THEN 1 ELSE 0 END), 0) AS successful_first_attempt,
+            COALESCE(SUM(CASE WHEN is_success = 0 AND is_retry = 0 THEN 1 ELSE 0 END), 0) AS failed_first_attempt,
+            COALESCE(SUM(CASE WHEN is_success = 1 AND is_retry = 1 THEN 1 ELSE 0 END), 0) AS successful_retry,
+            COALESCE(SUM(CASE WHEN is_success = 0 AND is_retry = 1 THEN 1 ELSE 0 END), 0) AS failed_retry,
+            COUNT(*) AS total_attempts
         FROM 
             email_logs;
     `;

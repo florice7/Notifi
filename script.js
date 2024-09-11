@@ -6,11 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterDropdown = document.getElementById('birthdayFilter');
     filterDropdown.addEventListener('change', (e) => {
         const selectedFilter = e.target.value;
-
-        resetTable();
-        
+        resetTable();       
         populateTable(selectedFilter);
-        fetchEmailStatus();
     });
 });
 
@@ -608,29 +605,43 @@ document.getElementById('extract-form').addEventListener('submit', function(even
 });
 
 
-function fetchEmailStatus() {
-    fetch('/email-status')
-        .then(response => response.json())
-        .then(data => {
-            updateEmailStatusChart(data);
-        })
-        .catch(error => console.error('Error fetching email status data:', error));
-}
+let emailStatusChart; 
 
 function updateEmailStatusChart(data) {
-    const ctx = document.getElementById('emailStatusChart').getContext('2d');
+    const totalAttempts = data.total_attempts;
 
     const emailData = {
-        labels: ['Successful Emails', 'Failed Emails'],
+        labels: ['Successful 1st Attempt', 'Failed 1st Attempt', 'Successful Retry', 'Failed Retry'],
         datasets: [{
-            data: [data.successful_emails, data.failed_emails],
-            backgroundColor: ['rgba(106, 4, 15, 1)', 'rgba(10, 10, 10, 1)'],
-            borderColor: ['rgba(106, 4, 15, 1)', 'rgba(10, 10, 10, 1)'],
+            data: [
+                (data.successful_first_attempt / totalAttempts) * 100, 
+                (data.failed_first_attempt / totalAttempts) * 100, 
+                (data.successful_retry / totalAttempts) * 100, 
+                (data.failed_retry / totalAttempts) * 100
+            ],
+            backgroundColor: [
+                'rgba(106, 4, 15, 0.8)',  // Red
+                'rgba(10, 10, 10, 0.9)',  // Black
+                'rgba(20, 150, 150, 0.8)',  // Green
+                'rgba(200, 200, 0, 0.8)'   // Yellow
+            ],
+            borderColor: [
+                'rgba(106, 4, 15, 0.8)',
+                'rgba(10, 10, 10, 0.9)',
+                'rgba(20, 150, 150, 0.8)',
+                'rgba(200, 200, 0, 0.8)'
+            ],
             borderWidth: 1
         }]
     };
 
-    new Chart(ctx, {
+    // Destroy existing chart if it exists
+    if (emailStatusChart) {
+        emailStatusChart.destroy();
+    }
+
+    const ctx = document.getElementById('emailStatusChart').getContext('2d');
+    emailStatusChart = new Chart(ctx, {
         type: 'pie',
         data: emailData,
         options: {
@@ -638,44 +649,44 @@ function updateEmailStatusChart(data) {
             plugins: {
                 legend: {
                     position: 'top',
+                    labels: {
+                        font: {
+                            family: 'Poppins',  // Set Poppins font for the legend
+                            size: 14,
+                        }
+                    }
                 },
+                datalabels: {
+                    formatter: (value, ctx) => {
+                        return value.toFixed(2) + '%'; // Show percentage on the chart
+                    },
+                    color: '#fff',  
+                    font: {
+                        family: 'Poppins',  
+                        weight: 'bold',
+                        size: 20
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            const value = emailData.datasets[0].data[tooltipItem.dataIndex];
+                            return `${emailData.labels[tooltipItem.dataIndex]}: ${value.toFixed(2)}%`;
+                        }
+                    }
+                }
             }
-        }
+        },
+        plugins: [ChartDataLabels]  
     });
 }
 
-function fetchRetryStatus() {
-    fetch('/email-retry-status')
+
+function fetchEmailStatus() {
+    fetch('/email-status')
         .then(response => response.json())
         .then(data => {
-            updateRetryStatusChart(data);
+            updateEmailStatusChart(data);
         })
-        .catch(error => console.error('Error fetching retry status data:', error));
-}
-
-function updateRetryStatusChart(data) {
-    const ctx = document.getElementById('retryStatusChart').getContext('2d');
-
-    const retryData = {
-        labels: ['Successful Retries', 'Failed Retries'],
-        datasets: [{
-            data: [data.successful_retries, data.failed_retries],
-            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 159, 64, 0.6)'],
-            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 159, 64, 1)'],
-            borderWidth: 1
-        }]
-    };
-
-    new Chart(ctx, {
-        type: 'pie',
-        data: retryData,
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-            }
-        }
-    });
+        .catch(error => console.error('Error fetching email status data:', error));
 }
