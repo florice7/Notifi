@@ -474,7 +474,7 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background-color: rgba(100, 70, 70, 0.4);
+    /* background-color: rgba(100, 70, 70, 0.4); */
 }
 
 .intro {
@@ -1039,16 +1039,15 @@ footer a:hover {
 }
 
 .table-container {
-    height: 70%;
+    height: 100%;
     width: 70%;
     max-width: 100%;
     min-width: 300px;
     overflow: auto;
     margin-left: 4rem;
     flex: 1; /* Allows the table to take available space */
-    height: 70%;
     box-sizing: border-box; 
-    background-color: blueviolet;
+    /* background-color: blueviolet; */
 }
 
 
@@ -1542,7 +1541,7 @@ th:first-child {
 }
 
 .analytics-card-container,
-.analytics-table-and-form-container,
+.analytics-graph-and-form-container,
 .analytics-chart-container {
     flex: 1; /* Makes the children take up equal available height */
 }
@@ -1654,7 +1653,7 @@ th:first-child {
 
 
 /* For the parent container */
-.analytics-table-and-form-container {
+.analytics-graph-and-form-container {
     display: flex;
     justify-content: space-between; 
     align-items: flex-start; 
@@ -1672,6 +1671,21 @@ th:first-child {
     margin-left: 4rem;
     overflow: auto;
     box-sizing: border-box;
+}
+
+.analytics-graph-container {
+    flex: 1; 
+    max-width: 70%; 
+    min-width: 300px; 
+    margin-left: 4rem;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+
+.analytics-graph-container canvas {
+    height: 25rem;
+    overflow-x: auto;
 }
 
 /* For the form container */

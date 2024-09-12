@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/employees')
         .then(response => response.json())
         .then(data => {
-            populateTable(data);  // Populate the table with fetched employees
+            // populateTable(data); 
             updatePieChart(data);
             updateAgePieChart(data);
             fetchEmailStatus();
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateAverageMaleAgeCard(data);
             updateAverageFemaleAgeCard(data);
             updateTotalEmployeesCard(data);
+            createDepartmentAgeChart(data);
         })
         .catch(error => console.error('Error fetching data:', error));
 });
@@ -132,7 +133,7 @@ document.getElementById('analyticsForm').addEventListener('submit', function(e) 
 
                 filteredEmployees = filterEmployeesByAge(employees, minAge, maxAge, gender, department);
 
-            populateTable(filteredEmployees);
+            // populateTable(filteredEmployees);
             updatePieChart(filteredEmployees);
             updateAgePieChart(filteredEmployees);
             updateCircularProgress(filteredEmployees.length, employees.length);
@@ -514,4 +515,101 @@ function updateCircularProgress(filteredCount, totalCount) {
 }
 
 
+function createDepartmentAgeChart(employees) {
+    // Group employees by department and gender and calculate average age
+    const departments = {};
+
+    employees.forEach(employee => {
+        const department = employee.department;
+        const gender = employee.gender;
+        const dob = new Date(employee.date_of_birth);
+        const age = new Date().getFullYear() - dob.getFullYear();
+
+        if (!departments[department]) {
+            departments[department] = { Male: [], Female: [] };
+        }
+        departments[department][gender].push(age);
+    });
+
+    // Calculate average age per department and gender
+    const departmentNames = Object.keys(departments);
+    const maleAges = [];
+    const femaleAges = [];
+
+    departmentNames.forEach(department => {
+        const maleAgesInDepartment = departments[department]['Male'];
+        const femaleAgesInDepartment = departments[department]['Female'];
+
+        const averageMaleAge = maleAgesInDepartment.reduce((a, b) => a + b, 0) / maleAgesInDepartment.length || 0;
+        const averageFemaleAge = femaleAgesInDepartment.reduce((a, b) => a + b, 0) / femaleAgesInDepartment.length || 0;
+
+        maleAges.push(averageMaleAge);
+        femaleAges.push(averageFemaleAge);
+    });
+
+    // Create the chart
+    const ctx = document.getElementById('departmentAgeChart').getContext('2d');
+    const departmentAgeChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: departmentNames,
+            datasets: [
+                {
+                    label: 'Male Average Age',
+                    data: maleAges,
+                    backgroundColor: 'rgba(106, 4, 15, 0.8)', 
+                    barThickness: 60, 
+                    categoryPercentage: 0.4, 
+                    barPercentage: 0.2
+                },
+                {
+                    label: 'Female Average Age',
+                    data: femaleAges,
+                    backgroundColor: 'rgba(195, 180, 180, 1)', // Female color
+                    barThickness: 60, // Width of the bar
+                    categoryPercentage: 0.4, // Adjusts the width of bars relative to the group
+                    barPercentage: 0.2// Adjusts the width of bars relative to the group
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    stacked: false, // Ensure the bars are side by side
+                    title: {
+                        display: true,
+                        text: 'Departments',
+                        font: {
+                            family: 'Poppins',
+                            size: 16
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Average Age',
+                        font: {
+                            size: 16
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            family: 'Poppins',
+                            size: 14
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 
