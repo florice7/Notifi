@@ -1,0 +1,684 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Poppins, sans-serif;
+    background-color: #f4f4f4;
+    font-weight: normal;
+}
+
+/* Side Menu */
+.side-menu {
+    width: 200px;
+    height: 100vh;
+    background-color: #fff;
+    color: #000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: all 0.3s ease;
+    overflow: hidden; /* Ensure content doesn't overflow outside the menu */
+}
+
+.side-menu.hidden {
+    transform: translateX(-100%);
+}
+
+.side-menu .logo {
+    display: flex;
+    justify-content: center; /* Center the logo horizontally */
+    align-items: center;     /* Center the logo vertically */
+    height: 100px; /* Adjust the height to give the logo some space */
+    padding: 10px; /* Optional padding around the logo */
+    margin-bottom: 30px; 
+    box-sizing: border-box;
+}
+
+.side-menu .logo img {
+    max-width: 100%; /* Ensure the image does not exceed the container's width */
+    height: auto;    /* Maintain aspect ratio */
+    max-height: 100%; /* Make sure the height fits within the logo container */
+}
+
+.side-menu ul {
+    list-style-type: none;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+.side-menu ul li {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.side-menu ul li i {
+    margin-right: 10px;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 200px;
+    padding: 8px;
+    transition: margin-left 0.3s ease;
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header .left button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+header .right {
+    display: flex;
+    align-items: center;
+}
+
+header .right i {
+    font-size: 1.5rem;
+    margin-right: 30px;
+}
+
+#dateTime {
+    display: flex;
+    align-items: center;
+    font-size: 0.7rem;
+    margin-right: 20px;
+}
+
+#dateTime i {
+    margin-right: 8px;
+}
+
+.user-profile i {
+    font-size: 1.5rem;
+}
+
+/* Body Content */
+.body-content {
+    margin-top: 4px; /* Reduced margin to decrease the space between the header and the button container */
+}
+/* Button Container Wrapper */
+.button-container-wrapper {
+    background-color: white; /* White background for the enclosure */
+    padding: 10px 15px; /* Reduced padding to decrease the height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow for depth */
+    margin-bottom: 4px; /* Reduced margin to decrease space between button and search containers */
+}
+
+/* Content Container */
+.content-container {
+    display: flex;
+    justify-content: space-between; /* Space between text and buttons */
+    align-items: center; /* Vertically centers the content */
+}
+
+/* Textual Information */
+.textual-info {
+    margin-right: 20px; /* Adds spacing between text and buttons */
+}
+
+/* Textual Information */
+.textual-info p {
+    margin: 0; /* Removes default margin for better spacing */
+    font-size: 12px; /* Default font size for other paragraphs */
+    color: #000; /* Font color */
+}
+
+/* Specific Styling for the Bold and Larger Text */
+.textual-info .bold-text {
+    font-weight: bold; /* Makes the text bold */
+    font-size: 22px; /* Increases the font size */
+}
+
+
+/* Button Container */
+.button-container {
+    display: flex;
+    align-items: center; /* Vertically centers the buttons */
+}
+
+.btn {
+    padding: 10px 20px;
+    margin-left: 10px; /* Adjusted to left margin for spacing between buttons */
+    background-color: white; /* Button background color */
+    color: #000; /* Button text color */
+    border: 2px solid #6a040f; /* Border color and width */
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px; /* Optional: Adjusts the font size */
+}
+
+/* Hover effect */
+.btn:hover {
+    background-color: #6a040f; /* Changes background color on hover */
+    color: white; /* Changes text color to white on hover */
+}
+
+/* Search container styles */
+.search-container {
+    background-color: white;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 4px; /* Reduced margin to decrease space between button and search containers */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Enlarged search container on click */
+.search-container.enlarged {
+    transform: scale(1.05); /* Slight enlargement */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow effect */
+}
+
+/* Search form styles */
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: space-between;
+}
+
+/* Input group styles */
+.input-group {
+    display: flex;
+    align-items: center;
+    flex-basis: calc(20% - 10px); /* Adjusted for two-line layout */
+}
+
+/* Label styles */
+.input-group label {
+    margin-right: 10px; /* Space between label and input */
+    white-space: nowrap; /* Prevents label text from wrapping */
+    flex: 0 0 20%; /* Makes label take up 30% of the container width */
+}
+
+/* Input styles */
+.search-input {
+    flex: 1; /* Allows the input to take the remaining space */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+}
+
+/* Special case for dates and button */
+.input-group:nth-last-child(3), /* Start Date */
+.input-group:nth-last-child(2), /* End Date */
+.input-group:nth-last-child(1) { /* Filter Button */
+    flex-basis: calc(30% - 10px); /* Adjusted to fit all elements in one line */
+}
+
+/* Filter button */
+.search-btn {
+    background-color: #6a040f; /* Button background color */
+    color: #fff; /* Button text color */
+    border-radius: 25px;
+    padding: 5px 50px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 18px; /* Smaller font size */
+    flex: 0 0 auto; /* Prevents the button from growing */
+}
+
+.search-btn:hover {
+    background-color: #000; /* Changes background color on hover */
+    color: white; /* Changes text color to white on hover */
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white; /* Set the entire table's background to white */
+}
+
+table th, table td {
+    padding: 10px;
+    border-top: 1px solid #ddd; /* Keep only the horizontal lines */
+    border-bottom: 1px solid #ddd;
+    border-left: none; /* Remove vertical lines */
+    border-right: none; /* Remove vertical lines */
+    text-align: left;
+    background-color: white; /* Ensure all table cells have a white background */
+    font-size: 13px; /* Reduce the font size */
+}
+
+thead {
+    background-color: white; /* Set table header background to white */
+    border-bottom: 2px solid #ddd;
+}
+
+tbody {
+    background-color: white; /* Set table body background to white */
+}
+tfoot {
+    text-align: center; /* Center text and icons horizontally */
+}
+
+tfoot .tfoot-wrapper {
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Align items vertically */
+    gap: 10px; /* Add space between text and icons */
+}
+
+.icon-container i {
+    margin: 0 5px; /* Space between icons */
+    cursor: pointer; /* Pointer cursor for icons */
+}
+
+/* Footer styling */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff; /* Footer background color */
+    color: #6A040F;
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #ccc; /* Optional: adds a top border to the footer */
+}
+
+/* Adjust for smaller devices */
+@media (max-width: 600px) {
+    footer {
+        padding: 15px;
+    }
+}
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+footer a {
+    color: #6A040F;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
+/* EDIT modals */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 5% auto;
+    padding: 2rem;
+    border: 1px solid #888;
+    border-radius: 20px;
+    max-width: 800px;
+    width: 90%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.logo-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.company-logo {
+    width: 50px;
+    height: 40px;
+}
+
+/* Modal title */
+.modal h2 {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.5rem;
+}
+
+/* Form container: Display content side by side */
+.form-container {
+    display: flex;
+    flex-direction: row; 
+    gap: 2rem; 
+    justify-content: space-between;
+    align-items: center; 
+}
+
+
+.form-content {
+    width: 70%;
+    /* background-color: #820519; */
+    padding: 1rem;
+    box-sizing: border-box; 
+}
+
+
+.form-image {
+    display: block; /* Make sure it's visible */
+    width: 30%;
+    box-sizing: border-box;
+}
+
+.form-image img {
+    width: 100%; /* Make the image scale to the full width of the container */
+    height: auto; /* Keep the aspect ratio */
+    object-fit: cover; /* Ensure the image covers the container properly */
+}
+
+.modal-content button[type="submit"] {
+    display: block;
+    font-family: Poppins, sans-serif;
+    background-color: #6A040F;
+    color: white;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 0 auto; /* Center the button horizontally */
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button[type="submit"]:hover {
+    background-color: #820519; /* Darker hover effect */
+}
+
+/* Form group styling */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.2rem;
+    border: 1px solid #6A040F;
+    border-radius: 5px;
+    font-family: Poppins, sans-serif;
+    font-size: 0.9rem;
+}
+
+
+
+#addForm button[type="submit"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    background-color: #6A040F;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+}
+
+#addForm button[type="submit"]:hover {
+    background-color: #6A040F;
+}
+
+.close {
+    color: #6A040F;
+    position: absolute;
+    top: 8px;
+    right: 18px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #6A040F;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Media query for screens wider than 768px */
+@media screen and (min-width: 768px) {
+    .form-container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .form-content {
+        width: 60%;
+    }
+
+    .form-image {
+        display: block;
+        width: 35%;
+        margin-left: 5%;
+    }
+
+    .form-group {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .form-group label {
+        width: 40%;
+        text-align: left;
+        margin-right: 10px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 55%;
+    }
+}
+
+/* Media query for screens narrower than 768px */
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+    }
+
+    .form-group {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group label {
+        width: 40%;
+        /* margin-right: 10px; */
+        text-align: left;
+        /* Align text to the left */
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 60%;
+    }
+
+    #addForm button[type="submit"] {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    .company-logo {
+        width: 40px;
+        height: 30px;
+    }
+
+    .modal h2 {
+        font-size: 1.2rem;
+        margin-top: 20px;
+    }
+}
+
+/* Modal container */
+#actionsModal {
+    display: none;
+    position: fixed; /* Fixed positioning to float above the footer */
+    bottom: 50px; /* Adjust based on footer height */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    width: 80%; /* Adjust as needed */
+    max-width: 600px; /* Adjust as needed */
+    background-color: #ffffff;
+    padding: 1rem;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000; /* Ensure it is above other elements */
+    box-sizing: border-box;
+}
+/* Modal content */
+.actions-content {
+    display: flex;
+    justify-content: flex-start; /* Align items at the start (left) by default */
+    align-items: center;
+    gap: 10px; /* Adds a little space between the selected count and icon container */
+}
+
+/* Icon container */
+.icon-container {
+    display: flex;
+    gap: 10px;
+    margin-left: auto; /* This pushes the icon container to the far right */
+}
+
+.icon-container i {
+    font-size: 1.5rem; /* Adjust icon size as needed */
+    cursor: pointer;
+}
+
+
+#editBtn {
+    color: #6c757d; /* Greyed out color */
+    cursor: not-allowed; /* Cursor indicates it's not clickable */
+    pointer-events: none; /* Disable clicking */
+}
+
+#editBtn.active {
+    color: #000; /* Black color when active */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    pointer-events: auto; /* Enable clicking */
+}
+
+
+
+/* The modal is hidden by default */
+#addModal {
+    display: none;  /* Hidden by default */
+}
+
+
+/* Custom Modal Styles for Reports */
+#reports-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+}
+
+.reports-modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    position: relative;
+}
+
+.reports-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Scoped form styles specific to the reports form */
+#reports-form .form-group {
+    margin-bottom: 12px;
+}
+
+#reports-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#reports-form .form-group input,
+#reports-form .form-group select {
+    width: 100%;
+    padding: 5px;
+}
+
+#reports-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#reports-form button i {
+    margin-right: 5px;
+}
+
+/* Add spacing for the icon and text */
+#reports-dropdown {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+#reports-dropdown i {
+    margin-right: 5px;
+}

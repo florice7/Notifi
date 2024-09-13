@@ -55,22 +55,18 @@ body {
     }
 }
 
-header {
+/* header {
     background-color: #ffffff;
     color: #000000;
-    /* padding: 1rem; */
     box-shadow: 2px 2px 8px 2px gray;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
     position: fixed;
-    /* Keeps the header fixed at the top */
     width: 100%;
-    /* Ensures the header spans the full width */
     z-index: 2;
     height: 5rem;
     padding: 0 1rem;
-    /* Add padding to prevent content from touching the edges */
-}
+} */
 
 .header-content {
     display: flex;
@@ -111,8 +107,8 @@ header {
     align-items: center;
     border-radius: 35px;
     justify-content: space-between;
-    /* Space items evenly, reducing bottom gap */
 }
+
 
 /* Navigation Styles */
 .side-menu nav {

@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 
 // Fetch all employees
 app.get('/employees', (req, res) => {
-    const sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, preferred_notification_method, department FROM employees';
+    const sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, department FROM employees';
     db.query(sql, (err, results) => {
         if (err) throw err;
         res.json(results);
