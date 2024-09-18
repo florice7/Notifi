@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,
+wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ad2-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="logo">
+            <img src="logo.png" alt="Company Logo">
+        </div>
+        <ul>
+            <li><i class="fa fa-tachometer-alt"></i> Dashboard</li>
+            <li><i class="fa fa-users"></i> Users</li>
+            <li><i class="fa fa-chart-line"></i> Analytics</li>
+            <li class="dropdown" id="reports-dropdown">
+                <i class="fa fa-file-alt" id="reports-icon" style="cursor: pointer;"></i> Reports
+            </li>
+            <li><i class="fa fa-user-shield"></i> Admins</li>
+            <li><i class="fa fa-cog"></i> Settings</li>
+            <li><i class="fa fa-sign-out-alt"></i> Log out</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <header>
+            <div class="left">
+                <button id="menuToggle"><i class="fa fa-bars"></i></button>
+            </div>
+            <div class="right">
+                
+                <i class="fa fa-bell"></i>
+
+                <span id="dateTime">
+                    <i class="far fa-clock"></i>
+                    <span class="date-time-text"></span>
+                </span>
+
+                <!-- User Profile Icon -->
+                <div class="user-profile">
+                    <i class="fa fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Body Content -->
+        <div class="body-content">
+            <div class="button-container-wrapper">
+                <div class="content-container">
+                    <div class="textual-info">
+                        <p class="bold-text">Admins' Panel</p>
+                    </div>
+                </div>
+            </div>
+
+           
+
+    <footer>
+        <div class="footer-content">
+            <a href="#" class="footer-link">Privacy Policy</a>
+            <a href="#" class="footer-link">Terms and Conditions</a>
+            <p>&copy; 2024 Equity Bank Rwanda.</p>
+        </div>
+    </footer>
+
+    
+</body>
+
+</html>

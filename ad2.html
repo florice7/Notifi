@@ -12,7 +12,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="ad2-styles.css">
+    <link rel="stylesheet" href="/css/ad2-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
@@ -21,17 +21,19 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
     <!-- Side Menu -->
     <div class="side-menu" id="sideMenu">
         <div class="logo">
-            <img src="logo.png" alt="Company Logo">
+            <img src="/images/logo.png" alt="Company Logo">
         </div>
         <ul>
-            <li><i class="fa fa-tachometer-alt"></i> Dashboard</li>
-            <li><i class="fa fa-users"></i> Users</li>
-            <li><i class="fa fa-chart-line"></i> Analytics</li>
+            <li><a href="dashboard.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="ad2.html"><i class="fa fa-users"></i> Users</a></li>
+            <li><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
             <li class="dropdown" id="reports-dropdown">
-                <i class="fa fa-file-alt" id="reports-icon" style="cursor: pointer;"></i> Reports
+                <i class="fa fa-file-alt" id="reports-icon"></i> Reports
             </li>
-            <li><i class="fa fa-users"></i> Admins</li>
+            <li><a href="manage-admins.html"><i class="fa fa-user-shield"></i> Admins</a></li>
+
             <li><i class="fa fa-cog"></i> Settings</li>
+            <li><i class="fa fa-sign-out-alt"></i> Log out</li>
         </ul>
 
     </div>
@@ -70,10 +72,10 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     </div>
                     <div class="button-container">
                         <button class="btn import-btn">
-                            <i class="fa fa-upload"></i> Import List
+                            <i class="fa fa-upload"></i> Import File
                         </button>
                         <button id="openAddModal" class="btn register-btn">
-                            <i class="fa fa-plus"  ></i> Register User
+                            <i class="fa fa-plus"></i> Register User
                         </button>
                     </div>
                 </div>
@@ -146,26 +148,13 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <tbody>
                     <!-- Rows will be dynamically populated here -->
                 </tbody>
-                <!-- <tfoot>
-                    <tr>
-                        <td colspan="9">
-                            <div class="tfoot-wrapper">
-                                <span id="selectedCount">0 Employees selected</span>
-                                <div class="icon-container">
-                                    <i class="fa fa-edit" id="editBtn" title="Edit" aria-hidden="true"></i>
-                                    <i class="fa fa-trash" id="deleteBtn" title="Delete" aria-hidden="true"></i>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tfoot> -->
-
             </table>
-            <!-- Modal Container -->
             <!-- Modal Container -->
             <div id="actionsModal" class="actions-modal">
                 <div class="actions-content">
-                    <span id="selectedCount">0 Employees selected</span>
+                    <div class="selected-count">
+                        <span id="selectedCount">0 Employees selected</span>
+                    </div>
                     <div class="icon-container">
                         <i class="fa fa-edit" id="editBtn" title="Edit" aria-hidden="true"></i>
                         <i class="fa fa-trash" id="deleteBtn" title="Delete" aria-hidden="true"></i>
@@ -176,33 +165,32 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
         </div>
     </div>
-<!-- Modal Structure for the Dropdown Form -->
-<div id="reports-modal" class="reports-modal">
-    <div class="reports-modal-content">
-        <span class="reports-close">&times;</span>
-        <form id="reports-form">
-            <div class="form-group">
-                <label for="start-date">Start Date:</label>
-                <input type="date" id="start-date" name="start-date">
-            </div>
-            <div class="form-group">
-                <label for="end-date">End Date:</label>
-                <input type="date" id="end-date" name="end-date">
-            </div>
-            <div class="form-group">
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender">
-                    <option value="">All</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                </select>
-            </div>
-            <button type="submit">
-                <i class="fas fa-download"></i> Extract
-            </button>
-        </form>
+    <!-- Modal Structure for the Dropdown Form -->
+    <div id="reports-modal" class="reports-modal">
+        <div class="reports-modal-content">
+            <form id="reports-form">
+                <div class="form-group">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" name="start-date">
+                </div>
+                <div class="form-group">
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" name="end-date">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender">
+                        <option value="">All</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-download"></i> Extract
+                </button>
+            </form>
+        </div>
     </div>
-</div>
 
 
     <!-- Edit Modal -->
@@ -210,7 +198,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         <div class="modal-content">
             <span id="close" class="close">&times;</span>
             <div class="logo-container">
-                <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+                <img src="/images/equity-logo.png" alt="Company Logo" class="company-logo">
             </div>
 
             <h2>Edit user</h2>
@@ -254,14 +242,16 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                             <label for="edit-department">Department:</label>
                             <input type="text" id="edit-department" required>
                         </div>
+
+                    </form>
                 </div>
                 <div class="form-image">
-                    <img src="body.png" alt="image">
+                    <img src="/images/body.png" alt="image">
                 </div>
 
-                </form>
+
             </div>
-            <button type="submit">Save Changes</button>
+            <button type="submit" id="editButton">Save Changes</button>
         </div>
     </div>
 
@@ -272,7 +262,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <span id="closeAddModal" class="close">&times;</span>
             <!-- Company logo at the top left -->
             <div class="logo-container">
-                <img src="equity-logo.png" alt="Company Logo" class="company-logo">
+                <img src="/images/equity-logo.png" alt="Company Logo" class="company-logo">
             </div>
 
             <h2>Register User</h2>
@@ -326,16 +316,30 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 </div>
 
                 <div class="form-image">
-                    <img src="body.png" alt="image">
+                    <img src="/images/body.png" alt="image">
                 </div>
 
-
-
             </div>
-            <button type="submit">Register</button>
+            <button type="submit" id="registerButton">Register</button>
         </div>
     </div>
 
+    <div id="confirmationDialog" class="custom-dialog" style="display: none;">
+        <div class="dialog-content">
+            <p id="confirmationMessage">Are you sure you want to delete this?</p>
+            <button id="confirmYes" class="dialog-button">Yes</button>
+            <button id="confirmNo" class="dialog-button">No</button>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Dialog -->
+    <div id="logoutConfirmationDialog" class="custom-dialog" style="display: none;">
+        <div class="dialog-content">
+            <p id="logoutConfirmationMessage">Are you sure you want to log out?</p>
+            <button id="logoutConfirmYes" class="dialog-button">Yes</button>
+            <button id="logoutConfirmNo" class="dialog-button">No</button>
+        </div>
+    </div>
 
 
 
@@ -348,7 +352,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         </div>
     </footer>
 
-    <script src="ad2-js.js"></script>
+    <script src="/js/ad2-js.js"></script>
 </body>
 
 </html>

@@ -91,10 +91,90 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 window.addEventListener('DOMContentLoaded', () => {
     const splashScreen = document.getElementById('splash-screen');
-    const mainContent = document.getElementById('main-content');
+    // const mainContent = document.getElementById('main-content');
 
     splashScreen.addEventListener('click', () => {
         splashScreen.style.transform = 'translateY(-100%)';
-        mainContent.classList.add('active');
+        // mainContent.classList.add('active');
     });
 });
+
+
+
+document.getElementById('login-form').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prevent default form submission
+
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)  // Convert form data to JSON string
+    }).then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.text();
+        }
+    }).then(text => {
+        if (text) {
+            alert(text);  // Show error message
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('signup-form');
+    const pfNumberInput = document.getElementById('pf_number');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const errorMsg = document.getElementById('errorMsg');
+
+    form.addEventListener('submit', (event) => {
+        let isValid = true;
+        let errors = [];
+
+        // Clear previous error messages
+        errorMsg.innerHTML = '';
+
+        // Validate PF number (Example: should be numeric and exactly 5 digits long)
+        const pfNumber = pfNumberInput.value.trim();
+        if (!/^\d{5}$/.test(pfNumber)) {
+            isValid = false;
+            errors.push('PF Number must be exactly 5 digits long.');
+        }
+
+        // Validate password
+        const password = passwordInput.value.trim();
+        if (!/^(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
+            isValid = false;
+            errors.push('Password must be at least 8 characters long and contain at least one number.');
+        }
+
+        // Check if passwords match
+        const confirmPassword = confirmPasswordInput.value.trim();
+        if (password !== confirmPassword) {
+            isValid = false;
+            errors.push('Passwords do not match.');
+        }
+
+        // Display errors and prevent form submission if any validation fails
+        if (!isValid) {
+            errorMsg.innerHTML = errors.join('<br>');
+            event.preventDefault();
+        }
+    });
+});
+
+
+

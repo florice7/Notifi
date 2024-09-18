@@ -9,16 +9,70 @@ const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 // const fetch = require('node-fetch');
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 const multer = require('multer');
 const ExcelJS = require('exceljs');
 const fs = require('fs');
 const upload = multer({ dest: 'uploads/' });
 
+// Session setup
 
+app.use(session({
+    secret: 'Flax@123',
+    resave: false,
+    saveUninitialized: true
+}));
 
+// Body parser setup
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve static files from 'Notifi' directory
+app.use(express.static(path.join(__dirname, 'public'))); // Note: public folder is inside Notifi
+
+// Middleware for authentication
+app.use((req, res, next) => {
+    const openRoutes = ['/index.html', '/login', '/waiting-for-approval.html', '/signup']; // Open routes
+    if (req.path === '/' || openRoutes.includes(req.path) || req.path.startsWith('/css/') || req.path.startsWith('/js/') || req.path.startsWith('/images/')) {
+        return next(); // Allow access to open routes and static files
+    }
+    isAuthenticated(req, res, next); // Check authentication for other routes
+});
+
+// Serve HTML files
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html')); // Serve index.html
+});
+
+app.get('/manage-admins.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'manage-admins.html')); // Serve manage-admins.html
+});
+
+app.get('/ad2.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'ad2.html')); // Serve ad2.html
+});
+
+app.get('/analytics.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'analytics.html')); // Serve analytics.html
+});
+
+app.get('/dashboard.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html')); // Serve analytics.html
+});
+
+app.get('/waiting-for-approval.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'waiting-for-approval.html')); // Serve waiting-for-approval.html
+});
+// Authentication middleware function
+function isAuthenticated(req, res, next) {
+    if (req.session && req.session.user) {
+        return next(); 
+    } else {
+        res.redirect('/');
+    }
+}
+
+
 
 
 // Create connection to MySQL database
@@ -35,15 +89,6 @@ db.connect(err => {
     console.log('Connected to MySQL database');
 });
 
-// Middleware
-app.use(bodyParser.json()); // For parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
-app.use(express.static(path.join('C:/Users/Florice/Desktop/Notifi'))); // Serving static files from Notifi folder
-
-// Serve the HTML files
-app.get('/', (req, res) => {
-    res.sendFile(path.join('C:/Users/Florice/Desktop/Notifi', 'admin-dashboard.html'));
-});
 
 // Fetch all employees
 app.get('/employees', (req, res) => {
@@ -57,7 +102,7 @@ app.get('/employees', (req, res) => {
 app.get('/employees', (req, res) => {
     const { pf_number, first_name, last_name } = req.query;
 
-    let sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, preferred_notification_method, department FROM employees WHERE 1=1';
+    let sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, department FROM employees WHERE 1=1';
     const params = [];
 
     if (pf_number) {
@@ -83,7 +128,7 @@ app.get('/employees', (req, res) => {
 // Fetch a single employee
 app.get('/employees/:id', (req, res) => {
     const id = req.params.id;
-    const sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, preferred_notification_method, department FROM employees WHERE pf_number = ?';
+    const sql = 'SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, department FROM employees WHERE pf_number = ?';
     db.query(sql, [id], (err, result) => {
         if (err) throw err;
         if (result.length > 0) {
@@ -96,61 +141,144 @@ app.get('/employees/:id', (req, res) => {
 
 // Add a new employee
 app.post('/employees', (req, res) => {
-    const { pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department } = req.body;
+    const { pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department } = req.body;
 
-    // Ensure the date_of_birth is in the correct format
-    // Validate the data (e.g., ensure pf_number is unique if necessary)
+    // SQL query to check if the PF number already exists
+    const checkPfSql = 'SELECT COUNT(*) as count FROM employees WHERE pf_number = ?';
 
-    const sql = 'INSERT INTO employees (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department], (err, result) => {
+    db.query(checkPfSql, [pf_number], (err, result) => {
         if (err) {
-            // Handle specific error cases (e.g., duplicate entry)
-            console.error('Error adding employee:', err);
-            res.status(500).json({ message: 'Error adding employee', error: err.message });
-        } else {
+            console.error('Error checking PF number:', err);
+            return res.status(500).json({ message: 'Error checking PF number', error: err.message });
+        }
+
+        // If the PF number is not unique, return an error message
+        if (result[0].count > 0) {
+            return res.status(400).json({ message: 'PF number must be unique' });
+        }
+
+        // If PF number is unique, insert the new employee
+        const insertSql = 'INSERT INTO employees (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+        
+        db.query(insertSql, [pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department], (err, result) => {
+            if (err) {
+                console.error('Error adding employee:', err);
+                return res.status(500).json({ message: 'Error adding employee', error: err.message });
+            }
+
+            // If successful, return success message
             res.json({ message: 'Employee added successfully', id: result.insertId });
-        }
+        });
     });
 });
 
-// Update an employee
-app.put('/employees/:id', (req, res) => {
-    const originalId = req.params.id;
-    const { pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department } = req.body;
 
-    // Ensure the date_of_birth is in the correct format
-    // Validate the data (e.g., ensure pf_number is unique if necessary)
 
-    // Update query to allow changing the PF number, be cautious with primary keys
-    const sql = 'UPDATE employees SET pf_number = ?, first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, email = ?, phone_number = ?, preferred_notification_method = ?, department = ? WHERE pf_number = ?';
+// Route to get filtered employees in analytics
+app.get('/employees/filter', (req, res) => {
+    const department = req.query.department ? req.query.department.toLowerCase() : '';
+    const startAge = parseInt(req.query.startAge, 10) || 15;
+    const endAge = parseInt(req.query.endAge, 10) || 100;
 
-    db.query(sql, [pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department, originalId], (err, result) => {
+    const sql = `
+        SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, "%Y-%m-%d") AS date_of_birth, email, phone_number, department
+        FROM employees
+        WHERE (LOWER(department) LIKE ?) 
+        AND (YEAR(CURDATE()) - YEAR(date_of_birth) BETWEEN ? AND ?)
+    `;
+
+    db.query(sql, [`${department}%`, startAge, endAge], (err, results) => {
         if (err) {
-            // Handle specific error cases (e.g., no rows updated)
-            console.error('Error updating employee:', err);
-            res.status(500).json({ message: 'Error updating employee', error: err.message });
-        } else if (result.affectedRows === 0) {
-            res.status(404).json({ message: 'Employee not found' });
-        } else {
-            res.json({ message: 'Employee updated successfully' });
+            console.error('Error executing query:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
+        res.json(results);
     });
 });
+
+
+app.put('/employees/:id', (req, res) => {
+    const originalPfNumber = req.params.id;
+    const { pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department } = req.body;
+
+    db.beginTransaction(err => {
+        if (err) {
+            return res.status(500).json({ message: 'Transaction error', error: err.message });
+        }
+
+        const updateEmployeeSql = `
+            UPDATE employees 
+            SET pf_number = ?, first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, email = ?, phone_number = ?, department = ? 
+            WHERE pf_number = ?`;
+
+        db.query(updateEmployeeSql, [pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department, originalPfNumber], (err, employeeResult) => {
+            if (err) {
+                console.error('Error updating employees:', err);
+                return db.rollback(() => {
+                    res.status(500).json({ message: 'Error updating employee', error: err.message });
+                });
+            }
+
+            const checkAdminSql = `SELECT pf_number FROM admins WHERE pf_number = ?`;
+            db.query(checkAdminSql, [originalPfNumber], (err, adminResult) => {
+                if (err) {
+                    console.error('Error checking admin status:', err);
+                    return db.rollback(() => {
+                        res.status(500).json({ message: 'Error checking admin status', error: err.message });
+                    });
+                }
+
+                if (adminResult.length > 0) {
+                    const updateAdminSql = `UPDATE admins SET pf_number = ? WHERE pf_number = ?`;
+                    db.query(updateAdminSql, [pf_number, originalPfNumber], (err, adminUpdateResult) => {
+                        if (err) {
+                            console.error('Error updating admin PF number:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ message: 'Error updating admin PF number', error: err.message });
+                            });
+                        }
+
+                        db.commit(err => {
+                            if (err) {
+                                console.error('Transaction commit error:', err);
+                                return db.rollback(() => {
+                                    res.status(500).json({ message: 'Transaction commit error', error: err.message });
+                                });
+                            }
+                            res.json({ message: 'Updated successfully' });
+                        });
+                    });
+                } else {
+                    db.commit(err => {
+                        if (err) {
+                            console.error('Transaction commit error:', err);
+                            return db.rollback(() => {
+                                res.status(500).json({ message: 'Transaction commit error', error: err.message });
+                            });
+                        }
+                        res.json({ message: 'Updated successfully' });
+                    });
+                }
+            });
+        });
+    });
+});
+
 
 // Check PF number uniqueness
-app.get('/employees/pf_number/:pfNumber', (req, res) => {
-    const pfNumber = req.params.pfNumber;
-    const sql = 'SELECT COUNT(*) AS count FROM employees WHERE pf_number = ?';
-    db.query(sql, [pfNumber], (err, result) => {
-        if (err) throw err;
-        const count = result[0].count;
-        if (count > 0) {
-            res.status(200).json({ message: 'PF number exists' });
-        } else {
-            res.status(404).json({ message: 'PF number does not exist' });
-        }
-    });
-});
+// app.get('/employees/pf_number/:pfNumber', (req, res) => {
+//     const pfNumber = req.params.pfNumber;
+//     const sql = 'SELECT COUNT(*) AS count FROM employees WHERE pf_number = ?';
+//     db.query(sql, [pfNumber], (err, result) => {
+//         if (err) throw err;
+//         const count = result[0].count;
+//         if (count > 0) {
+//             res.status(200).json({ message: 'PF number exists' });
+//         } else {
+//             res.status(404).json({ message: 'PF number does not exist' });
+//         }
+//     });
+// });
 
 // Delete an employee
 app.delete('/employees/:id', (req, res) => {
@@ -161,6 +289,28 @@ app.delete('/employees/:id', (req, res) => {
         res.json({ message: 'Employee deleted successfully' });
     });
 });
+
+
+// Route for deleting multiple employees
+app.delete('/employees', (req, res) => {
+    const pfNumbers = req.body.pf_numbers; // Array of PF numbers to delete
+
+    if (pfNumbers && pfNumbers.length > 0) {
+        const sql = `DELETE FROM employees WHERE pf_number IN (${pfNumbers.map(() => '?').join(',')})`;
+
+        db.query(sql, pfNumbers, (err, result) => {
+            if (err) {
+                console.error('Error deleting employees:', err);
+                res.status(500).json({ message: 'Error deleting employees', error: err.message });
+            } else {
+                res.json({ message: 'Employees deleted successfully' });
+            }
+        });
+    } else {
+        res.status(400).json({ message: 'No employees selected for deletion' });
+    }
+});
+
 
 
 
@@ -493,8 +643,8 @@ app.post('/import', upload.single('file'), async (req, res) => {
             } else {
                 // Insert new employee data
                 const insertQuery = `INSERT INTO employees 
-                    (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, preferred_notification_method, department) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+                    (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
                 await db.promise().query(insertQuery, [pfNumber, firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department]);
                 insertedRecords++;
@@ -696,47 +846,255 @@ function drawTableRow(doc, employee, columnWidths) {
 
 
 // Signup Route
-app.post('/signup', async (req, res) => {
-    const { pf_number, password, confirm_password } = req.body;
+// app.post('/signup', async (req, res) => {
+//     const { pf_number, password, confirm_password } = req.body;
 
-    // Validate Passwords Match
-    if (password !== confirm_password) {
-        return res.send('Passwords do not match.');
+//     // Validate Passwords Match
+//     if (password !== confirm_password) {
+//         return res.send('Passwords do not match.');
+//     }
+
+//     // Check if PF Number Exists in Employees Table
+//     db.query('SELECT * FROM employees WHERE pf_number = ?', [pf_number], (err, results) => {
+//         if (err) throw err;
+
+//         if (results.length === 0) {
+//             return res.send('PF Number not found in employees table.');
+//         } else {
+//             // Check if PF Number Already Registered
+//             db.query('SELECT * FROM admins WHERE pf_number = ?', [pf_number], async (err, results) => {
+//                 if (err) throw err;
+
+//                 if (results.length > 0) {
+//                     return res.send('You are already created');
+//                 } else {
+//                     // Hash the Password
+//                     const hashedPassword = await bcrypt.hash(password, 10);
+
+//                     // Insert New User into Admins Table
+//                     const newUser = { pf_number, password: hashedPassword, role: 3 }; // Default to third-level admin
+//                     db.query('INSERT INTO admins SET ?', newUser, (err, results) => {
+//                         if (err) throw err;
+//                         res.send('Registration successful. Please wait for admission.');
+//                     });
+//                 }
+//             });
+//         }
+//     });
+// });
+
+
+
+const saltRounds = 10;
+const pfNumber = '43290';
+const plainPassword = 'Flax@123';
+
+// Check if the super admin already exists or if the table is empty
+db.query('SELECT COUNT(*) AS count FROM admins', (err, countResult) => {
+    if (err) {
+        console.error('Error checking admin count:', err);
+        return;
     }
 
-    // Check if PF Number Exists in Employees Table
-    db.query('SELECT * FROM employees WHERE pf_number = ?', [pf_number], (err, results) => {
-        if (err) throw err;
+    const adminCount = countResult[0].count;
 
-        if (results.length === 0) {
-            return res.send('PF Number not found in employees table.');
-        } else {
-            // Check if PF Number Already Registered
-            db.query('SELECT * FROM users WHERE pf_number = ?', [pf_number], async (err, results) => {
-                if (err) throw err;
+    if (adminCount === 0) {
+        // If the table is empty, reset the auto-increment value to 1
+        db.query('ALTER TABLE admins AUTO_INCREMENT = 1', (err) => {
+            if (err) {
+                console.error('Error resetting auto-increment:', err);
+                return;
+            }
 
-                if (results.length > 0) {
-                    return res.send('You are already created');
-                } else {
-                    // Hash the Password
-                    const hashedPassword = await bcrypt.hash(password, 10);
+            // Now check if the super admin exists
+            db.query('SELECT * FROM admins WHERE pf_number = ?', [pfNumber], (err, results) => {
+                if (err) {
+                    console.error('Error checking super admin:', err);
+                    return;
+                }
 
-                    // Insert New User into Users Table
-                    const newUser = { pf_number, password: hashedPassword, role: 3 }; // Default to third-level admin
-                    db.query('INSERT INTO users SET ?', newUser, (err, results) => {
-                        if (err) throw err;
-                        res.send('Registration successful. Please wait for admission.');
+                if (results.length === 0) {
+                    // Super admin does not exist, create them
+                    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+                        if (err) {
+                            console.error('Error hashing password:', err);
+                            return;
+                        }
+
+                        // Insert the admin record
+                        const query = 'INSERT INTO admins (pf_number, password, role, status, admitted_by) VALUES (?, ?, ?, ?, ?)';
+                        const values = [pfNumber, hashedPassword, 1, 'active', null];
+
+                        db.query(query, values, (err, insertResults) => {
+                            if (err) {
+                                console.error('Error inserting super admin:', err);
+                                return;
+                            }
+                            console.log('Super admin created with ID:', insertResults.insertId);
+                        });
                     });
+                } else {
+                    console.log('Super admin already exists');
                 }
             });
+        });
+    } else {
+        console.log('Admin table is not empty, no need to reset auto-increment.');
+    }
+});
+
+
+
+app.post('/login', (req, res) => {
+    const { pf_number, password } = req.body;
+
+    if (!pf_number || !password) {
+        return res.status(400).send('PF number and password are required');
+    }
+
+    // Query to get admin info, including status
+    db.query('SELECT id, password, role, status FROM admins WHERE pf_number = ?', [pf_number], (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Database error');
         }
+
+        if (results.length === 0) {
+            return res.status(401).send('Invalid PF number or password');
+        }
+
+        const user = results[0];
+
+        // Check the status of the admin
+        if (user.status === 'pending') {
+            return res.redirect('/waiting-for-approval.html'); // Redirect to approval pending page
+        } else if (user.status === 'inactive') {
+            return res.status(403).send('Your account is inactive. Please contact the administrator.');
+        }
+
+        // Compare passwords if status is valid (e.g., active)
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) {
+                console.error('Password comparison error:', err);
+                return res.status(500).send('Error comparing passwords');
+            }
+
+            if (isMatch) {
+                // Set session and redirect to the admin dashboard
+                req.session.user = {
+                    id: user.id,
+                    role: user.role
+                };
+                res.redirect('/dashboard.html');
+            } else {
+                res.status(401).send('Invalid PF number or password');
+            }
+        });
+    });
+});
+
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.status(500).send('Logout error');
+        }
+        res.redirect('/'); 
     });
 });
 
 
 
 
+app.post('/signup', (req, res) => {
+    const { pf_number, password } = req.body;
+
+    // Check if all fields are provided
+    if (!pf_number || !password) {
+        return res.status(400).send('All fields are required.');
+    }
+
+    // Check if the PF number exists in the employees table
+    db.query('SELECT * FROM employees WHERE pf_number = ?', [pf_number], (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Server error.');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send('PF number does not exist.');
+        }
+
+        // Hash the password before saving
+        bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+            if (err) {
+                console.error('Password hashing error:', err);
+                return res.status(500).send('Server error.');
+            }
+
+            // Insert the new admin record
+            const role = 3;  // Default role for third-level admin
+            const status = 'pending';  // Default status is pending
+            const query = 'INSERT INTO admins (pf_number, password, role, status) VALUES (?, ?, ?, ?)';
+
+            db.query(query, [pf_number, hashedPassword, role, status], (err, result) => {
+                if (err) {
+                    console.error('Error inserting admin:', err);
+                    return res.status(500).send('Server error.');
+                }
+
+                // Redirect to a "waiting for approval" page
+                res.redirect('/waiting-for-approval.html');
+            });
+        });
+    });
+});
+
+
+
+
+
+
+app.get('/getAdmins', (req, res) => {
+    const query = `
+        SELECT 
+            admins.id,
+            admins.pf_number,
+            employees.first_name,
+            employees.last_name,
+            employees.email,
+            employees.phone_number,
+            admins.role,
+            admins.status
+        FROM admins
+        JOIN employees ON admins.pf_number = employees.pf_number
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching admin data:', err);
+            return res.status(500).send('Error retrieving admin data');
+        }
+        res.json(results);
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
 // Start server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+// app.listen(port, () => {
+//     console.log(`Server running at http://localhost:${port}`);
+// });
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

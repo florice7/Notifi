@@ -54,10 +54,20 @@ body {
 .side-menu ul li {
     padding: 10px;
     cursor: pointer;
+    display: flex; /* Ensures the icon and text are aligned horizontally */
+    align-items: center; /* Ensures the icon and text are vertically aligned */
 }
 
 .side-menu ul li i {
-    margin-right: 10px;
+    margin-right: 10px; /* Adds space between the icon and the text */
+    opacity: 0.7; /* Adjust the value as needed */
+}
+
+.side-menu ul li a {
+    text-decoration: none;
+    color: #000;
+    display: flex;
+    align-items: center;
 }
 
 /* Main Content */
@@ -87,6 +97,7 @@ header .left button {
     font-size: 1.5rem;
     margin-right: 10px;
     cursor: pointer;
+    opacity: 0.8; /* Adjust the value as needed */
 }
 
 header .right {
@@ -97,6 +108,7 @@ header .right {
 header .right i {
     font-size: 1.5rem;
     margin-right: 30px;
+    opacity: 0.8; /* Adjust the value as needed */
 }
 
 #dateTime {
@@ -232,8 +244,9 @@ header .right i {
     background-color: #6a040f; /* Button background color */
     color: #fff; /* Button text color */
     border-radius: 25px;
+    border: none;
     padding: 5px 50px;
-    cursor: pointer;
+    /* cursor: pointer; */
     text-align: center;
     font-size: 18px; /* Smaller font size */
     flex: 0 0 auto; /* Prevents the button from growing */
@@ -412,8 +425,8 @@ footer a:hover {
     font-family: Poppins, sans-serif;
     background-color: #6A040F;
     color: white;
-    font-size: 1.2rem;
-    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -448,10 +461,10 @@ footer a:hover {
 
 
 
-#addForm button[type="submit"] {
+/* #addForm button[type="submit"] {
     display: block;
     margin: 20px auto;
-    padding: 10px 20px;
+    padding: 0.6rem 2rem;
     border: none;
     border-radius: 50px;
     background-color: #6A040F;
@@ -462,7 +475,7 @@ footer a:hover {
 
 #addForm button[type="submit"]:hover {
     background-color: #6A040F;
-}
+} */
 
 .close {
     color: #6A040F;
@@ -558,45 +571,53 @@ footer a:hover {
     }
 }
 
-/* Modal container */
 #actionsModal {
     display: none;
-    position: fixed; /* Fixed positioning to float above the footer */
-    bottom: 50px; /* Adjust based on footer height */
+    position: fixed;
+    bottom: 50px;
     left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
-    width: 80%; /* Adjust as needed */
-    max-width: 600px; /* Adjust as needed */
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
     background-color: #ffffff;
     padding: 1rem;
     border: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* Ensure it is above other elements */
+    z-index: 1000;
     box-sizing: border-box;
 }
+
 /* Modal content */
 .actions-content {
     display: flex;
-    justify-content: flex-start; /* Align items at the start (left) by default */
+    justify-content: space-between; /* Space between the selected count and icons */
     align-items: center;
-    gap: 10px; /* Adds a little space between the selected count and icon container */
+    /* background-color: #6a040f; */
+    width: 100%;
+}
+
+/* Selected count */
+.selected-count {
+    flex-grow: 0; /* This ensures the selected count doesn't take unnecessary space */
 }
 
 /* Icon container */
 .icon-container {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     margin-left: auto; /* This pushes the icon container to the far right */
+    
 }
 
 .icon-container i {
-    font-size: 1.5rem; /* Adjust icon size as needed */
+    font-size: 1.1rem;
     cursor: pointer;
+    opacity: 0.7; /* Adjust the value as needed */
+    color: #6A040F;
 }
 
-
 #editBtn {
-    color: #6c757d; /* Greyed out color */
+    color: gray; 
     cursor: not-allowed; /* Cursor indicates it's not clickable */
     pointer-events: none; /* Disable clicking */
 }
@@ -625,60 +646,342 @@ footer a:hover {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+    overflow: auto; /* Ensure content is scrollable if needed */
 }
 
 .reports-modal-content {
     background-color: #fff;
-    margin: 15% auto;
+    margin: 5% auto; /* Reduce margin for better positioning */
     padding: 20px;
     border: 1px solid #888;
-    width: 400px;
+    width: 90%;
+    max-width: 400px; /* Limit max width */
     position: relative;
-}
-
-.reports-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+    border-radius: 8px; /* Rounded corners for a smoother look */
+    padding-top: 20px; /* Adjust padding to accommodate removal of close button */
 }
 
 /* Scoped form styles specific to the reports form */
 #reports-form .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 15px; /* Slightly more margin for spacing */
 }
 
 #reports-form .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
+/* Slightly lower start and end date fields by adding margin */
 #reports-form .form-group input,
 #reports-form .form-group select {
     width: 100%;
-    padding: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 10px; /* Add margin to push the inputs lower */
 }
 
+/* Center the button and update its color */
 #reports-form button {
-    background-color: #4CAF50;
+    background-color: #6a040f; /* Button color */
     color: white;
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    display: block;
+    margin: 30px auto 0; /* Push button lower */
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+#reports-form button:hover {
+    background-color: #50030b; /* Darker shade on hover */
 }
 
 #reports-form button i {
     margin-right: 5px;
 }
 
+/* Add extra margin to the date fields and the extract button */
+#start-date, #end-date, #extract-button {
+    margin-top: 20px; /* Push these elements lower */
+}
+
+
 /* Add spacing for the icon and text */
-#reports-dropdown {
+/* #reports-dropdown {
     display: flex;
     align-items: center;
     cursor: pointer;
+} */
+
+/* #reports-dropdown i {
+    margin-right: 5px;
+} */
+
+
+.custom-dialog {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-#reports-dropdown i {
-    margin-right: 5px;
+.dialog-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    max-width: 400px;
+    text-align: center;
+    display: block;
+}
+
+.dialog-button {
+    background-color: #6A040F;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dialog-button:hover {
+    background-color: #000000;
+}
+
+
+#logoutConfirmationDialog {
+    display: none;
+}
+
+
+#adminActionsModal {
+    display: none;
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 600px;
+    background-color: #ffffff;
+    padding: 1rem;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+/* Modal content */
+.actions-content {
+    display: flex;
+    justify-content: space-between; /* Space between the selected count and icons */
+    align-items: center;
+    width: 100%;
+}
+
+/* Selected count */
+.selected-count {
+    flex-grow: 0; /* This ensures the selected count doesn't take unnecessary space */
+}
+
+/* Icon container */
+.icon-container {
+    display: flex;
+    gap: 15px;
+    margin-left: auto; /* Pushes the icon container to the far right */
+}
+
+.icon-container i {
+    font-size: 1.1rem;
+    cursor: pointer;
+    opacity: 0.7; /* Adjust the opacity as needed */
+}
+
+#adminEditBtn {
+    color: #6c757d; /* Greyed out color */
+    cursor: not-allowed; /* Cursor indicates it's not clickable */
+    pointer-events: none; /* Disable clicking */
+}
+
+#adminEditBtn.active {
+    color: #000; /* Black color when active */
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    pointer-events: auto; /* Enable clicking */
+}
+
+
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    /* background-color: #a58e8e; */
+}
+
+.card {
+    flex: 1 1 calc(25% - 1rem); /* 4 cards evenly spaced */
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.7s ease;
+}
+
+.card:hover {
+    transform: translateY(-1rem); 
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    color: #6A040F;
+    margin-bottom: 1rem;
+}
+
+.total-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.average-age {
+    font-size: 1rem;
+    color: #777;
+}
+
+@media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(50% - 1rem); /* 2 cards per row on medium screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex: 1 1 100%; /* Full-width on small screens */
+    }
+}
+
+
+
+/* Main container holding graphs and progress card */
+.analytics-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    background-color: #f9f9f9;
+}
+
+/* Left section (graphs) */
+.graphs-container {
+    flex: 1; /* Take the remaining space */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    /* box-shadow:  4px 6px rgba(0, 0, 0, 0.4); */
+}
+
+/* Individual graph styling */
+.graph {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    text-align: center;
+    height: 30rem; /* Adjust height of individual graphs */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.graph canvas {
+    width: 100% !important; /* Ensure the canvas fills the container */
+    height: 100% !important; /* Ensure the canvas fills the container */
+}
+
+
+/* Right section (progress card) */
+.progress-card {
+    flex: 0 0 calc(25% - 1rem); /* Match the width of one card */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    padding: 1rem;
+    text-align: center;
+    height: 100%; /* Match the height of the stacked graphs */
+    transition: transform 0.7s ease;
+}
+
+
+.progress-card:hover {
+    transform: translateY(-1rem); 
+}
+
+/* Circular progress styling */
+#circle-container {
+    position: relative;
+    width: 300px; /* Increased size */
+    height: 300px; /* Increased size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    /* background-color: #333; */
+}
+
+#circleProgress circle {
+    transition: stroke-dashoffset 1.5s ease;
+}
+
+#percentageDisplay {
+    position: absolute;
+    font-size: 3rem; /* Larger font size */
+    font-weight: bold;
+    color: #1064f4;
+}
+
+#progressLabel {
+    position: absolute;
+    font-size: 1rem; /* Smaller font size */
+    color: #1064f4;
+    margin-top: 4rem; /* Space below the percentage */
+}
+
+/* Canvas (Graphs) styling */
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .analytics-container {
+        flex-direction: column;
+    }
+    
+    .graphs-container, .progress-card {
+        flex: 1;
+    }
 }
