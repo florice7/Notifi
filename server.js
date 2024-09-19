@@ -14,6 +14,12 @@ const multer = require('multer');
 const ExcelJS = require('exceljs');
 const fs = require('fs');
 const upload = multer({ dest: 'uploads/' });
+const XLSX = require('xlsx');
+
+
+
+
+
 
 // Session setup
 
@@ -356,46 +362,56 @@ function sendGeneralBirthdayEmail() {
     const nextWeekStr = nextWeek.toISOString().slice(0, 10);
     const nextToTomorrowStr = nextToTomorrow.toISOString().slice(0, 10);
 
+    // Fetch today's birthdays
     getEmployeesWithBirthdaysInRange(todayStr, todayStr, (error, todaysBirthdays) => {
         if (error) {
             console.error("Error fetching today's birthdays:", error);
             return;
         }
 
+        // Fetch tomorrow's birthdays
         getEmployeesWithBirthdaysInRange(tomorrowStr, tomorrowStr, (error, tomorrowsBirthdays) => {
             if (error) {
                 console.error("Error fetching tomorrow's birthdays:", error);
                 return;
             }
 
+            // Fetch upcoming birthdays in the next week
             getEmployeesWithBirthdaysInRange(nextToTomorrowStr, nextWeekStr, (error, nextWeekBirthdays) => {
                 if (error) {
                     console.error("Error fetching upcoming birthdays:", error);
                     return;
                 }
 
+                // Check if all birthday lists are empty
+                if (todaysBirthdays.length === 0 && tomorrowsBirthdays.length === 0 && nextWeekBirthdays.length === 0) {
+                    console.log("No birthdays to announce today, tomorrow, or in the upcoming week. No email will be sent.");
+                    return; // No email will be sent
+                }
+
+                // If there are birthdays, proceed to construct the email
                 const subject = 'Birthday Reminders';
-                let text = 'Hello Team,\n Birthday Updates\n';
+                let text = 'Dear Team,\n\nHere are the birthday updates for our colleagues:\n\n';
 
                 if (todaysBirthdays.length > 0) {
-                    text += 'Today\'s Birthdays:\n';
+                    text += '🎂 *Today\'s Birthdays:*\n';
                     text += formatEmployeeList(todaysBirthdays);
                     text += '\n\n';
                 }
 
                 if (tomorrowsBirthdays.length > 0) {
-                    text += 'Tomorrow\'s Birthdays:\n';
+                    text += '🎉 *Tomorrow\'s Birthdays:*\n';
                     text += formatEmployeeList(tomorrowsBirthdays);
                     text += '\n\n';
                 }
 
                 if (nextWeekBirthdays.length > 0) {
-                    text += 'Upcoming Birthdays:\n';
+                    text += '🎈 *Upcoming Birthdays:*\n';
                     text += formatUpcomingBirthdays(nextWeekBirthdays);
-                    text += '\n\n\n';
+                    text += '\n\n';
                 }
 
-                text += 'Best regards,\nEquity Bank Rwanda PLC';
+                text += 'Let’s wish our colleagues a fantastic day ahead!\n\nBest regards,\nEquity Bank Rwanda PLC';
 
                 // Fetch all employee emails
                 db.query('SELECT email FROM employees', (err, results) => {
@@ -403,9 +419,9 @@ function sendGeneralBirthdayEmail() {
                         console.error('Error fetching employee emails:', err);
                         return;
                     }
-                
+
                     const emailList = results.map(row => row.email);
-                
+
                     const retryFailedEmails = (email, retries = 5, delay = 1 * 60 * 1000) => {
                         const mailOptions = {
                             from: 'musafiriflorice@gmail.com',
@@ -413,19 +429,19 @@ function sendGeneralBirthdayEmail() {
                             subject: subject,
                             text: text
                         };
-                
+
                         let attempts = 0;
-                
+
                         const attemptToSend = () => {
                             transporter.sendMail(mailOptions, (error, info) => {
                                 attempts++; // Increment the attempt count
-                                
+
                                 if (error) {
                                     console.error(`Error sending email to ${email}: ${error.message}`);
-                
+
                                     // Log each failure attempt
                                     logEmailStatus('Birthday Reminder', email, false, error.message, attempts, attempts > 1);
-                
+
                                     if (attempts < retries) {
                                         console.log(`Retrying for ${email}... Attempt ${attempts} of ${retries}`);
                                         setTimeout(attemptToSend, delay);
@@ -441,20 +457,20 @@ function sendGeneralBirthdayEmail() {
                                 }
                             });
                         };
-                
+
                         attemptToSend(); // Start the first attempt
                     };
-                
+
                     // Send emails and retry if needed
                     emailList.forEach(email => {
                         retryFailedEmails(email);
                     });
                 });
-                                
             });
         });
     });
 }
+
 
 
 
@@ -567,8 +583,8 @@ function logEmailStatus(emailType, email, isSuccess, reason = null, attemptNumbe
 
 
 // Schedule tasks
-cron.schedule('23 11 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
-cron.schedule('22 11 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
+cron.schedule('37 18 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
+cron.schedule('35 18 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
 
 app.get('/email-status', (req, res) => {
     const query = `
@@ -607,114 +623,114 @@ app.post('/send-birthday-wishes', (req, res) => {
 
 
 // Endpoint to handle file upload and data import
-app.post('/import', upload.single('file'), async (req, res) => {
-    const filePath = req.file.path;
-    const workbook = new ExcelJS.Workbook();
+// app.post('/import', upload.single('file'), async (req, res) => {
+//     const filePath = req.file.path;
+//     const workbook = new ExcelJS.Workbook();
 
-    try {
-        await workbook.xlsx.readFile(filePath);
-        const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
+//     try {
+//         await workbook.xlsx.readFile(filePath);
+//         const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
 
-        let duplicateRecords = [];
-        let insertedRecords = 0;
-        let updatedRecords = 0;
+//         let duplicateRecords = [];
+//         let insertedRecords = 0;
+//         let updatedRecords = 0;
 
-        // Read each row and process it
-        for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) { // Start from row 2 to skip headers
-            const row = worksheet.getRow(rowNumber);
-            const pfNumber = row.getCell(1).value;
-            const firstName = row.getCell(2).value;
-            const lastName = row.getCell(3).value;
-            const gender = row.getCell(4).value;
-            const dob = row.getCell(5).value;
-            const emailCell = row.getCell(6);
-            const email = emailCell.text || emailCell.value;
-            const phoneNumber = row.getCell(7).value;
-            const notificationMethod = row.getCell(8).value;
-            const department = row.getCell(9).value;
+//         // Read each row and process it
+//         for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) { // Start from row 2 to skip headers
+//             const row = worksheet.getRow(rowNumber);
+//             const pfNumber = row.getCell(1).value;
+//             const firstName = row.getCell(2).value;
+//             const lastName = row.getCell(3).value;
+//             const gender = row.getCell(4).value;
+//             const dob = row.getCell(5).value;
+//             const emailCell = row.getCell(6);
+//             const email = emailCell.text || emailCell.value;
+//             const phoneNumber = row.getCell(7).value;
+//             const notificationMethod = row.getCell(8).value;
+//             const department = row.getCell(9).value;
 
-            // Check if PF Number already exists
-            const query = 'SELECT * FROM employees WHERE pf_number = ?';
-            const [existingEmployee] = await db.promise().query(query, [pfNumber]);
+//             // Check if PF Number already exists
+//             const query = 'SELECT * FROM employees WHERE pf_number = ?';
+//             const [existingEmployee] = await db.promise().query(query, [pfNumber]);
 
-            if (existingEmployee.length > 0) {
-                // PF Number exists, add to duplicates array
-                duplicateRecords.push({ pfNumber, firstName, lastName });
-            } else {
-                // Insert new employee data
-                const insertQuery = `INSERT INTO employees 
-                    (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+//             if (existingEmployee.length > 0) {
+//                 // PF Number exists, add to duplicates array
+//                 duplicateRecords.push({ pfNumber, firstName, lastName });
+//             } else {
+//                 // Insert new employee data
+//                 const insertQuery = `INSERT INTO employees 
+//                     (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) 
+//                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
-                await db.promise().query(insertQuery, [pfNumber, firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department]);
-                insertedRecords++;
-            }
-        }
+//                 await db.promise().query(insertQuery, [pfNumber, firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department]);
+//                 insertedRecords++;
+//             }
+//         }
 
-        if (duplicateRecords.length > 0) {
-            res.json({
-                message: 'Some records already exist. Do you want to update them?',
-                duplicates: duplicateRecords
-            });
-        } else {
-            res.json({
-                message: `Successfully imported ${insertedRecords} records.`
-            });
-        }
-    } catch (error) {
-        console.error('Error processing file:', error);
-        res.status(500).json({ message: 'Error processing file' });
-    } finally {
-        // Clean up the uploaded file
-        fs.unlinkSync(filePath);
-    }
-});
+//         if (duplicateRecords.length > 0) {
+//             res.json({
+//                 message: 'Some records already exist. Do you want to update them?',
+//                 duplicates: duplicateRecords
+//             });
+//         } else {
+//             res.json({
+//                 message: `Successfully imported ${insertedRecords} records.`
+//             });
+//         }
+//     } catch (error) {
+//         console.error('Error processing file:', error);
+//         res.status(500).json({ message: 'Error processing file' });
+//     } finally {
+//         // Clean up the uploaded file
+//         fs.unlinkSync(filePath);
+//     }
+// });
 
-// Endpoint to handle updating existing records
-app.post('/update', upload.single('file'), async (req, res) => {
-    const filePath = req.file.path;
-    const workbook = new ExcelJS.Workbook();
+// // Endpoint to handle updating existing records
+// app.post('/update', upload.single('file'), async (req, res) => {
+//     const filePath = req.file.path;
+//     const workbook = new ExcelJS.Workbook();
 
-    try {
-        await workbook.xlsx.readFile(filePath);
-        const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
+//     try {
+//         await workbook.xlsx.readFile(filePath);
+//         const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
 
-        let updatedRecords = 0;
+//         let updatedRecords = 0;
 
-        // Read each row and update it
-        for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) { // Start from row 2 to skip headers
-            const row = worksheet.getRow(rowNumber);
-            const pfNumber = row.getCell(1).value;
-            const firstName = row.getCell(2).value;
-            const lastName = row.getCell(3).value;
-            const gender = row.getCell(4).value;
-            const dob = row.getCell(5).value;
-            const emailCell = row.getCell(6);
-            const email = emailCell.text || emailCell.value;
-            const phoneNumber = row.getCell(7).value;
-            const notificationMethod = row.getCell(8).value;
-            const department = row.getCell(9).value;
+//         // Read each row and update it
+//         for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) { // Start from row 2 to skip headers
+//             const row = worksheet.getRow(rowNumber);
+//             const pfNumber = row.getCell(1).value;
+//             const firstName = row.getCell(2).value;
+//             const lastName = row.getCell(3).value;
+//             const gender = row.getCell(4).value;
+//             const dob = row.getCell(5).value;
+//             const emailCell = row.getCell(6);
+//             const email = emailCell.text || emailCell.value;
+//             const phoneNumber = row.getCell(7).value;
+//             const notificationMethod = row.getCell(8).value;
+//             const department = row.getCell(9).value;
 
-            // Update existing employee data
-            const updateQuery = `UPDATE employees 
-                SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, email = ?, phone_number = ?, preferred_notification_method = ?, department = ? 
-                WHERE pf_number = ?`;
+//             // Update existing employee data
+//             const updateQuery = `UPDATE employees 
+//                 SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, email = ?, phone_number = ?, preferred_notification_method = ?, department = ? 
+//                 WHERE pf_number = ?`;
 
-            await db.promise().query(updateQuery, [firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department, pfNumber]);
-            updatedRecords++;
-        }
+//             await db.promise().query(updateQuery, [firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department, pfNumber]);
+//             updatedRecords++;
+//         }
 
-        res.json({
-            message: `Successfully updated ${updatedRecords} records.`
-        });
-    } catch (error) {
-        console.error('Error processing file:', error);
-        res.status(500).json({ message: 'Error processing file' });
-    } finally {
-        // Clean up the uploaded file
-        fs.unlinkSync(filePath);
-    }
-});
+//         res.json({
+//             message: `Successfully updated ${updatedRecords} records.`
+//         });
+//     } catch (error) {
+//         console.error('Error processing file:', error);
+//         res.status(500).json({ message: 'Error processing file' });
+//     } finally {
+//         // Clean up the uploaded file
+//         fs.unlinkSync(filePath);
+//     }
+// });
 
 
 // Handle the extract request
@@ -952,8 +968,15 @@ app.post('/login', (req, res) => {
         return res.status(400).send('PF number and password are required');
     }
 
-    // Query to get admin info, including status
-    db.query('SELECT id, password, role, status FROM admins WHERE pf_number = ?', [pf_number], (err, results) => {
+    // Query to get admin info, including first name and status
+    const query = `
+        SELECT admins.id, admins.password, admins.role, admins.status, employees.first_name 
+        FROM admins 
+        JOIN employees ON admins.pf_number = employees.pf_number
+        WHERE admins.pf_number = ?
+    `;
+
+    db.query(query, [pf_number], (err, results) => {
         if (err) {
             console.error('Database query error:', err);
             return res.status(500).send('Database error');
@@ -980,15 +1003,59 @@ app.post('/login', (req, res) => {
             }
 
             if (isMatch) {
-                // Set session and redirect to the admin dashboard
+                // Set session and include the first name
                 req.session.user = {
                     id: user.id,
-                    role: user.role
+                    role: user.role,
+                    first_name: user.first_name // Store the first name in the session
                 };
                 res.redirect('/dashboard.html');
             } else {
                 res.status(401).send('Invalid PF number or password');
             }
+        });
+    });
+});
+
+
+app.get('/session', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).send('Not logged in');
+    }
+
+    const adminId = req.session.user.id;
+
+    // Query to get all necessary information about the admin from both the employees and admins tables
+    const query = `
+        SELECT employees.first_name, employees.last_name, employees.pf_number, employees.email, employees.phone_number, employees.department, 
+               admins.role, admins.status
+        FROM employees
+        JOIN admins ON employees.pf_number = admins.pf_number
+        WHERE admins.id = ?
+    `;
+
+    db.query(query, [adminId], (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Database error');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const adminData = results[0];
+
+        // Send the necessary profile data
+        res.json({
+            first_name: adminData.first_name,
+            last_name: adminData.last_name,
+            pf_number: adminData.pf_number,
+            email: adminData.email,
+            phone_number: adminData.phone_number,
+            department: adminData.department,
+            role: adminData.role,
+            status: adminData.status
         });
     });
 });
@@ -1085,7 +1152,109 @@ app.get('/getAdmins', (req, res) => {
 
 
 
+// Function to convert Excel date serial number to JavaScript Date
+// function excelDateToJSDate(serial) {
+//     const epoch = new Date(1899, 11, 30); // Excel's epoch is December 30, 1899
+//     const days = Math.floor(serial);
+//     const milliseconds = Math.round((serial - days) * 86400000); // Convert fractional days to milliseconds
+//     return new Date(epoch.getTime() + days * 86400000 + milliseconds);
+// }
 
+
+// Function to convert Excel date serial number to JavaScript Date
+function excelDateToJSDate(serial) {
+    const epoch = new Date(1899, 11, 30); // Excel's epoch is December 30, 1899
+    const days = Math.floor(serial);
+    const milliseconds = Math.round((serial - days) * 86400000); // Convert fractional days to milliseconds
+    return new Date(epoch.getTime() + days * 86400000 + milliseconds - (new Date().getTimezoneOffset() * 60000));
+}
+
+
+// Define the route for file upload
+app.post('/upload', upload.single('file'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        const filePath = path.join(__dirname, req.file.path);
+
+        // Load the uploaded Excel file using xlsx
+        const workbook = XLSX.readFile(filePath);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]]; // Get the first sheet
+
+        // Convert the worksheet to JSON format
+        const data = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
+        data.forEach(async (row) => {
+            const {
+                STAFF_ID: pfNumber,
+                STAFF_NAME: staffName,
+                DATE_OF_BIRTH: dateOfBirth,
+                STAFF_GENDER: staffGender,
+                TELEPHONE: phoneNumber,
+                EMAIL_ID: emailId,
+                DEPARTMENT_ID: department
+            } = row;
+
+            // Split the staffName to get first and last name
+            const [firstName, ...lastNameParts] = staffName.split(' ');
+            const lastName = lastNameParts.join(' ');
+
+            // Convert dateOfBirth to proper format
+            let formattedDateOfBirth;
+            if (typeof dateOfBirth === 'number') {
+                // Convert Excel serial date to JavaScript Date
+                const jsDate = excelDateToJSDate(dateOfBirth);
+                formattedDateOfBirth = jsDate.toISOString().split('T')[0];
+            } else if (dateOfBirth instanceof Date) {
+                // Directly format if it's already a Date object
+                formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0];
+            } else {
+                // If the date is in a string format, parse it directly
+                formattedDateOfBirth = new Date(dateOfBirth).toISOString().split('T')[0];
+            }
+
+            const sql = `
+                INSERT INTO employees (pf_number, first_name, last_name, date_of_birth, gender, phone_number, email, department)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE
+                    first_name = VALUES(first_name),
+                    last_name = VALUES(last_name),
+                    date_of_birth = VALUES(date_of_birth),
+                    gender = VALUES(gender),
+                    phone_number = VALUES(phone_number),
+                    email = VALUES(email),
+                    department = VALUES(department)
+            `;
+
+            const values = [
+                pfNumber,
+                firstName,
+                lastName,
+                formattedDateOfBirth,
+                staffGender === 'M' ? 'Male' : 'Female',
+                phoneNumber,
+                emailId,
+                department
+            ];
+
+            db.query(sql, values, (err) => {
+                if (err) {
+                    console.error('Error executing query:', err);
+                }
+            });
+        });
+
+        // Remove the uploaded file after processing
+        fs.unlinkSync(filePath);
+
+        res.status(200).json({ message: 'File uploaded and processed successfully' });
+    } catch (error) {
+        console.error('Error processing file:', error);
+        res.status(500).json({ message: 'An error occurred while processing the file' });
+    }
+});
 
 
 

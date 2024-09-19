@@ -1,4 +1,4 @@
-/* Basic Reset */
+
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +7,9 @@
 
 body {
     font-family: Poppins, sans-serif;
-    background-color: #f4f4f4;
+    background-color: rgba(244, 220, 220, 0.8);
     font-weight: normal;
+    /* overflow: scroll; */
 }
 
 /* Side Menu */
@@ -122,10 +123,19 @@ header .right i {
     margin-right: 8px;
 }
 
-.user-profile i {
-    font-size: 1.5rem;
-}
 
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    /* padding: auto; */
+}
+.user-profile i {
+    font-size: 1rem;
+}
+#adminName {
+    font-size: 0.7rem;
+}
 /* Body Content */
 .body-content {
     margin-top: 4px; /* Reduced margin to decrease the space between the header and the button container */
@@ -187,74 +197,106 @@ header .right i {
     color: white; /* Changes text color to white on hover */
 }
 
-/* Search container styles */
+.file-upload-container {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.file-name {
+    margin-left: 10px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.remove-btn {
+    background-color: #e63946;
+    color: white;
+    margin-left: 10px;
+    border: 2px solid #e63946;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.remove-btn:hover {
+    background-color: #d62828;
+    border-color: #d62828;
+}
+
+
+
+
+/* Container Styles */
 .search-container {
     background-color: white;
-    padding: 10px 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 4px; /* Reduced margin to decrease space between button and search containers */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    border-radius: 10px;
 }
 
-/* Enlarged search container on click */
-.search-container.enlarged {
-    transform: scale(1.05); /* Slight enlargement */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow effect */
-}
-
-/* Search form styles */
+/* Form Layout */
 .search-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for equal-sized inputs */
+    gap: 20px;
 }
 
 /* Input group styles */
 .input-group {
     display: flex;
     align-items: center;
-    flex-basis: calc(20% - 10px); /* Adjusted for two-line layout */
+    gap: 10px;
 }
 
 /* Label styles */
 .input-group label {
-    margin-right: 10px; /* Space between label and input */
-    white-space: nowrap; /* Prevents label text from wrapping */
-    flex: 0 0 20%; /* Makes label take up 30% of the container width */
+    white-space: nowrap;
+    min-width: 140px; /* Ensure labels have consistent width */
 }
 
 /* Input styles */
 .search-input {
-    flex: 1; /* Allows the input to take the remaining space */
+    flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 15px;
+    border-radius: 10px;
+    width: 100%; /* Ensure equal width for all inputs */
 }
 
-/* Special case for dates and button */
-.input-group:nth-last-child(3), /* Start Date */
-.input-group:nth-last-child(2), /* End Date */
-.input-group:nth-last-child(1) { /* Filter Button */
-    flex-basis: calc(30% - 10px); /* Adjusted to fit all elements in one line */
+/* Adjust alignment for Date Range */
+#start-date, #end-date {
+    width: 100%; /* Ensure date inputs are aligned with other inputs */
 }
 
-/* Filter button */
+/* Filter and Clear Buttons */
 .search-btn {
-    background-color: #6a040f; /* Button background color */
-    color: #fff; /* Button text color */
+    background-color: #6a040f;
+    color: white;
     border-radius: 25px;
+    padding: 10px 40px;
+    font-size: 16px;
     border: none;
-    padding: 5px 50px;
-    /* cursor: pointer; */
-    text-align: center;
-    font-size: 18px; /* Smaller font size */
-    flex: 0 0 auto; /* Prevents the button from growing */
+    cursor: pointer;
+    width: 100%; /* Button width matches input width */
 }
 
 .search-btn:hover {
-    background-color: #000; /* Changes background color on hover */
-    color: white; /* Changes text color to white on hover */
+    background-color: #000;
+}
+
+/* Responsive Styling */
+@media (max-width: 1024px) {
+    .search-form {
+        grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on smaller screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        grid-template-columns: 1fr; /* Stack inputs on very small screens */
+    }
 }
 
 /* Table */
@@ -888,6 +930,7 @@ footer a:hover {
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem 0;
+    margin-bottom: 1rem;
     background-color: #f9f9f9;
 }
 

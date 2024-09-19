@@ -25,7 +25,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         </div>
         <ul>
             <li><a href="dashboard.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="ad2.html"><i class="fa fa-users"></i> Users</a></li>
+            <li><a href="ad2.html"><i class="fa fa-users"></i> Staff</a></li>
             <li><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
             <li class="dropdown" id="reports-dropdown">
                 <i class="fa fa-file-alt" id="reports-icon"></i> Reports
@@ -58,7 +58,9 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <!-- User Profile Icon -->
                 <div class="user-profile">
                     <i class="fa fa-user-circle"></i>
+                    <p id="adminName">Admin</p>
                 </div>
+                
             </div>
         </header>
 
@@ -68,7 +70,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <div class="content-container">
                     <div class="textual-info">
                         <p class="bold-text">Dashboard</p>
-                        <p>Welcome</p>
+                        <p id="welcomeMessage">Welcome</p>
                     </div>
                 </div>
             </div>
@@ -95,17 +97,17 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
             <div class="card-container">
                 <div class="card" id="allEmployees">
-                    <h3>All Employees</h3>
+                    <h3>All Staff</h3>
                     <div class="total-number" id="totalEmployees">0</div>
                     <div class="average-age">Average Age: <span id="averageAgeAll">0</span></div>
                 </div>
                 <div class="card" id="maleEmployees">
-                    <h3>Male Employees</h3>
+                    <h3>Males</h3>
                     <div class="total-number" id="totalMaleEmployees">0</div>
                     <div class="average-age">Average Age: <span id="averageAgeMale">0</span></div>
                 </div>
                 <div class="card" id="femaleEmployees">
-                    <h3>Female Employees</h3>
+                    <h3>Females</h3>
                     <div class="total-number" id="totalFemaleEmployees">0</div>
                     <div class="average-age">Average Age: <span id="averageAgeFemale">0</span></div>
                 </div>

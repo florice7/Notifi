@@ -25,7 +25,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         </div>
         <ul>
             <li><a href="dashboard.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="ad2.html"><i class="fa fa-users"></i> Users</a></li>
+            <li><a href="ad2.html"><i class="fa fa-users"></i> Staff</a></li>
             <li><a href="analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
             <li class="dropdown" id="reports-dropdown">
                 <i class="fa fa-file-alt" id="reports-icon"></i> Reports
@@ -71,9 +71,28 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         <p>Employees' List. Select the employee's row to edit.</p>
                     </div>
                     <div class="button-container">
-                        <button class="btn import-btn">
-                            <i class="fa fa-upload"></i> Import File
-                        </button>
+                        <div class="file-upload-container">
+                            <input type="file" id="fileInput" class="file-input" accept=".xlsx, .xls" style="display: none;" />
+
+                            
+                            <!-- Choose File Button -->
+                            <button class="btn import-btn" id="chooseFileBtn">
+                                <i class="fa fa-upload"></i> Choose File
+                            </button>
+                            
+                            <!-- File name display -->
+                            <span id="fileName" class="file-name"></span>
+                            
+                            <!-- Remove file button -->
+                            <button class="btn remove-btn" id="removeFileBtn" style="display: none;">Remove</button>
+                            
+                            <!-- Process File Button -->
+                            <button class="btn process-btn" id="processFileBtn" style="display: none;">
+                                <i class="fa fa-check"></i> Process File
+                            </button>
+                        </div>
+                        
+                        
                         <button id="openAddModal" class="btn register-btn">
                             <i class="fa fa-plus"></i> Register User
                         </button>
@@ -84,17 +103,17 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
             <div class="search-container">
                 <form class="search-form">
-                    <!-- Name, PF Number, Gender (First Line) -->
+                    <!-- First Row: Name, PF Number, Gender, Birthdays -->
                     <div class="input-group">
                         <label for="name-filter">Name:</label>
                         <input type="text" id="name-filter" placeholder="Enter name" class="search-input">
                     </div>
-
+            
                     <div class="input-group">
                         <label for="pfno-filter">PF Number:</label>
                         <input type="text" id="pfno-filter" placeholder="Enter PF number" class="search-input">
                     </div>
-
+            
                     <div class="input-group">
                         <label for="gender-filter">Gender:</label>
                         <select id="gender-filter" class="search-input">
@@ -103,31 +122,42 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                             <option value="female">Female</option>
                         </select>
                     </div>
-
-                    <!-- Birthdays, Start Date, End Date, Filter Button (Second Line) -->
+            
                     <div class="input-group">
                         <label for="birthday-filter">Birthdays:</label>
                         <select id="birthday-filter" class="search-input">
                             <option value="all">All</option>
                             <option value="today">Today</option>
-                            <option value="7-days">This week</option>
-                            <option value="month">This month</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="nextSevenDays">This week</option>
+                            <option value="next30Days">This month</option>
                         </select>
                     </div>
-
+            
+                    <!-- Second Row: Date Range (DOB), Filter, Clear -->
                     <div class="input-group">
                         <label for="start-date">Start Date:</label>
                         <input type="date" id="start-date" class="search-input">
                     </div>
-
+            
                     <div class="input-group">
-                        <label for="end-date">End Date:</label>
+                        <label for="end-date">To:</label>
                         <input type="date" id="end-date" class="search-input">
                     </div>
-
-                    <button type="submit" class="btn search-btn">Filter</button>
+            
+                    <!-- Filter and Clear Buttons -->
+                    <div class="input-group">
+                        <button id="clearForm" type="button" class="btn search-btn">Clear</button>
+                    </div>
+            
+                    <div class="input-group">
+                        <button type="submit" class="btn search-btn">Filter</button>
+                    </div>
                 </form>
             </div>
+            
+            
+            
 
             <!-- Table -->
             <table id="employeeTable">
@@ -354,5 +384,11 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
 
     <script src="/js/ad2-js.js"></script>
 </body>
-
+<footer>
+    <div class="footer-content">
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms and Conditions</a>
+        <p>&copy; 2024 Equity Bank Rwanda.</p>
+    </div>
+</footer>
 </html>

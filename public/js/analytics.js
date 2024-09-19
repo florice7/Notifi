@@ -97,14 +97,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         label: 'Male',
                         data: maleCounts,
-                        backgroundColor: '#1064f4',
+                        backgroundColor: '#710C04',
                         barPercentage: 1.0, // Make bars thinner
                         categoryPercentage: 1.0, // Make bars in each department touch
                     },
                     {
                         label: 'Female',
                         data: femaleCounts,
-                        backgroundColor: '#ff6384',
+                        backgroundColor: '#BC5449',
                         barPercentage: 1.0, // Make bars thinner
                         categoryPercentage: 1.0, // Make bars in each department touch
                     }
@@ -204,14 +204,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         label: 'Male',
                         data: maleAges,
-                        backgroundColor: '#1064f4',
+                        backgroundColor: '#710C04',
                         barPercentage: 1.0, // Adjust for thinner bars
                         categoryPercentage: 1.0, // Ensure bars touch each other
                     },
                     {
                         label: 'Female',
                         data: femaleAges,
-                        backgroundColor: '#ff6384',
+                        backgroundColor: '#BC5449',
                         barPercentage: 1.0, // Adjust for thinner bars
                         categoryPercentage: 1.0, // Ensure bars touch each other
                     }
@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: ['Male', 'Female'],
                 datasets: [{
                     data: [maleCount, femaleCount],
-                    backgroundColor: ['#1064f4', '#ff6384'], // Male (blue), Female (pink)
+                    backgroundColor: ['#710C04', '#BC5449'], // Male (blue), Female (pink)
                 }]
             },
             options: {
@@ -427,3 +427,17 @@ document.getElementById('logoutConfirmYes').addEventListener('click', function()
 document.getElementById('logoutConfirmNo').addEventListener('click', function() {
     document.getElementById('logoutConfirmationDialog').style.display = 'none';
 });
+
+
+fetch('/session')
+    .then(response => response.json())
+    .then(data => {
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const adminName = document.getElementById('adminName');
+        
+        welcomeMessage.textContent = `Welcome ${data.last_name}`;
+        adminName.textContent = `${data.last_name}`;
+    })
+    .catch(err => {
+        console.error('Error fetching session data:', err);
+    });
