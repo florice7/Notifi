@@ -54,10 +54,18 @@ app.get('/manage-admins.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'manage-admins.html')); // Serve manage-admins.html
 });
 
+app.get('/manage-admins-level3.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'manage-admins-level3.html')); 
+});
+
 app.get('/ad2.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'ad2.html')); // Serve ad2.html
 });
 
+
+app.get('/ad2-level3.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'ad2-level3.html')); // Serve ad2.html
+});
 
 app.get('/terms', (req, res) => {
     const termsPath = path.join(__dirname, 'terms.pdf');
@@ -65,7 +73,16 @@ app.get('/terms', (req, res) => {
 });
 
 app.get('/analytics.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'analytics.html')); // Serve analytics.html
+    res.sendFile(path.join(__dirname, 'analytics.html')); 
+});
+
+app.get('/analytics-level3.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'analytics-level3.html')); 
+});
+
+
+app.get('/dashboard-level3.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard-level3.html')); 
 });
 
 app.get('/dashboard.html', (req, res) => {
@@ -74,6 +91,10 @@ app.get('/dashboard.html', (req, res) => {
 
 app.get('/settings.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'settings.html')); // Serve dashboard.html
+});
+
+app.get('/settings-level3.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'settings-level3.html')); // Serve dashboard.html
 });
 
 
@@ -1026,7 +1047,7 @@ app.post('/login', (req, res) => {
                     return res.redirect('/dashboard.html');
                 } else if (user.role === 3) {
                     // Redirect to a different page for role 3 (third-level admin)
-                    return res.redirect('/dashboard.html'); 
+                    return res.redirect('/dashboard-level3.html'); 
                 }
             } else {
                 return res.status(401).send('Invalid PF number or password');

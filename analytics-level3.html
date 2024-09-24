@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,
+wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/ad2-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Side Menu -->
+    <div class="side-menu" id="sideMenu">
+        <div class="logo">
+            <img src="/images/logo.png" alt="Company Logo">
+        </div>
+        <ul>
+            <li><a href="dashboard-level3.html"><i class="fa fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="ad2-level3.html"><i class="fa fa-users"></i> Staff</a></li>
+            <li><a href="analytics-level3.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+            <li class="dropdown" id="reports-dropdown">
+                <i class="fa fa-file-alt" id="reports-icon"></i> Reports
+            </li>
+            <li><a href="manage-admins-level3.html"><i class="fa fa-user-shield"></i> Admins</a></li>
+
+            <li><a href="settings-level3.html"><i class="fa fa-cog"></i> Settings</a></li>
+            <li><i class="fa fa-sign-out-alt"></i> Log out</li>
+        </ul>
+
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <header>
+            <div class="left">
+                <button id="menuToggle"><i class="fa fa-bars"></i></button>
+            </div>
+            <div class="right">
+                <!-- Notification Bell -->
+                <i class="fa fa-bell"></i>
+
+                <!-- Date and Time with Icon -->
+                <span id="dateTime">
+                    <i class="far fa-clock"></i>
+                    <span class="date-time-text"></span>
+                </span>
+
+                <!-- User Profile Icon -->
+                <div class="user-profile">
+                    <i class="fa fa-user-circle"></i>
+                    <p id="adminName">Admin</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Body Content -->
+        <div class="body-content">
+            <div class="button-container-wrapper">
+                <div class="content-container">
+                    <div class="textual-info">
+                        <p class="bold-text">Analytics</p>
+                        <p>Use the advanced search and Visualize data</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="search-container">
+                <form class="search-form">
+                    <div class="input-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" class="search-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="start-age">Min Age:</label>
+                        <input type="number" id="start-age" class="search-input">
+                    </div>
+                    <div class="input-group">
+                        <label for="end-age">Max Age:</label>
+                        <input type="number" id="end-age" class="search-input">
+                    </div>
+
+                    <button id="clearForm" type="button" class="clear-btn">Clear</button>
+                    <button type="submit" class="search-btn">Filter</button>
+                </form>
+            </div>
+
+
+            <div class="card-container">
+                <div class="card" id="allEmployees">
+                    <h3>All Staff</h3>
+                    <div class="total-number" id="totalEmployees">0</div>
+                    <div class="average-age">Average Age: <span id="averageAgeAll">0</span></div>
+                </div>
+                <div class="card" id="maleEmployees">
+                    <h3>Males</h3>
+                    <div class="total-number" id="totalMaleEmployees">0</div>
+                    <div class="average-age">Average Age: <span id="averageAgeMale">0</span></div>
+                </div>
+                <div class="card" id="femaleEmployees">
+                    <h3>Females</h3>
+                    <div class="total-number" id="totalFemaleEmployees">0</div>
+                    <div class="average-age">Average Age: <span id="averageAgeFemale">0</span></div>
+                </div>
+                <div class="card" id="admins">
+                    <h3>Admins</h3>
+                    <div class="total-number" id="totalAdmins">0</div>
+                </div>
+            </div>
+
+
+
+            <span class="adminName" hidden></span>
+
+
+            <div class="analytics-container">
+                <div class="graphs-container">
+                    <div class="graph" id="graph1">
+                        <canvas id="graphCanvas1"></canvas>
+                    </div>
+                    <div class="graph" id="graph2">
+                        <canvas id="graphCanvas2"></canvas>
+                    </div>
+                </div>
+            
+                <!-- Right Section: Circular progress indicators -->
+                <div class="progress-cards-container">
+                    <div class="progress-card">
+                        <h3>Gender Distribution</h3>
+                        <div id="circle-container">
+                            <canvas id="genderDistributionChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+                    <div class="email-status-cards">
+                        <div class="email-card success-card">
+                            <h3>Successful Emails</h3>
+                            <p id="successfulEmailsCount">0</p>
+                        </div>
+                        <div class="email-card failure-card">
+                            <h3>Failed Emails</h3>
+                            <p id="failedEmailsCount">0</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+
+
+        </div>
+    </div>
+
+    <!-- Modal Structure for the Dropdown Form -->
+    <div id="reports-modal" class="reports-modal">
+        <div class="reports-modal-content">
+            <form id="reports-form">
+                <div class="form-group">
+                    <label for="report-start-date">Start Date:</label>
+                    <input type="date" id="report-start-date" name="report-start-date">
+                </div>
+                <div class="form-group">
+                    <label for="report-end-date">End Date:</label>
+                    <input type="date" id="report-end-date" name="report-end-date">
+                </div>
+
+                <div class="form-group">
+                    <label for="report-department">Department:</label>
+                    <input type="text" id="report-department" name="report-department">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender">
+                        <option value="">All</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                <button type="submit">
+                    <i class="fas fa-download"></i> Extract
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <!-- Logout Confirmation Dialog -->
+    <div id="logoutConfirmationDialog" class="custom-dialog" style="display: none;">
+        <div class="dialog-content">
+            <p id="logoutConfirmationMessage">Are you sure you want to log out?</p>
+            <button id="logoutConfirmYes" class="dialog-button">Yes</button>
+            <button id="logoutConfirmNo" class="dialog-button">No</button>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="footer-content">
+            <a href="#" class="footer-link">Privacy Policy</a>
+            <a href="#" class="footer-link">Terms and Conditions</a>
+            <p>&copy; 2024 Equity Bank Rwanda.</p>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <script src="/js/analytics.js"></script>
+</body>
+
+</html>
