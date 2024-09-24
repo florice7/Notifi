@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics</title>
+    <title>Settings</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,
 wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -58,7 +58,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <!-- User Profile Icon -->
                 <div class="user-profile">
                     <i class="fa fa-user-circle"></i>
-                    <p id="adminName">Admin</p>
+                    <p class="adminName">Admin</p>
                 </div>
             </div>
         </header>
@@ -68,98 +68,56 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <div class="button-container-wrapper">
                 <div class="content-container">
                     <div class="textual-info">
-                        <p class="bold-text">Analytics</p>
-                        <p>Use the advanced search and Visualize data</p>
+                        <p class="bold-text">Settings</p>
+                        <p>Profile </p>
                     </div>
+
                 </div>
             </div>
 
 
-            <div class="search-container">
-                <form class="search-form">
-                    <div class="input-group">
-                        <label for="department">Department</label>
-                        <input type="text" id="department" class="search-input">
-                    </div>
-                    <div class="input-group">
-                        <label for="start-age">Min Age:</label>
-                        <input type="number" id="start-age" class="search-input">
-                    </div>
-                    <div class="input-group">
-                        <label for="end-age">Max Age:</label>
-                        <input type="number" id="end-age" class="search-input">
-                    </div>
-
-                    <button id="clearForm" type="button" class="clear-btn">Clear</button>
-                    <button type="submit" class="search-btn">Filter</button>
-                </form>
-            </div>
-
-
-            <div class="card-container">
-                <div class="card" id="allEmployees">
-                    <h3>All Staff</h3>
-                    <div class="total-number" id="totalEmployees">0</div>
-                    <div class="average-age">Average Age: <span id="averageAgeAll">0</span></div>
-                </div>
-                <div class="card" id="maleEmployees">
-                    <h3>Males</h3>
-                    <div class="total-number" id="totalMaleEmployees">0</div>
-                    <div class="average-age">Average Age: <span id="averageAgeMale">0</span></div>
-                </div>
-                <div class="card" id="femaleEmployees">
-                    <h3>Females</h3>
-                    <div class="total-number" id="totalFemaleEmployees">0</div>
-                    <div class="average-age">Average Age: <span id="averageAgeFemale">0</span></div>
-                </div>
-                <div class="card" id="admins">
-                    <h3>Admins</h3>
-                    <div class="total-number" id="totalAdmins">0</div>
+            <div id="settingsPage">
+                <h1>Profile Information</h1>
+                <div class="profile-info">
+                    <p><strong>First Name:</strong> <span id="firstName"></span></p>
+                    <p><strong>Last Name:</strong> <span id="lastName"></span></p>
+                    <p><strong>PF Number:</strong> <span id="pfNumber"></span></p>
+                    <p><strong>Email:</strong> <span id="email"></span></p>
+                    <p><strong>Phone Number:</strong> <span id="phoneNumber"></span></p>
+                    <p><strong>Department:</strong> <span id="department"></span></p>
+                    <p><strong>Role:</strong> <span id="role"></span></p>
+                    <p><strong>Status:</strong> <span id="status"></span></p>
+                    <button id="changePasswordBtn">Change Password</button>
                 </div>
             </div>
 
-
-
-            <span class="adminName" hidden></span>
-
-
-            <div class="analytics-container">
-                <div class="graphs-container">
-                    <div class="graph" id="graph1">
-                        <canvas id="graphCanvas1"></canvas>
-                    </div>
-                    <div class="graph" id="graph2">
-                        <canvas id="graphCanvas2"></canvas>
-                    </div>
-                </div>
-            
-                <!-- Right Section: Circular progress indicators -->
-                <div class="progress-cards-container">
-                    <div class="progress-card">
-                        <h3>Gender Distribution</h3>
-                        <div id="circle-container">
-                            <canvas id="genderDistributionChart" width="300" height="300"></canvas>
+            <!-- Password Change Modal -->
+            <div id="changePasswordModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="closeModal">&times;</span>
+                    <h2>Change Password</h2>
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="oldPassword">Old Password</label>
+                            <input type="password" id="oldPassword" name="oldPassword" required>
                         </div>
-                    </div>
-                    <div class="email-status-cards">
-                        <div class="email-card success-card">
-                            <h3>Successful Emails</h3>
-                            <p id="successfulEmailsCount">0</p>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
                         </div>
-                        <div class="email-card failure-card">
-                            <h3>Failed Emails</h3>
-                            <p id="failedEmailsCount">0</p>
-                        </div>
-                    </div>
-                    
+                        <button type="submit">Update Password</button>
+                    </form>
                 </div>
             </div>
-            
-
-
         </div>
-    </div>
 
+
+
+
+
+
+    </div>
+    </div>
     <!-- Modal Structure for the Dropdown Form -->
     <div id="reports-modal" class="reports-modal">
         <div class="reports-modal-content">
@@ -193,8 +151,6 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
     </div>
 
 
-
-
     <!-- Logout Confirmation Dialog -->
     <div id="logoutConfirmationDialog" class="custom-dialog" style="display: none;">
         <div class="dialog-content">
@@ -205,6 +161,8 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
     </div>
 
 
+
+
     <footer>
         <div class="footer-content">
             <a href="#" class="footer-link">Privacy Policy</a>
@@ -212,10 +170,15 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <p>&copy; 2024 Equity Bank Rwanda.</p>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
-    <script src="/js/analytics.js"></script>
+    <script src="/js/settings.js"></script>
 </body>
+<footer>
+    <div class="footer-content">
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms and Conditions</a>
+        <p>&copy; 2024 Equity Bank Rwanda.</p>
+    </div>
+</footer>
 
 </html>

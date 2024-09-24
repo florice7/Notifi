@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateCardData(); // Initial update with all data
                 createAgeGenderDisparityChart(allEmployeeData);
                 createPeopleCountChart(allEmployeeData);
+                // updateEmailStatusChart();
             })
             .catch(error => console.error('Error fetching employee data:', error));
     }
@@ -97,16 +98,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     {
                         label: 'Male',
                         data: maleCounts,
-                        backgroundColor: '#710C04',
-                        barPercentage: 1.0, // Make bars thinner
-                        categoryPercentage: 1.0, // Make bars in each department touch
+                        backgroundColor: '#BC5449',
+                        borderRadius: 18, // Add slight curve to the bars
+                        barPercentage: 1.0, // Keep bars attached within the same department
+                        categoryPercentage: 0.6, // Create separation between departments
                     },
                     {
                         label: 'Female',
                         data: femaleCounts,
-                        backgroundColor: '#BC5449',
-                        barPercentage: 1.0, // Make bars thinner
-                        categoryPercentage: 1.0, // Make bars in each department touch
+                        backgroundColor: '#710C04',
+                        borderRadius: 18, // Add slight curve to the bars
+                        barPercentage: 1.0, // Keep bars attached within the same department
+                        categoryPercentage: 0.6, // Create separation between departments
                     }
                 ]
             },
@@ -119,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         title: {
                             display: true,
                             text: 'Number of People',
+                            color: '#000000', // Solid black for Y-axis title
                             font: {
                                 family: 'Poppins', // Poppins for Y-axis title
                                 size: 14,
@@ -136,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         title: {
                             display: true,
                             text: 'Department',
+                            color: '#000000', // Solid black for X-axis title
                             font: {
                                 family: 'Poppins', // Poppins for X-axis title
                                 size: 14,
@@ -164,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-
 
 
 
@@ -173,105 +177,107 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let ageGenderChart; // Declare chart outside the function to reuse it
 
-    function createAgeGenderDisparityChart(data) {
-        // Destroy previous chart instance if it exists
-        if (ageGenderChart) {
-            ageGenderChart.destroy();
-        }
-    
-        // Prepare chart data
-        const departments = [...new Set(data.map(employee => employee.department))]; // Unique departments
-        const maleAges = [];
-        const femaleAges = [];
-    
-        departments.forEach(department => {
-            const malesInDept = data.filter(emp => emp.department === department && emp.gender.toLowerCase() === 'male');
-            const femalesInDept = data.filter(emp => emp.department === department && emp.gender.toLowerCase() === 'female');
-    
-            const avgMaleAge = malesInDept.length ? (malesInDept.reduce((acc, emp) => acc + (new Date().getFullYear() - new Date(emp.date_of_birth).getFullYear()), 0) / malesInDept.length) : 0;
-            const avgFemaleAge = femalesInDept.length ? (femalesInDept.reduce((acc, emp) => acc + (new Date().getFullYear() - new Date(emp.date_of_birth).getFullYear()), 0) / femalesInDept.length) : 0;
-    
-            maleAges.push(avgMaleAge);
-            femaleAges.push(avgFemaleAge);
-        });
-    
-        const ctx = document.getElementById('graphCanvas1').getContext('2d');
-        ageGenderChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: departments,
-                datasets: [
-                    {
-                        label: 'Male',
-                        data: maleAges,
-                        backgroundColor: '#710C04',
-                        barPercentage: 1.0, // Adjust for thinner bars
-                        categoryPercentage: 1.0, // Ensure bars touch each other
-                    },
-                    {
-                        label: 'Female',
-                        data: femaleAges,
-                        backgroundColor: '#BC5449',
-                        barPercentage: 1.0, // Adjust for thinner bars
-                        categoryPercentage: 1.0, // Ensure bars touch each other
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // Allow the chart to fit the height properly
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Average Age',
-                            font: {
-                                family: 'Poppins', // Poppins for Y-axis title
-                                size: 14,
-                                weight: '600'
-                            }
-                        },
-                        ticks: {
-                            font: {
-                                family: 'Poppins', // Poppins for Y-axis labels
-                                size: 12
-                            }
+function createAgeGenderDisparityChart(data) {
+    // Destroy previous chart instance if it exists
+    if (ageGenderChart) {
+        ageGenderChart.destroy();
+    }
+
+    // Prepare chart data
+    const departments = [...new Set(data.map(employee => employee.department))]; // Unique departments
+    const maleAges = [];
+    const femaleAges = [];
+
+    departments.forEach(department => {
+        const malesInDept = data.filter(emp => emp.department === department && emp.gender.toLowerCase() === 'male');
+        const femalesInDept = data.filter(emp => emp.department === department && emp.gender.toLowerCase() === 'female');
+
+        const avgMaleAge = malesInDept.length ? (malesInDept.reduce((acc, emp) => acc + (new Date().getFullYear() - new Date(emp.date_of_birth).getFullYear()), 0) / malesInDept.length) : 0;
+        const avgFemaleAge = femalesInDept.length ? (femalesInDept.reduce((acc, emp) => acc + (new Date().getFullYear() - new Date(emp.date_of_birth).getFullYear()), 0) / femalesInDept.length) : 0;
+
+        maleAges.push(avgMaleAge);
+        femaleAges.push(avgFemaleAge);
+    });
+
+    const ctx = document.getElementById('graphCanvas1').getContext('2d');
+    ageGenderChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: departments,
+            datasets: [
+                {
+                    label: 'Male',
+                    data: maleAges,
+                    backgroundColor: '#BC5449',
+                    barPercentage: 1.0, // Keep bars attached within the same department
+                    borderRadius: 18,
+                    categoryPercentage: 0.6, // Separation between departments
+                },
+                {
+                    label: 'Female',
+                    data: femaleAges,
+                    backgroundColor: '#710C04',
+                    barPercentage: 1.0, // Keep bars attached within the same department
+                    borderRadius: 18,
+                    categoryPercentage: 0.6, // Separation between departments
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Average Age',
+                        color: '#000000', // Solid black for Y-axis title
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                            weight: '600'
                         }
                     },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Department',
-                            font: {
-                                family: 'Poppins', // Poppins for X-axis title
-                                size: 14,
-                                weight: '600'
-                            }
-                        },
-                        ticks: {
-                            font: {
-                                family: 'Poppins', // Poppins for X-axis labels
-                                size: 12
-                            }
+                    ticks: {
+                        font: {
+                            family: 'Poppins',
+                            size: 12
                         }
                     }
                 },
-                plugins: {
-                    legend: {
-                        labels: {
-                            font: {
-                                family: 'Poppins', // Poppins for legend labels
-                                size: 12
-                            }
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Department',
+                        color: '#000000', // Solid black for X-axis title
+                        font: {
+                            family: 'Poppins',
+                            size: 14,
+                            weight: '600'
+                        }
+                    },
+                    ticks: {
+                        font: {
+                            family: 'Poppins',
+                            size: 12
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            family: 'Poppins',
+                            size: 12
                         }
                     }
                 }
             }
-        });
-    }
-    
-
+        }
+    });
+}
 
 
     function updateCardData() {
@@ -307,14 +313,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('totalFemaleEmployees').textContent = femaleEmployees.length;
         document.getElementById('averageAgeFemale').textContent = femaleEmployees.length ? (femaleEmployees.reduce((acc, emp) => acc + new Date().getFullYear() - new Date(emp.date_of_birth).getFullYear(), 0) / femaleEmployees.length).toFixed(2) : 0;
 
-        // Update progress card
         updateGenderDistributionChart(filteredData);
         // createAgeGenderDisparityChart(filteredData);
     }
 
     function updateAdminCard() {
         const totalAdmins = allAdminData.length;
-        // Update the admin card element
         document.getElementById('totalAdmins').textContent = totalAdmins;
     }
 
@@ -339,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: ['Male', 'Female'],
                 datasets: [{
                     data: [maleCount, femaleCount],
-                    backgroundColor: ['#710C04', '#BC5449'], // Male (blue), Female (pink)
+                    backgroundColor: ['#BC5449', '#710C04'], 
                 }]
             },
             options: {
@@ -384,8 +388,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     
     
+   
     
-
+    document.getElementById('clearForm').addEventListener('click', function() {
+        // Clear the department input
+        document.getElementById('department').value = '';
+    
+        // Reset the age inputs to default values
+        document.getElementById('start-age').value = '';
+        document.getElementById('end-age').value = '';
+        updateCardData();
+    });
 
     // Add event listener to the filter button
     document.querySelector('.search-btn').addEventListener('click', function (event) {
@@ -397,6 +410,10 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchAllEmployees();
     fetchAllAdmins();
 });
+
+
+
+
 
 
 
@@ -429,15 +446,122 @@ document.getElementById('logoutConfirmNo').addEventListener('click', function() 
 });
 
 
+
 fetch('/session')
-    .then(response => response.json())
-    .then(data => {
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        const adminName = document.getElementById('adminName');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Not logged in');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Store all necessary information in the global adminData object
+            adminData = {
+                first_name: data.first_name,
+                last_name: data.last_name,
+                pf_number: data.pf_number,
+                email: data.email,
+                phone_number: data.phone_number,
+                department: data.department,
+                role: data.role,
+                status: data.status
+            };
+            document.getElementById('adminName').textContent = adminData.last_name;
+            document.querySelector('.adminName').textContent = adminData.last_name;
+        })
+        .catch(error => {
+            console.error('Error fetching session data:', error);
+        });
+
+
+        // function updateEmailStatusChart() {
+        //     fetch('/email-status')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             const totalAttempts = data.total_attempts;
+        //             const successfulEmails = data.successful_first_attempt + data.successful_retry;
+        //             const failedEmails = data.failed_first_attempt + data.failed_retry;
+
         
-        welcomeMessage.textContent = `Welcome ${data.last_name}`;
-        adminName.textContent = `${data.last_name}`;
-    })
-    .catch(err => {
-        console.error('Error fetching session data:', err);
-    });
+        //             // Destroy the previous chart instance if it exists
+        //             if (window.emailStatusChartInstance) {
+        //                 window.emailStatusChartInstance.destroy();
+        //             }
+        
+        //             const ctx = document.getElementById('emailStatusChart').getContext('2d');
+        
+        //             // Create the pie chart
+        //             window.emailStatusChartInstance = new Chart(ctx, {
+        //                 type: 'pie',
+        //                 data: {
+        //                     labels: ['Successful Emails', 'Failed Emails'],
+        //                     datasets: [{
+        //                         data: [successfulEmails, failedEmails],
+        //                         backgroundColor: ['#BC5449','#710C04'], 
+        //                     }]
+        //                 },
+        //                 options: {
+        //                     responsive: true,
+        //                     maintainAspectRatio: false,  // Set to false to ignore aspect ratio
+        //                     plugins: {
+        //                         datalabels: {
+        //                             color: '#fff',
+        //                             formatter: function(value, context) {
+        //                                 const percentage = totalAttempts ? ((value / totalAttempts) * 100).toFixed(1) : 0;
+                                        
+        //                                 return `${percentage}%`;  // Display percentage inside the pie
+        //                             },
+        //                             font: {
+        //                                 family: 'Poppins',
+        //                                 size: 30,
+        //                                 weight: 'bold'
+        //                             }
+        //                         },
+        //                         tooltip: {
+        //                             callbacks: {
+        //                                 label: function (context) {
+        //                                     const label = context.label || '';
+        //                                     const count = context.raw || 0;
+        //                                     const percentage = totalAttempts ? ((count / totalAttempts) * 100).toFixed(0) : 0;
+        //                                     return `${label}: ${count} (${percentage}%)`;
+        //                                 }
+        //                             },
+        //                             bodyFont: {
+        //                                 family: 'Poppins',
+        //                                 size: 14,
+        //                             },
+        //                             titleFont: {
+        //                                 family: 'Poppins',
+        //                                 size: 16,
+        //                                 weight: '600'
+        //                             }
+        //                         }
+        //                     }
+        //                 },
+        //                 plugins: [ChartDataLabels]
+        //             });
+        //         })
+        //         .catch(error => {
+        //             console.error('Error fetching email status data:', error);
+        //         });
+        // }
+                
+
+        function updateEmailStatusCards() {
+            fetch('/email-status')
+                .then(response => response.json())
+                .then(data => {
+                    const successfulEmails = Number(data.successful_first_attempt) + Number(data.successful_retry);
+                    const failedEmails = Number(data.failed_first_attempt) + Number(data.failed_retry);
+                    // Update the card elements with the counts
+                    document.getElementById('successfulEmailsCount').textContent = successfulEmails;
+                    document.getElementById('failedEmailsCount').textContent = failedEmails;          
+                })
+                .catch(error => {
+                    console.error('Error fetching email status data:', error);
+                });
+        }
+        
+       
+        updateEmailStatusCards();
+        

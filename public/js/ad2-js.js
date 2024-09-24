@@ -38,119 +38,6 @@ document.addEventListener('click', function (event) {
 });
 
 
-
-
-// // Function to show the modal
-// function showModal(selectedCount) {
-//     const modal = document.getElementById('actionsModal');
-//     const selectedCountElement = document.getElementById('selectedCount');
-//     selectedCountElement.textContent = `${selectedCount} Employees selected`;
-//     modal.style.display = 'flex'; // Change display to flex to show the modal
-// }
-
-// // Function to hide the modal
-// function hideModal() {
-//     const modal = document.getElementById('actionsModal');
-//     modal.style.display = 'none';
-// }
-
-// // Fetch data and populate the table
-// fetch('/employees')
-//     .then(response => response.json())
-//     .then(data => {
-//         const tableBody = document.querySelector('#employeeTable tbody');
-//         data.forEach(employee => {
-//             const row = document.createElement('tr');
-
-//             row.innerHTML = `
-//                 <td><input type="radio" class="select-row"></td>  <!-- Radio Button instead of checkbox -->
-//                 <td>${employee.pf_number}</td>
-//                 <td>${employee.first_name}</td>
-//                 <td>${employee.last_name}</td>
-//                 <td>${employee.gender}</td>
-//                 <td>${employee.date_of_birth}</td>
-//                 <td>${employee.email}</td>
-//                 <td>${employee.phone_number}</td>
-//                 <td>${employee.department}</td>
-//             `;
-
-//             tableBody.appendChild(row);
-//         });
-
-//         // Select All functionality
-//         const selectAllRadio = document.getElementById('selectAll');
-//         const radios = document.querySelectorAll('.select-row');
-//         const selectedCountElement = document.getElementById('selectedCount');
-//         const editBtn = document.getElementById('editBtn');
-//         const deleteBtn = document.getElementById('deleteBtn');
-
-//         // Toggle selection for the Select All radio button
-//         selectAllRadio.addEventListener('click', () => {
-//             const isChecked = selectAllRadio.dataset.checked === 'true';
-//             selectAllRadio.dataset.checked = isChecked ? 'false' : 'true';
-//             radios.forEach(radio => {
-//                 radio.checked = !isChecked;
-//                 radio.dataset.checked = !isChecked ? 'true' : 'false';
-//             });
-//             updateSelectAllState();
-//             updateSelectedCount();
-//         });
-
-//         function updateSelectAllState() {
-//             const allChecked = Array.from(radios).every(radio => radio.checked);
-//             const anyChecked = Array.from(radios).some(radio => radio.checked);
-
-//             selectAllRadio.checked = allChecked;
-//             selectAllRadio.dataset.checked = allChecked ? 'true' : 'false';
-//         }
-
-
-
-//         // Toggle individual row selection
-//         radios.forEach(radio => {
-//             radio.dataset.checked = 'false'; // Initialize each radio button as unchecked
-
-//             radio.addEventListener('click', function () {
-//                 const isChecked = this.dataset.checked === 'true';
-//                 this.checked = !isChecked;
-//                 this.dataset.checked = !isChecked ? 'true' : 'false';
-
-//                 updateSelectAllState();
-//                 updateSelectedCount();
-//             });
-//         });
-
-//         function updateSelectedCount() {
-//             const selectedRows = document.querySelectorAll('.select-row:checked');
-//             const selectedCount = selectedRows.length;
-//             selectedCountElement.textContent = `${selectedCount} Employee(s) selected`;
-
-//             // Enable delete button if one or more rows are selected
-//             deleteBtn.disabled = selectedCount === 0;
-
-//             // Enable edit button only if exactly one row is selected
-//             if (selectedCount === 1) {
-//                 editBtn.classList.add('active'); // Add active class when one row is selected
-//             } else {
-//                 editBtn.classList.remove('active'); // Remove active class otherwise
-//             }
-
-//             // Show or hide modal based on the selected count
-//             if (selectedCount > 0) {
-//                 showModal(selectedCount);
-//             } else {
-//                 hideModal();
-//             }
-//         }
-
-//         updateSelectAllState();
-
-//     });
-
-
-
-
-
 let originalPfNumber; // To store the original PF number
 
 const editModal = document.getElementById('editModal');
@@ -624,27 +511,17 @@ document.getElementById('processFileBtn').addEventListener('click', async () => 
 });
 
 
-
-function fetchAndPopulateTable() {
-    fetch('/employees')
-        .then(response => response.json())
-        .then(data => {
-            populateTable(data); // Populate table with all employee data
-        })
-        .catch(error => {
-            console.error('Error fetching employee data:', error);
-        });
-}
-
-// Populate the table with default values at page load
 document.addEventListener('DOMContentLoaded', function () {
-    fetchAndPopulateTable(); 
+    filterAndPopulateEmployees();
 });
 
-
+// Form submission event
 document.querySelector('.search-form').addEventListener('submit', function (e) {
-    e.preventDefault(); // Prevent the form from submitting
+    e.preventDefault();
+    filterAndPopulateEmployees();
+});
 
+function filterAndPopulateEmployees() {
     // Get the search/filter values
     const nameFilter = document.getElementById('name-filter').value.toLowerCase();
     const pfFilter = document.getElementById('pfno-filter').value.toLowerCase();
@@ -653,8 +530,6 @@ document.querySelector('.search-form').addEventListener('submit', function (e) {
     const startDate = document.getElementById('start-date').value || '1900-01-01';
     const endDate = document.getElementById('end-date').value || new Date().toISOString().split('T')[0];
 
-
-
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
@@ -662,8 +537,6 @@ document.querySelector('.search-form').addEventListener('submit', function (e) {
     nextSevenDays.setDate(today.getDate() + 7);
     const next30Days = new Date(today);
     next30Days.setDate(today.getDate() + 30);
-
-
 
     // Fetch filtered employee data
     fetch('/employees')
@@ -684,12 +557,8 @@ document.querySelector('.search-form').addEventListener('submit', function (e) {
                 const birthday = new Date(employee.date_of_birth);
                 const isWithinRange = birthday >= new Date(startDate) && birthday <= new Date(endDate);
 
-
-                // Birthday filter logic
-                // const birthday = new Date(employee.date_of_birth);
                 // Birthday filter logic
                 let birthdayMatches = true; // Default: no filtering if 'All' is selected
-
                 const currentYear = today.getFullYear();
                 const employeeBirthdayThisYear = new Date(currentYear, birthday.getMonth(), birthday.getDate());
 
@@ -703,14 +572,17 @@ document.querySelector('.search-form').addEventListener('submit', function (e) {
                     birthdayMatches = employeeBirthdayThisYear >= today && employeeBirthdayThisYear <= next30Days;
                 }
 
-
-
                 return nameMatches && pfMatches && genderMatches && isWithinRange && birthdayMatches;
             });
 
-            populateTable(filteredData); // Call the function to populate the table with filtered data
+            // Populate the table with filtered data
+            populateTable(filteredData);
+
+            // Reapply selection logic to the newly populated rows
+            applySelectionLogic();
+
         });
-});
+}
 
 
 function isSameDay(date1, date2) {
@@ -729,7 +601,7 @@ function populateTable(data) {
         const row = document.createElement('tr');
 
         row.innerHTML = `
-            <td><input type="radio" class="select-row"></td>  <!-- Radio Button -->
+            <td><input type="checkbox" class="select-row"></td>  <!-- Checkbox instead of radio -->
             <td>${employee.pf_number}</td>
             <td>${employee.first_name}</td>
             <td>${employee.last_name}</td>
@@ -743,49 +615,37 @@ function populateTable(data) {
         tableBody.appendChild(row);
     });
 
-    // Reapply selection logic
-    applySelectionLogic();
+    applySelectionLogic(); // Apply the selection logic to the populated rows
 }
+
 
 // Function to handle row selection, select-all, and modal display logic
 function applySelectionLogic() {
-    const selectAllRadio = document.getElementById('selectAll');
-    const radios = document.querySelectorAll('.select-row');
-    const selectedCountElement = document.getElementById('selectedCount');
-    const editBtn = document.getElementById('editBtn');
-    const deleteBtn = document.getElementById('deleteBtn');
+    const selectAllCheckbox = document.getElementById('selectAll'); // Select All Checkbox
+    const checkboxes = document.querySelectorAll('.select-row'); // Individual Row Checkboxes
+    const selectedCountElement = document.getElementById('selectedCount'); // Selected Count Display
+    const editBtn = document.getElementById('editBtn'); // Edit Button
+    const deleteBtn = document.getElementById('deleteBtn'); // Delete Button
 
     // Select All functionality
-    selectAllRadio.addEventListener('click', () => {
-        const isChecked = selectAllRadio.dataset.checked === 'true';
-        selectAllRadio.dataset.checked = isChecked ? 'false' : 'true';
-        radios.forEach(radio => {
-            radio.checked = !isChecked;
-            radio.dataset.checked = !isChecked ? 'true' : 'false';
+    selectAllCheckbox.addEventListener('click', () => {
+        const isChecked = selectAllCheckbox.checked; // Get state of "Select All" checkbox
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked; // Set each checkbox based on the "Select All" state
         });
-        updateSelectAllState();
-        updateSelectedCount();
+        updateSelectedCount(); // Update the selected count display and button states
     });
 
     function updateSelectAllState() {
-        const allChecked = Array.from(radios).every(radio => radio.checked);
-        const anyChecked = Array.from(radios).some(radio => radio.checked);
-
-        selectAllRadio.checked = allChecked;
-        selectAllRadio.dataset.checked = allChecked ? 'true' : 'false';
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        selectAllCheckbox.checked = allChecked; // If all checkboxes are checked, check the "Select All" checkbox
     }
 
     // Toggle individual row selection
-    radios.forEach(radio => {
-        radio.dataset.checked = 'false'; // Initialize each radio button as unchecked
-
-        radio.addEventListener('click', function () {
-            const isChecked = this.dataset.checked === 'true';
-            this.checked = !isChecked;
-            this.dataset.checked = !isChecked ? 'true' : 'false';
-
-            updateSelectAllState();
-            updateSelectedCount();
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('click', function () {
+            updateSelectAllState(); // Update the "Select All" checkbox state based on individual selections
+            updateSelectedCount();   // Update the selected count and button states
         });
     });
 
@@ -799,9 +659,9 @@ function applySelectionLogic() {
 
         // Enable edit button only if exactly one row is selected
         if (selectedCount === 1) {
-            editBtn.classList.add('active'); // Add active class when one row is selected
+            editBtn.classList.add('active');
         } else {
-            editBtn.classList.remove('active'); // Remove active class otherwise
+            editBtn.classList.remove('active');
         }
 
         // Show or hide modal based on the selected count
@@ -812,7 +672,7 @@ function applySelectionLogic() {
         }
     }
 
-    updateSelectAllState();
+    updateSelectAllState(); // Initial state update
 }
 
 // Show/Hide modal logic
@@ -828,3 +688,80 @@ function hideModal() {
     modal.style.display = 'none';
 }
 
+fetch('/session')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Not logged in');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Store all necessary information in the global adminData object
+        adminData = {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            pf_number: data.pf_number,
+            email: data.email,
+            phone_number: data.phone_number,
+            department: data.department,
+            role: data.role,
+            status: data.status
+        };
+        document.getElementById('adminName').textContent = adminData.last_name;
+    })
+    .catch(error => {
+        console.error('Error fetching session data:', error);
+    });
+
+
+document.getElementById('clearForm').addEventListener('click', function () {
+    clearSearchInputs();
+    filterAndPopulateEmployees();
+});
+
+
+function clearSearchInputs() {
+    document.getElementById('name-filter').value = '';
+    document.getElementById('pfno-filter').value = '';
+
+    // Reset select dropdowns to their default values
+    document.getElementById('gender-filter').value = '';
+    document.getElementById('birthday-filter').value = 'all';
+
+    // Clear date inputs
+    document.getElementById('start-date').value = '';
+    document.getElementById('end-date').value = '';
+}
+
+
+
+
+document.getElementById('reports-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(this);
+
+    fetch('/extract-data', {
+        method: 'POST',
+        body: new URLSearchParams(formData), // Send form data
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob(); // Expect a file in response
+        }
+        throw new Error('Failed to generate the report');
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Notifi Report.xlsx'; // Download file as 'report.xlsx'
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+    .catch(error => {
+        console.error(error);
+        alert('Error generating report');
+    });
+});

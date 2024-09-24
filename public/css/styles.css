@@ -653,9 +653,9 @@ main {
 }
 /* New Footer Section Styles */
 #services-footer {
-    background-color: #f8f5f5;
+    background-color: #ffffff;
     padding: 30px 0;
-    color: #6A040F;
+    color: #000;
     text-align: left;
 }
 
@@ -673,7 +673,7 @@ main {
 .footer-column h3 {
     font-size: 18px;
     margin-bottom: 15px;
-    color: #6A040F;
+    color: #000;
 }
 
 .footer-column ul {
@@ -894,6 +894,39 @@ footer a:hover {
     object-fit: cover;
 }
 
+
+#signup-form a {
+    color: #6A040F;
+    text-decoration: none;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+#signup-form a:hover {
+    text-decoration: underline;
+}
+
+.terms-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.terms-container input {
+    margin-right: 10px;
+}
+
+.terms-container a {
+    color: #6A040F;
+    text-decoration: none;
+}
+
+.terms-container a:hover {
+    text-decoration: underline;
+}
 
 
 .form-container {

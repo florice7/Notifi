@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // Note: public folder 
 
 // Middleware for authentication
 app.use((req, res, next) => {
-    const openRoutes = ['/index.html', '/login', '/waiting-for-approval.html', '/signup']; // Open routes
+    const openRoutes = ['/index.html', '/login', '/waiting-for-approval.html', '/signup', '/terms']; // Open routes
     if (req.path === '/' || openRoutes.includes(req.path) || req.path.startsWith('/css/') || req.path.startsWith('/js/') || req.path.startsWith('/images/')) {
         return next(); // Allow access to open routes and static files
     }
@@ -58,13 +58,24 @@ app.get('/ad2.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'ad2.html')); // Serve ad2.html
 });
 
+
+app.get('/terms', (req, res) => {
+    const termsPath = path.join(__dirname, 'terms.pdf');
+    res.sendFile(termsPath);
+});
+
 app.get('/analytics.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'analytics.html')); // Serve analytics.html
 });
 
 app.get('/dashboard.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard.html')); // Serve analytics.html
+    res.sendFile(path.join(__dirname, 'dashboard.html')); // Serve dashboard.html
 });
+
+app.get('/settings.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'settings.html')); // Serve dashboard.html
+});
+
 
 app.get('/waiting-for-approval.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'waiting-for-approval.html')); // Serve waiting-for-approval.html
@@ -77,7 +88,6 @@ function isAuthenticated(req, res, next) {
         res.redirect('/');
     }
 }
-
 
 
 
@@ -583,8 +593,8 @@ function logEmailStatus(emailType, email, isSuccess, reason = null, attemptNumbe
 
 
 // Schedule tasks
-cron.schedule('37 18 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
-cron.schedule('35 18 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
+cron.schedule('00 08 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
+cron.schedule('30 07 * * *', sendBirthdayWishes, { timezone: "Africa/Kigali" });
 
 app.get('/email-status', (req, res) => {
     const query = `
@@ -733,130 +743,130 @@ app.post('/send-birthday-wishes', (req, res) => {
 // });
 
 
-// Handle the extract request
-app.post('/extract', (req, res) => {
-    const { startDate, endDate, gender } = req.body;
+// // Handle the extract request
+// app.post('/extract', (req, res) => {
+//     const { startDate, endDate, gender } = req.body;
 
-    let query = `
-        SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, '%d %M') AS birthdate, email, phone_number, department
-        FROM employees
-        WHERE DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN DATE_FORMAT(?, '%m-%d') AND DATE_FORMAT(?, '%m-%d')
-    `;
+//     let query = `
+//         SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, '%d %M') AS birthdate, email, phone_number, department
+//         FROM employees
+//         WHERE DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN DATE_FORMAT(?, '%m-%d') AND DATE_FORMAT(?, '%m-%d')
+//     `;
 
-    if (gender) {
-        query += ' AND gender = ?';
-    }
+//     if (gender) {
+//         query += ' AND gender = ?';
+//     }
 
-    const queryParams = gender ? [startDate, endDate, gender] : [startDate, endDate];
+//     const queryParams = gender ? [startDate, endDate, gender] : [startDate, endDate];
 
-    db.query(query, queryParams, (err, results) => {
-        if (err) {
-            console.error('Error fetching employee data:', err);
-            return res.status(500).send('Error fetching employee data');
-        }
+//     db.query(query, queryParams, (err, results) => {
+//         if (err) {
+//             console.error('Error fetching employee data:', err);
+//             return res.status(500).send('Error fetching employee data');
+//         }
 
-        // Create a PDF document
-        const doc = new pdf();
-        let filename = 'Notifi_Birthday_Reports.pdf';
+//         // Create a PDF document
+//         const doc = new pdf();
+//         let filename = 'Notifi_Birthday_Reports.pdf';
 
-        // Set headers to trigger a download
-        // Set headers to trigger a download with the correct filename
-        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-        res.setHeader('Content-Type', 'application/pdf');
-
-
-        // Pipe the PDF into the response
-        doc.pipe(res);
-
-        // Title
-        doc.fontSize(14).text('Notifi Birthday Reports', { align: 'center' });
-        doc.moveDown();
+//         // Set headers to trigger a download
+//         // Set headers to trigger a download with the correct filename
+//         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+//         res.setHeader('Content-Type', 'application/pdf');
 
 
-        const columnWidths = {
-            pfNumber: 60,
-            firstName: 95,
-            lastName: 85,
-            gender: 42,
-            birthdate: 80,
-            email: 155,
-            phoneNumber: 90,
-            department: 80
-        };
+//         // Pipe the PDF into the response
+//         doc.pipe(res);
 
-        // Adjust total table width to fit within page margins
-        const totalWidth = Object.values(columnWidths).reduce((a, b) => a + b, 0);
-        const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+//         // Title
+//         doc.fontSize(14).text('Notifi Birthday Reports', { align: 'center' });
+//         doc.moveDown();
 
-        // Scale down if necessary
-        if (totalWidth > pageWidth) {
-            const scaleFactor = pageWidth / totalWidth;
-            for (let key in columnWidths) {
-                columnWidths[key] *= scaleFactor;
-            }
-        }
 
-        // Draw table headers
-        doc.fontSize(8).fillColor('black');
-        drawTableHeader(doc, columnWidths);
+//         const columnWidths = {
+//             pfNumber: 60,
+//             firstName: 95,
+//             lastName: 85,
+//             gender: 42,
+//             birthdate: 80,
+//             email: 155,
+//             phoneNumber: 90,
+//             department: 80
+//         };
 
-        // Draw table rows
-        doc.fillColor('black');
-        results.forEach(employee => {
-            drawTableRow(doc, employee, columnWidths);
-        });
+//         // Adjust total table width to fit within page margins
+//         const totalWidth = Object.values(columnWidths).reduce((a, b) => a + b, 0);
+//         const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
 
-        // Finalize the PDF and end the response
-        doc.end();
-    });
-});
+//         // Scale down if necessary
+//         if (totalWidth > pageWidth) {
+//             const scaleFactor = pageWidth / totalWidth;
+//             for (let key in columnWidths) {
+//                 columnWidths[key] *= scaleFactor;
+//             }
+//         }
 
-function drawTableHeader(doc, columnWidths) {
-    const x = doc.page.margins.left; // X position for the table
-    let y = doc.y;
+//         // Draw table headers
+//         doc.fontSize(8).fillColor('black');
+//         drawTableHeader(doc, columnWidths);
 
-    // Draw the header text
-    doc.font('Helvetica-Bold')
-        .fontSize(8)
-        .text('PF', x, y, { width: columnWidths.pfNumber })
-        .text('First Name', x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
-        .text('Last Name', x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
-        .text('Gender', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
-        .text('Birthdate', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
-        .text('Email', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
-        .text('Phone Number', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
-        .text('Department', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
+//         // Draw table rows
+//         doc.fillColor('black');
+//         results.forEach(employee => {
+//             drawTableRow(doc, employee, columnWidths);
+//         });
 
-    y += 12;
+//         // Finalize the PDF and end the response
+//         doc.end();
+//     });
+// });
 
-    doc.strokeColor('black')
-        .lineWidth(1)
-        .moveTo(x, y)
-        .lineTo(x + Object.values(columnWidths).reduce((a, b) => a + b, 0), y)
-        .stroke();
+// function drawTableHeader(doc, columnWidths) {
+//     const x = doc.page.margins.left; // X position for the table
+//     let y = doc.y;
 
-    y += 10; // Move down for the first row of content
-    doc.y = y;
-}
+//     // Draw the header text
+//     doc.font('Helvetica-Bold')
+//         .fontSize(8)
+//         .text('PF', x, y, { width: columnWidths.pfNumber })
+//         .text('First Name', x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
+//         .text('Last Name', x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
+//         .text('Gender', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
+//         .text('Birthdate', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
+//         .text('Email', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
+//         .text('Phone Number', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
+//         .text('Department', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
 
-// Function to draw a row of the table
-function drawTableRow(doc, employee, columnWidths) {
-    const x = doc.page.margins.left; // X position for the table
-    let y = doc.y;
+//     y += 12;
 
-    doc.font('Helvetica')
-        .text(employee.pf_number, x, y, { width: columnWidths.pfNumber })
-        .text(employee.first_name, x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
-        .text(employee.last_name, x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
-        .text(employee.gender, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
-        .text(employee.birthdate, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
-        .text(employee.email, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
-        .text(employee.phone_number, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
-        .text(employee.department, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
+//     doc.strokeColor('black')
+//         .lineWidth(1)
+//         .moveTo(x, y)
+//         .lineTo(x + Object.values(columnWidths).reduce((a, b) => a + b, 0), y)
+//         .stroke();
 
-    y += 16; // Move down for the next row
-    doc.y = y;
-}
+//     y += 10; // Move down for the first row of content
+//     doc.y = y;
+// }
+
+// // Function to draw a row of the table
+// function drawTableRow(doc, employee, columnWidths) {
+//     const x = doc.page.margins.left; // X position for the table
+//     let y = doc.y;
+
+//     doc.font('Helvetica')
+//         .text(employee.pf_number, x, y, { width: columnWidths.pfNumber })
+//         .text(employee.first_name, x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
+//         .text(employee.last_name, x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
+//         .text(employee.gender, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
+//         .text(employee.birthdate, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
+//         .text(employee.email, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
+//         .text(employee.phone_number, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
+//         .text(employee.department, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
+
+//     y += 16; // Move down for the next row
+//     doc.y = y;
+// }
 
 
 
@@ -968,7 +978,7 @@ app.post('/login', (req, res) => {
         return res.status(400).send('PF number and password are required');
     }
 
-    // Query to get admin info, including first name and status
+    // Query to get admin info, including first name, role, and status
     const query = `
         SELECT admins.id, admins.password, admins.role, admins.status, employees.first_name 
         FROM admins 
@@ -988,14 +998,14 @@ app.post('/login', (req, res) => {
 
         const user = results[0];
 
-        // Check the status of the admin
+        // Handle different statuses
         if (user.status === 'pending') {
             return res.redirect('/waiting-for-approval.html'); // Redirect to approval pending page
         } else if (user.status === 'inactive') {
-            return res.status(403).send('Your account is inactive. Please contact the administrator.');
+            return res.redirect('/inactive.html'); // Redirect to inactive page
         }
 
-        // Compare passwords if status is valid (e.g., active)
+        // If status is active, proceed to password validation
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
                 console.error('Password comparison error:', err);
@@ -1009,13 +1019,22 @@ app.post('/login', (req, res) => {
                     role: user.role,
                     first_name: user.first_name // Store the first name in the session
                 };
-                res.redirect('/dashboard.html');
+
+                // Handle different roles after successful login
+                if (user.role === 1 || user.role === 2) {
+                    // Redirect to dashboard for role 1 (admin) and role 2 (second-level admin)
+                    return res.redirect('/dashboard.html');
+                } else if (user.role === 3) {
+                    // Redirect to a different page for role 3 (third-level admin)
+                    return res.redirect('/dashboard.html'); 
+                }
             } else {
-                res.status(401).send('Invalid PF number or password');
+                return res.status(401).send('Invalid PF number or password');
             }
         });
     });
 });
+
 
 
 app.get('/session', (req, res) => {
@@ -1255,6 +1274,237 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         res.status(500).json({ message: 'An error occurred while processing the file' });
     }
 });
+
+
+
+
+app.post('/extract-data', async (req, res) => {
+    const { 'report-start-date': startDate, 'report-end-date': endDate, 'report-department': department, gender } = req.body;
+
+    // Default values for start and end date
+    const defaultStartDate = '1900-01-01';
+    const defaultEndDate = new Date().toISOString().split('T')[0]; // Today's date
+
+    // Conditional assignment for startDate and endDate
+    const start = startDate && startDate.trim() !== '' ? startDate : defaultStartDate;
+    const end = endDate && endDate.trim() !== '' ? endDate : defaultEndDate;
+
+    // Filters for department and gender
+    const depFilter = department ? `${department}%` : '%'; // Case-insensitive matching
+    const genderFilter = gender || '%'; // All genders if empty
+
+    // Updated SQL query to include email and phone_number
+    const query = `
+        SELECT pf_number, CONCAT(first_name, ' ', last_name) AS staff_name, date_of_birth, gender AS staff_gender, department, email, phone_number
+        FROM employees
+        WHERE (date_of_birth BETWEEN ? AND ?)
+        AND department LIKE ?
+        AND gender LIKE ?
+    `;
+
+    db.query(query, [start, end, depFilter, genderFilter], async (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error generating report');
+        }
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Report');
+
+        // Adding headers for the Excel sheet, including email and phone number
+        worksheet.columns = [
+            { header: 'PF Number', key: 'pf_number', width: 15 },
+            { header: 'Name', key: 'staff_name', width: 25 },
+            { header: 'Birthdate', key: 'date_of_birth', width: 15 },
+            { header: 'Gender', key: 'staff_gender', width: 10 },
+            { header: 'Department', key: 'department', width: 20 },
+            { header: 'Email', key: 'email', width: 30 }, // New email column
+            { header: 'Phone Number', key: 'phone_number', width: 15 } // New phone number column
+        ];
+
+        // Add rows to the worksheet based on the SQL result
+        results.forEach(row => {
+            worksheet.addRow({
+                pf_number: row.pf_number,
+                staff_name: row.staff_name,
+                date_of_birth: row.date_of_birth,
+                staff_gender: row.staff_gender,
+                department: row.department,
+                email: row.email, 
+                phone_number: row.phone_number 
+            });
+        });
+
+        const filePath = path.join(__dirname, 'uploads', 'Notifi Report.xlsx');
+        await workbook.xlsx.writeFile(filePath);
+
+        // Send the file as a download
+        res.download(filePath, 'report.xlsx', (err) => {
+            if (err) {
+                console.error('Error sending the file:', err);
+            }
+            fs.unlinkSync(filePath); // Delete the file after download
+        });
+    });
+});
+
+
+
+
+// Approve an admin
+app.post('/approveAdmin', (req, res) => {
+    const adminId = req.body.adminId;
+
+    const query = `
+        UPDATE admins 
+        SET status = 'active' 
+        WHERE id = ?
+    `;
+
+    db.query(query, [adminId], (err, results) => {
+        if (err) {
+            console.error('Error updating admin status:', err);
+            return res.status(500).send('Error updating admin status');
+        }
+        res.send('Admin approved');
+    });
+});
+
+// Reject (delete) an admin
+app.post('/rejectAdmin', (req, res) => {
+    const adminId = req.body.adminId;
+
+    const query = `
+        DELETE FROM admins 
+        WHERE id = ?
+    `;
+
+    db.query(query, [adminId], (err, results) => {
+        if (err) {
+            console.error('Error deleting admin:', err);
+            return res.status(500).send('Error deleting admin');
+        }
+        res.send('Admin rejected');
+    });
+});
+
+
+
+// app.post('/deactivateAdmin', (req, res) => {
+//     const adminId = req.body.adminId;
+//     const query = `
+//         UPDATE admins 
+//         SET status = 'inactive' 
+//         WHERE id = ?
+//     `;
+
+//     db.query(query, [adminId], (err, results) => {
+//         if (err) {
+//             console.error('Error updating admin status:', err);
+//             return res.status(500).send('Error deactivating admin');
+//         }
+//         res.send('Admin deactivated');
+//     });
+// });
+
+
+// app.post('/activateAdmin', (req, res) => {
+//     const adminId = req.body.adminId;
+
+//     const query = `
+//         UPDATE admins 
+//         SET status = 'active' 
+//         WHERE pf_number = ?
+//     `;
+
+//     db.query(query, [adminId], (err, results) => {
+//         if (err) {
+//             console.error('Error activating admin:', err);
+//             return res.status(500).send('Error activating admin');
+//         }
+//         res.send('Admin activated successfully');
+//     });
+// });
+
+
+
+
+app.post('/change-password', (req, res) => {
+    const { oldPassword, newPassword } = req.body;
+    const adminId = req.session.user.id; 
+
+    // Fetch the current password hash from the database
+    db.query('SELECT password FROM admins WHERE id = ?', [adminId], (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Server error.');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send('Admin not found.');
+        }
+
+        const hashedPassword = results[0].password;
+
+        // Compare the old password with the hash
+        bcrypt.compare(oldPassword, hashedPassword, (err, isMatch) => {
+            if (err) {
+                console.error('Error comparing passwords:', err);
+                return res.status(500).send('Server error.');
+            }
+
+            if (!isMatch) {
+                return res.status(401).send('Old password is incorrect.');
+            }
+
+            // Hash the new password and update in the database
+            bcrypt.hash(newPassword, saltRounds, (err, newHashedPassword) => {
+                if (err) {
+                    console.error('Password hashing error:', err);
+                    return res.status(500).send('Server error.');
+                }
+
+                db.query('UPDATE admins SET password = ? WHERE id = ?', [newHashedPassword, adminId], (err) => {
+                    if (err) {
+                        console.error('Error updating password:', err);
+                        return res.status(500).send('Server error.');
+                    }
+
+                    res.json({ message: 'Password changed successfully.' });
+                });
+            });
+        });
+    });
+});
+
+
+
+app.post('/updateAdminRole/:id', (req, res) => {
+    const adminId = req.params.id;
+    const { role } = req.body; // Get the new role from the request body
+
+    // SQL query to update the admin role
+    const query = `
+        UPDATE admins 
+        SET role = ? 
+        WHERE id = ?
+    `;
+
+    db.query(query, [role, adminId], (err, results) => {
+        if (err) {
+            console.error('Error updating admin role:', err);
+            return res.status(500).send('Error updating admin role');
+        }
+        
+        if (results.affectedRows === 0) {
+            return res.status(404).send('Admin not found');
+        }
+
+        res.send('Admin role updated successfully');
+    });
+});
+
+
 
 
 

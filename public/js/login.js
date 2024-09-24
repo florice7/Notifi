@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pfNumberInput = document.getElementById('pf_number');
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirm_password');
+    const termsCheckbox = document.querySelector('input[name="terms"]');
     const errorMsg = document.getElementById('errorMsg');
 
     form.addEventListener('submit', (event) => {
@@ -149,10 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validate PF number (Example: should be numeric and exactly 5 digits long)
         const pfNumber = pfNumberInput.value.trim();
-        if (!/^\d{5}$/.test(pfNumber)) {
-            isValid = false;
-            errors.push('PF Number must be exactly 5 digits long.');
-        }
+        // if (!/^\d{5}$/.test(pfNumber)) {
+        //     isValid = false;
+        //     errors.push('PF Number must be exactly 5 digits long.');
+        // }
 
         // Validate password
         const password = passwordInput.value.trim();
@@ -166,6 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (password !== confirmPassword) {
             isValid = false;
             errors.push('Passwords do not match.');
+        }
+
+        // Check if the terms and privacy policy checkbox is checked
+        if (!termsCheckbox.checked) {
+            isValid = false;
+            errors.push('You must accept the Terms and Privacy Policy.');
         }
 
         // Display errors and prevent form submission if any validation fails

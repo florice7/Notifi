@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admins</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,
 wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -32,10 +32,9 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             </li>
             <li><a href="manage-admins.html"><i class="fa fa-user-shield"></i> Admins</a></li>
 
-            <li><i class="fa fa-cog"></i> Settings</li>
+            <li><a href="settings.html"><i class="fa fa-cog"></i> Settings</a></li>
             <li><i class="fa fa-sign-out-alt"></i> Log out</li>
         </ul>
-
     </div>
 
     <!-- Main Content -->
@@ -57,6 +56,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 <!-- User Profile Icon -->
                 <div class="user-profile">
                     <i class="fa fa-user-circle"></i>
+                    <p id="adminName">Admin</p>
                 </div>
             </div>
         </header>
@@ -76,7 +76,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <table id="adminTable">
                 <thead>
                     <tr>
-                        <th><input type="radio" id="selectAllAdmins"></th>
+                        <th><input type="checkbox" id="selectAllAdmins" hidden></th>
                         <th>ID</th>
                         <th>PF Number</th>
                         <th>First Name</th>
@@ -100,27 +100,51 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         <span id="adminSelectedCount">0 Admin(s) selected</span>
                     </div>
                     <div class="icon-container">
-                        <i class="fa fa-edit" id="adminEditBtn" title="Edit" aria-hidden="true"></i>
+                        <!-- <i class="fa fa-edit" id="adminEditBtn" title="Edit" aria-hidden="true"></i> -->
+                        <i class="fa fa-edit" id="adminEditBtn" title="Edit" aria-hidden="true" data-id="${adminId}" data-role="${role}"></i>
                         <i class="fa fa-trash" id="adminDeleteBtn" title="Delete" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
 
+            <!-- Modal Structure -->
+            <div id="editAdminModal" class="modal">
+                <div class="edit-admin-modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Edit Admin Role</h2>
+                    <form id="editAdminForm">
+                        <label for="adminRole">Role:</label>
+                        <select id="adminRole" name="adminRole">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+
+                        <button type="submit" class="save-btn">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+
+
 
         </div>
     </div>
-    <!-- Modal Structure for the Dropdown Form -->
-    <!-- <div id="reports-modal" class="reports-modal">
+
+    <div id="reports-modal" class="reports-modal">
         <div class="reports-modal-content">
-            <span class="reports-close">&times;</span>
             <form id="reports-form">
                 <div class="form-group">
-                    <label for="start-date">Start Date:</label>
-                    <input type="date" id="start-date" name="start-date">
+                    <label for="report-start-date">Start Date:</label>
+                    <input type="date" id="report-start-date" name="report-start-date">
                 </div>
                 <div class="form-group">
-                    <label for="end-date">End Date:</label>
-                    <input type="date" id="end-date" name="end-date">
+                    <label for="report-end-date">End Date:</label>
+                    <input type="date" id="report-end-date" name="report-end-date">
+                </div>
+
+                <div class="form-group">
+                    <label for="report-department">Department:</label>
+                    <input type="text" id="report-department" name="report-department">
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender:</label>
@@ -135,7 +159,10 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                 </button>
             </form>
         </div>
-    </div> -->
+    </div>
+
+
+
 
 
     <!-- Edit Modal -->

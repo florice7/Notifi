@@ -32,7 +32,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             </li>
             <li><a href="manage-admins.html"><i class="fa fa-user-shield"></i> Admins</a></li>
 
-            <li><i class="fa fa-cog"></i> Settings</li>
+            <li><a href="settings.html"><i class="fa fa-cog"></i> Settings</a></li>
             <li><i class="fa fa-sign-out-alt"></i> Log out</li>
         </ul>
 
@@ -60,7 +60,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     <i class="fa fa-user-circle"></i>
                     <p id="adminName">Admin</p>
                 </div>
-                
+
             </div>
         </header>
 
@@ -69,8 +69,8 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             <div class="button-container-wrapper">
                 <div class="content-container">
                     <div class="textual-info">
-                        <p class="bold-text">Dashboard</p>
-                        <p id="welcomeMessage">Welcome</p>
+                        <p class="bold-text">My Dashboard</p>
+                        <p>Welcome <span class="adminName"></span></p>
                     </div>
                 </div>
             </div>
@@ -90,10 +90,12 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                         <label for="end-age">Max Age:</label>
                         <input type="number" id="end-age" class="search-input">
                     </div>
+
+                    <button id="clearForm" type="button" class="search-btn">Clear</button>
                     <button type="submit" class="search-btn">Filter</button>
                 </form>
             </div>
-        
+
 
             <div class="card-container">
                 <div class="card" id="allEmployees">
@@ -116,8 +118,8 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     <div class="total-number" id="totalAdmins">0</div>
                 </div>
             </div>
-        
-            
+
+
 
 
 
@@ -135,32 +137,53 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
                     </div>
                 </div>
 
-                <!-- Right Section: Circular progress indicator -->
-                <div class="progress-card">
-                    <h3>Gender Distribution</h3>
-                    <div id="circle-container">
-                        <canvas id="genderDistributionChart" width="300" height="300"></canvas>
+                <!-- Right Section: Circular progress indicators -->
+                <div class="progress-cards-container">
+                    <div class="progress-card">
+                        <h3>Gender Distribution</h3>
+                        <div id="circle-container">
+                            <canvas id="genderDistributionChart" width="300" height="300"></canvas>
+                        </div>
                     </div>
+                    <div class="email-status-cards">
+                        <div class="email-card success-card">
+                            <h3>Successful Emails</h3>
+                            <p id="successfulEmailsCount">0</p>
+                        </div>
+                        <div class="email-card failure-card">
+                            <h3>Failed Emails</h3>
+                            <p id="failedEmailsCount">0</p>
+                        </div>
+                    </div>
+
                 </div>
-                
-                
+
+
             </div>
 
 
 
         </div>
     </div>
+
+
+
     <!-- Modal Structure for the Dropdown Form -->
     <div id="reports-modal" class="reports-modal">
         <div class="reports-modal-content">
             <form id="reports-form">
                 <div class="form-group">
-                    <label for="start-date">Start Date:</label>
-                    <input type="date" id="start-date" name="start-date">
+                    <label for="report-start-date">Start Date:</label>
+                    <input type="date" id="report-start-date" name="report-start-date">
                 </div>
                 <div class="form-group">
-                    <label for="end-date">End Date:</label>
-                    <input type="date" id="end-date" name="end-date">
+                    <label for="report-end-date">End Date:</label>
+                    <input type="date" id="report-end-date" name="report-end-date">
+                </div>
+
+                <div class="form-group">
+                    <label for="report-department">Department:</label>
+                    <input type="text" id="report-department" name="report-department">
                 </div>
                 <div class="form-group">
                     <label for="gender">Gender:</label>
@@ -176,6 +199,7 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
             </form>
         </div>
     </div>
+
 
 
     <!-- Logout Confirmation Dialog -->
