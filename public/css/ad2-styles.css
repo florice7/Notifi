@@ -1363,3 +1363,88 @@ canvas {
         width: 100%; /* Full width on smaller screens */
     }
 }
+
+
+/* Modal container */
+.edit-admin-modal {
+    display: none; 
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content */
+.edit-admin-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    text-align: center;
+}
+
+/* Close button */
+.editModalclose {
+    color: #6a040f;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.editModalclose:hover,
+.editModalclose:focus {
+    color: #9d0208;
+    text-decoration: none;
+}
+
+/* Modal header */
+.edit-admin-modal h2 {
+    color: #6a040f;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Form labels */
+.edit-admin-modal-content label {
+    font-size: 16px;
+    color: #6a040f;
+    display: block;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* Form select */
+#adminRole {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #6a040f;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+    color: #6a040f;
+}
+
+/* Save button */
+.save-btn {
+    background-color: #6a040f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+}
+
+.save-btn:hover {
+    background-color: #9d0208;
+}

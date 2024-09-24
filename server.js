@@ -55,7 +55,7 @@ app.get('/manage-admins.html', (req, res) => {
 });
 
 app.get('/manage-admins-level3.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'manage-admins-level3.html')); 
+    res.sendFile(path.join(__dirname, 'manage-admins-level3.html'));
 });
 
 app.get('/ad2.html', (req, res) => {
@@ -73,16 +73,16 @@ app.get('/terms', (req, res) => {
 });
 
 app.get('/analytics.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'analytics.html')); 
+    res.sendFile(path.join(__dirname, 'analytics.html'));
 });
 
 app.get('/analytics-level3.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'analytics-level3.html')); 
+    res.sendFile(path.join(__dirname, 'analytics-level3.html'));
 });
 
 
 app.get('/dashboard-level3.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard-level3.html')); 
+    res.sendFile(path.join(__dirname, 'dashboard-level3.html'));
 });
 
 app.get('/dashboard.html', (req, res) => {
@@ -104,7 +104,7 @@ app.get('/waiting-for-approval.html', (req, res) => {
 // Authentication middleware function
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.user) {
-        return next(); 
+        return next();
     } else {
         res.redirect('/');
     }
@@ -196,7 +196,7 @@ app.post('/employees', (req, res) => {
 
         // If PF number is unique, insert the new employee
         const insertSql = 'INSERT INTO employees (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-        
+
         db.query(insertSql, [pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department], (err, result) => {
             if (err) {
                 console.error('Error adding employee:', err);
@@ -384,7 +384,7 @@ function sendGeneralBirthdayEmail() {
     const today = new Date();
     const tomorrow = new Date(today);
     const nextWeek = new Date(today);
-    const nextToTomorrow = new  Date(today);
+    const nextToTomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     nextWeek.setDate(today.getDate() + 7);
     nextToTomorrow.setDate(today.getDate() + 2);
@@ -524,10 +524,10 @@ function sendBirthdayWishes() {
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         console.error(`Error sending email to ${mailOptions.to}: ${error.message}`);
-            
+
                         // Log the failure attempt with retry information
                         logEmailStatus(emailType, mailOptions.to, false, error.message, attempts, true); // Mark as retry attempt
-            
+
                         // Retry for every error, but stop after the max number of retries
                         if (attempts < retries) {
                             console.log(`Retrying... Attempt ${attempts} of ${retries}`);
@@ -549,7 +549,19 @@ function sendBirthdayWishes() {
 
         // Loop through today's birthdays and send the emails
         todaysBirthdays.forEach(emp => {
-            const text = `Dear ${emp.first_name || 'Employee'} ${emp.last_name || ''},\n\nHappiest Birthday!\nWishing you a wonderful day filled with joy and success\n\nBest regards,\nEquity Bank Rwanda PLC`;
+            const text = `
+Dear ${emp.first_name || 'Employee'} ${emp.last_name || ''},
+
+🎉🎂 **Happy Birthday!** 🎂🎉
+
+On behalf of everyone here at Equity Bank Rwanda PLC, we want to take this moment to wish you a truly wonderful birthday filled with joy, laughter, and success. May this special day bring you everything your heart desires, and may the year ahead be filled with good health, happiness, and achievements!
+
+Take time to celebrate your day, reflect on all your accomplishments, and continue to inspire those around you.
+
+Warmest wishes,
+**Equity Bank Rwanda PLC**
+`;
+
             const mailOptions = {
                 from: 'musafiriflorice@gmail.com',
                 to: emp.email,
@@ -561,6 +573,7 @@ function sendBirthdayWishes() {
         });
     });
 }
+
 
 
 
@@ -581,7 +594,7 @@ function logEmailStatus(emailType, email, isSuccess, reason = null, attemptNumbe
         INSERT INTO email_logs (email_type, email_address, is_success, timestamp, reason, attempt_number, is_retry)
         VALUES (?, ?, ?, NOW(), ?, ?, ?)
     `;
-    
+
     db.query(query, [emailType, email, isSuccess ? 1 : 0, reason, attemptNumber, isRetry ? 1 : 0], (err, result) => {
         if (err) {
             console.error(`Error logging email status for ${email}:`, err);
@@ -962,7 +975,7 @@ db.query('SELECT COUNT(*) AS count FROM admins', (err, countResult) => {
 
                 if (results.length === 0) {
                     // Super admin does not exist, create them
-                    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+                    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
                         if (err) {
                             console.error('Error hashing password:', err);
                             return;
@@ -1047,7 +1060,7 @@ app.post('/login', (req, res) => {
                     return res.redirect('/dashboard.html');
                 } else if (user.role === 3) {
                     // Redirect to a different page for role 3 (third-level admin)
-                    return res.redirect('/dashboard-level3.html'); 
+                    return res.redirect('/dashboard-level3.html');
                 }
             } else {
                 return res.status(401).send('Invalid PF number or password');
@@ -1107,7 +1120,7 @@ app.get('/logout', (req, res) => {
             console.error('Logout error:', err);
             return res.status(500).send('Logout error');
         }
-        res.redirect('/'); 
+        res.redirect('/');
     });
 });
 
@@ -1351,8 +1364,8 @@ app.post('/extract-data', async (req, res) => {
                 date_of_birth: row.date_of_birth,
                 staff_gender: row.staff_gender,
                 department: row.department,
-                email: row.email, 
-                phone_number: row.phone_number 
+                email: row.email,
+                phone_number: row.phone_number
             });
         });
 
@@ -1452,7 +1465,7 @@ app.post('/rejectAdmin', (req, res) => {
 
 app.post('/change-password', (req, res) => {
     const { oldPassword, newPassword } = req.body;
-    const adminId = req.session.user.id; 
+    const adminId = req.session.user.id;
 
     // Fetch the current password hash from the database
     db.query('SELECT password FROM admins WHERE id = ?', [adminId], (err, results) => {
@@ -1516,7 +1529,7 @@ app.post('/updateAdminRole/:id', (req, res) => {
             console.error('Error updating admin role:', err);
             return res.status(500).send('Error updating admin role');
         }
-        
+
         if (results.affectedRows === 0) {
             return res.status(404).send('Admin not found');
         }

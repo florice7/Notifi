@@ -327,7 +327,8 @@ document.addEventListener('click', (event) => {
 });
 
 
-document.getElementById('adminEditBtn').addEventListener('click', function() {
+// Show the edit modal when the edit button is clicked
+document.getElementById('adminEditBtn').addEventListener('click', function () {
     const selectedCheckbox = document.querySelector('.admin-checkbox:checked');
     if (selectedCheckbox) {
         const selectedId = selectedCheckbox.value;
@@ -339,18 +340,19 @@ document.getElementById('adminEditBtn').addEventListener('click', function() {
 
         // Show the edit modal
         const editModal = document.getElementById('editAdminModal');
-        editModal.style.display = 'block';
+        editModal.style.display = 'flex';
+        hideAdminActionsModal();
     }
 });
 
+// Fetch admin role by ID
 function getRoleById(adminId) {
     const admin = admins.find(admin => admin.id == adminId);
-    return admin ? admin.role : null; 
+    return admin ? admin.role : null;
 }
 
-
-
-document.getElementById('editAdminForm').addEventListener('submit', function(event) {
+// Handle form submission
+document.getElementById('editAdminForm').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent form submission
 
     const selectedCheckbox = document.querySelector('.admin-checkbox:checked');
@@ -362,8 +364,8 @@ document.getElementById('editAdminForm').addEventListener('submit', function(eve
         .then(() => {
             // Update the UI
             selectedCheckbox.closest('tr').cells[7].textContent = getRoleName(newRole);
-            
-            // Hide the edit modal
+
+            // Hide the edit modal after a successful update
             const editModal = document.getElementById('editAdminModal');
             editModal.style.display = 'none';
         })
@@ -372,6 +374,7 @@ document.getElementById('editAdminForm').addEventListener('submit', function(eve
         });
 });
 
+// Function to update the admin role on the backend
 function updateAdminRole(adminId, newRole) {
     return fetch(`/updateAdminRole/${adminId}`, {
         method: 'POST',
@@ -383,3 +386,17 @@ function updateAdminRole(adminId, newRole) {
         if (!response.ok) throw new Error('Network response was not ok');
     });
 }
+
+// Close modal when clicking the close button (x)
+document.querySelector('.editModalclose').addEventListener('click', function () {
+    const editModal = document.getElementById('editAdminModal');
+    editModal.style.display = 'none';
+});
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', function (event) {
+    const editModal = document.getElementById('editAdminModal');
+    if (event.target == editModal) {
+        editModal.style.display = 'none';
+    }
+});
