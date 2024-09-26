@@ -185,3 +185,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// Show the forgot password modal
+document.querySelector('.forgot-password').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('forgotPasswordModal').style.display = 'flex';
+});
+
+// Close the modal
+document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('forgotPasswordModal').style.display = 'none';
+});
+
+// Close the modal when clicking outside of the modal content
+window.addEventListener('click', function (event) {
+    const modal = document.getElementById('forgotPasswordModal');
+    const modalContent = document.querySelector('.fpmodal-content');
+    
+    if (event.target === modal && !modalContent.contains(event.target)) {
+        modal.style.display = 'none';
+    }
+});
+
+
+document.getElementById('forgotPasswordForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const pfNumber = document.getElementById('pfNumber').value; // Get PF number from input
+    const messageElement = document.querySelector('.forgot-password-message'); // Message element
+
+    // Send the request to the server
+    fetch('/requestPasswordReset', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pf_number: pfNumber }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Parse JSON only if it's valid
+    })
+    .then(data => {
+        if (data.success) {
+            messageElement.textContent = 'Your request has been submitted successfully.';
+            messageElement.style.color = 'green';
+        } else {
+            messageElement.textContent = data.message; // Display message from the server
+            messageElement.style.color = 'red';
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting password reset request:', error);
+        messageElement.textContent = 'An error occurred. Please try again later.';
+        messageElement.style.color = 'red';
+    });
+});

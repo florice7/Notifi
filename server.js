@@ -34,11 +34,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from 'Notifi' directory
-app.use(express.static(path.join(__dirname, 'public'))); // Note: public folder is inside Notifi
+app.use(express.static(path.join(__dirname, 'public'))); 
 
 // Middleware for authentication
 app.use((req, res, next) => {
-    const openRoutes = ['/index.html', '/login', '/waiting-for-approval.html', '/signup', '/terms']; // Open routes
+    const openRoutes = ['/index.html', '/login', '/waiting-for-approval.html', '/signup', '/terms', '/requestPasswordReset']; // Open routes
     if (req.path === '/' || openRoutes.includes(req.path) || req.path.startsWith('/css/') || req.path.startsWith('/js/') || req.path.startsWith('/images/')) {
         return next(); // Allow access to open routes and static files
     }
@@ -64,7 +64,7 @@ app.get('/ad2.html', (req, res) => {
 
 
 app.get('/ad2-level3.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'ad2-level3.html')); // Serve ad2.html
+    res.sendFile(path.join(__dirname, 'ad2-level3.html')); // Serve ad2.html-level3
 });
 
 app.get('/terms', (req, res) => {
@@ -109,7 +109,6 @@ function isAuthenticated(req, res, next) {
         res.redirect('/');
     }
 }
-
 
 
 // Create connection to MySQL database
@@ -604,27 +603,6 @@ function logEmailStatus(emailType, email, isSuccess, reason = null, attemptNumbe
     });
 }
 
-// app.get('/email-retry-status', (req, res) => {
-//     const query = `
-//         SELECT
-//             COALESCE(SUM(is_success AND is_retry), 0) AS successful_retries,
-//             COALESCE(SUM((NOT is_success) AND is_retry), 0) AS failed_retries
-//         FROM
-//             email_logs
-//         WHERE
-//             is_retry = 1;
-//     `;
-
-//     db.query(query, (err, result) => {
-//         if (err) {
-//             console.error('Error fetching retry status data:', err);
-//             res.status(500).send('Error fetching retry status data');
-//         } else {
-//             res.json(result[0]);
-//         }
-//     });
-// });
-
 
 // Schedule tasks
 cron.schedule('00 08 * * *', sendGeneralBirthdayEmail, { timezone: "Africa/Kigali" });
@@ -665,70 +643,6 @@ app.post('/send-birthday-wishes', (req, res) => {
     res.send({ message: 'Birthday wishes sent successfully!' });
 });
 
-
-// Endpoint to handle file upload and data import
-// app.post('/import', upload.single('file'), async (req, res) => {
-//     const filePath = req.file.path;
-//     const workbook = new ExcelJS.Workbook();
-
-//     try {
-//         await workbook.xlsx.readFile(filePath);
-//         const worksheet = workbook.getWorksheet(1); // Assuming data is in the first sheet
-
-//         let duplicateRecords = [];
-//         let insertedRecords = 0;
-//         let updatedRecords = 0;
-
-//         // Read each row and process it
-//         for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) { // Start from row 2 to skip headers
-//             const row = worksheet.getRow(rowNumber);
-//             const pfNumber = row.getCell(1).value;
-//             const firstName = row.getCell(2).value;
-//             const lastName = row.getCell(3).value;
-//             const gender = row.getCell(4).value;
-//             const dob = row.getCell(5).value;
-//             const emailCell = row.getCell(6);
-//             const email = emailCell.text || emailCell.value;
-//             const phoneNumber = row.getCell(7).value;
-//             const notificationMethod = row.getCell(8).value;
-//             const department = row.getCell(9).value;
-
-//             // Check if PF Number already exists
-//             const query = 'SELECT * FROM employees WHERE pf_number = ?';
-//             const [existingEmployee] = await db.promise().query(query, [pfNumber]);
-
-//             if (existingEmployee.length > 0) {
-//                 // PF Number exists, add to duplicates array
-//                 duplicateRecords.push({ pfNumber, firstName, lastName });
-//             } else {
-//                 // Insert new employee data
-//                 const insertQuery = `INSERT INTO employees 
-//                     (pf_number, first_name, last_name, gender, date_of_birth, email, phone_number, department) 
-//                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-
-//                 await db.promise().query(insertQuery, [pfNumber, firstName, lastName, gender, dob, email, phoneNumber, notificationMethod, department]);
-//                 insertedRecords++;
-//             }
-//         }
-
-//         if (duplicateRecords.length > 0) {
-//             res.json({
-//                 message: 'Some records already exist. Do you want to update them?',
-//                 duplicates: duplicateRecords
-//             });
-//         } else {
-//             res.json({
-//                 message: `Successfully imported ${insertedRecords} records.`
-//             });
-//         }
-//     } catch (error) {
-//         console.error('Error processing file:', error);
-//         res.status(500).json({ message: 'Error processing file' });
-//     } finally {
-//         // Clean up the uploaded file
-//         fs.unlinkSync(filePath);
-//     }
-// });
 
 // // Endpoint to handle updating existing records
 // app.post('/update', upload.single('file'), async (req, res) => {
@@ -777,174 +691,6 @@ app.post('/send-birthday-wishes', (req, res) => {
 // });
 
 
-// // Handle the extract request
-// app.post('/extract', (req, res) => {
-//     const { startDate, endDate, gender } = req.body;
-
-//     let query = `
-//         SELECT pf_number, first_name, last_name, gender, DATE_FORMAT(date_of_birth, '%d %M') AS birthdate, email, phone_number, department
-//         FROM employees
-//         WHERE DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN DATE_FORMAT(?, '%m-%d') AND DATE_FORMAT(?, '%m-%d')
-//     `;
-
-//     if (gender) {
-//         query += ' AND gender = ?';
-//     }
-
-//     const queryParams = gender ? [startDate, endDate, gender] : [startDate, endDate];
-
-//     db.query(query, queryParams, (err, results) => {
-//         if (err) {
-//             console.error('Error fetching employee data:', err);
-//             return res.status(500).send('Error fetching employee data');
-//         }
-
-//         // Create a PDF document
-//         const doc = new pdf();
-//         let filename = 'Notifi_Birthday_Reports.pdf';
-
-//         // Set headers to trigger a download
-//         // Set headers to trigger a download with the correct filename
-//         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-//         res.setHeader('Content-Type', 'application/pdf');
-
-
-//         // Pipe the PDF into the response
-//         doc.pipe(res);
-
-//         // Title
-//         doc.fontSize(14).text('Notifi Birthday Reports', { align: 'center' });
-//         doc.moveDown();
-
-
-//         const columnWidths = {
-//             pfNumber: 60,
-//             firstName: 95,
-//             lastName: 85,
-//             gender: 42,
-//             birthdate: 80,
-//             email: 155,
-//             phoneNumber: 90,
-//             department: 80
-//         };
-
-//         // Adjust total table width to fit within page margins
-//         const totalWidth = Object.values(columnWidths).reduce((a, b) => a + b, 0);
-//         const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
-
-//         // Scale down if necessary
-//         if (totalWidth > pageWidth) {
-//             const scaleFactor = pageWidth / totalWidth;
-//             for (let key in columnWidths) {
-//                 columnWidths[key] *= scaleFactor;
-//             }
-//         }
-
-//         // Draw table headers
-//         doc.fontSize(8).fillColor('black');
-//         drawTableHeader(doc, columnWidths);
-
-//         // Draw table rows
-//         doc.fillColor('black');
-//         results.forEach(employee => {
-//             drawTableRow(doc, employee, columnWidths);
-//         });
-
-//         // Finalize the PDF and end the response
-//         doc.end();
-//     });
-// });
-
-// function drawTableHeader(doc, columnWidths) {
-//     const x = doc.page.margins.left; // X position for the table
-//     let y = doc.y;
-
-//     // Draw the header text
-//     doc.font('Helvetica-Bold')
-//         .fontSize(8)
-//         .text('PF', x, y, { width: columnWidths.pfNumber })
-//         .text('First Name', x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
-//         .text('Last Name', x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
-//         .text('Gender', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
-//         .text('Birthdate', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
-//         .text('Email', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
-//         .text('Phone Number', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
-//         .text('Department', x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
-
-//     y += 12;
-
-//     doc.strokeColor('black')
-//         .lineWidth(1)
-//         .moveTo(x, y)
-//         .lineTo(x + Object.values(columnWidths).reduce((a, b) => a + b, 0), y)
-//         .stroke();
-
-//     y += 10; // Move down for the first row of content
-//     doc.y = y;
-// }
-
-// // Function to draw a row of the table
-// function drawTableRow(doc, employee, columnWidths) {
-//     const x = doc.page.margins.left; // X position for the table
-//     let y = doc.y;
-
-//     doc.font('Helvetica')
-//         .text(employee.pf_number, x, y, { width: columnWidths.pfNumber })
-//         .text(employee.first_name, x + columnWidths.pfNumber, y, { width: columnWidths.firstName })
-//         .text(employee.last_name, x + columnWidths.pfNumber + columnWidths.firstName, y, { width: columnWidths.lastName })
-//         .text(employee.gender, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName, y, { width: columnWidths.gender })
-//         .text(employee.birthdate, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender, y, { width: columnWidths.birthdate })
-//         .text(employee.email, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate, y, { width: columnWidths.email })
-//         .text(employee.phone_number, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email, y, { width: columnWidths.phoneNumber })
-//         .text(employee.department, x + columnWidths.pfNumber + columnWidths.firstName + columnWidths.lastName + columnWidths.gender + columnWidths.birthdate + columnWidths.email + columnWidths.phoneNumber, y, { width: columnWidths.department });
-
-//     y += 16; // Move down for the next row
-//     doc.y = y;
-// }
-
-
-
-
-// Signup Route
-// app.post('/signup', async (req, res) => {
-//     const { pf_number, password, confirm_password } = req.body;
-
-//     // Validate Passwords Match
-//     if (password !== confirm_password) {
-//         return res.send('Passwords do not match.');
-//     }
-
-//     // Check if PF Number Exists in Employees Table
-//     db.query('SELECT * FROM employees WHERE pf_number = ?', [pf_number], (err, results) => {
-//         if (err) throw err;
-
-//         if (results.length === 0) {
-//             return res.send('PF Number not found in employees table.');
-//         } else {
-//             // Check if PF Number Already Registered
-//             db.query('SELECT * FROM admins WHERE pf_number = ?', [pf_number], async (err, results) => {
-//                 if (err) throw err;
-
-//                 if (results.length > 0) {
-//                     return res.send('You are already created');
-//                 } else {
-//                     // Hash the Password
-//                     const hashedPassword = await bcrypt.hash(password, 10);
-
-//                     // Insert New User into Admins Table
-//                     const newUser = { pf_number, password: hashedPassword, role: 3 }; // Default to third-level admin
-//                     db.query('INSERT INTO admins SET ?', newUser, (err, results) => {
-//                         if (err) throw err;
-//                         res.send('Registration successful. Please wait for admission.');
-//                     });
-//                 }
-//             });
-//         }
-//     });
-// });
-
-
-
 const saltRounds = 10;
 const pfNumber = '43290';
 const plainPassword = 'Flax@123';
@@ -961,12 +707,12 @@ db.query('SELECT COUNT(*) AS count FROM admins', (err, countResult) => {
     if (adminCount === 0) {
         // If the table is empty, reset the auto-increment value to 1
         db.query('ALTER TABLE admins AUTO_INCREMENT = 1', (err) => {
+            
             if (err) {
                 console.error('Error resetting auto-increment:', err);
                 return;
             }
 
-            // Now check if the super admin exists
             db.query('SELECT * FROM admins WHERE pf_number = ?', [pfNumber], (err, results) => {
                 if (err) {
                     console.error('Error checking super admin:', err);
@@ -1036,7 +782,7 @@ app.post('/login', (req, res) => {
         if (user.status === 'pending') {
             return res.redirect('/waiting-for-approval.html'); // Redirect to approval pending page
         } else if (user.status === 'inactive') {
-            return res.redirect('/inactive.html'); // Redirect to inactive page
+            return res.redirect('/inactive.html');
         }
 
         // If status is active, proceed to password validation
@@ -1155,7 +901,7 @@ app.post('/signup', (req, res) => {
 
             // Insert the new admin record
             const role = 3;  // Default role for third-level admin
-            const status = 'pending';  // Default status is pending
+            const status = 'pending';
             const query = 'INSERT INTO admins (pf_number, password, role, status) VALUES (?, ?, ?, ?)';
 
             db.query(query, [pf_number, hashedPassword, role, status], (err, result) => {
@@ -1186,7 +932,10 @@ app.get('/getAdmins', (req, res) => {
             employees.email,
             employees.phone_number,
             admins.role,
-            admins.status
+            admins.status,
+            admins.password_reset_requested,
+            (SELECT COUNT(*) FROM admins WHERE status = 'pending') AS pendingCount,
+            (SELECT COUNT(*) FROM admins WHERE password_reset_requested = 1) AS resetRequestCount
         FROM admins
         JOIN employees ON admins.pf_number = employees.pf_number
     `;
@@ -1199,19 +948,6 @@ app.get('/getAdmins', (req, res) => {
         res.json(results);
     });
 });
-
-
-
-
-
-
-// Function to convert Excel date serial number to JavaScript Date
-// function excelDateToJSDate(serial) {
-//     const epoch = new Date(1899, 11, 30); // Excel's epoch is December 30, 1899
-//     const days = Math.floor(serial);
-//     const milliseconds = Math.round((serial - days) * 86400000); // Convert fractional days to milliseconds
-//     return new Date(epoch.getTime() + days * 86400000 + milliseconds);
-// }
 
 
 // Function to convert Excel date serial number to JavaScript Date
@@ -1257,14 +993,11 @@ app.post('/upload', upload.single('file'), async (req, res) => {
             // Convert dateOfBirth to proper format
             let formattedDateOfBirth;
             if (typeof dateOfBirth === 'number') {
-                // Convert Excel serial date to JavaScript Date
                 const jsDate = excelDateToJSDate(dateOfBirth);
                 formattedDateOfBirth = jsDate.toISOString().split('T')[0];
             } else if (dateOfBirth instanceof Date) {
-                // Directly format if it's already a Date object
                 formattedDateOfBirth = dateOfBirth.toISOString().split('T')[0];
             } else {
-                // If the date is in a string format, parse it directly
                 formattedDateOfBirth = new Date(dateOfBirth).toISOString().split('T')[0];
             }
 
@@ -1461,8 +1194,6 @@ app.post('/rejectAdmin', (req, res) => {
 // });
 
 
-
-
 app.post('/change-password', (req, res) => {
     const { oldPassword, newPassword } = req.body;
     const adminId = req.session.user.id;
@@ -1511,8 +1242,6 @@ app.post('/change-password', (req, res) => {
     });
 });
 
-
-
 app.post('/updateAdminRole/:id', (req, res) => {
     const adminId = req.params.id;
     const { role } = req.body; // Get the new role from the request body
@@ -1539,8 +1268,69 @@ app.post('/updateAdminRole/:id', (req, res) => {
 });
 
 
+// app.post('/requestPasswordReset/:id', (req, res) => {
+//     const adminId = req.params.id;
+//     // SQL query to set the password_reset_requested flag to 1
+//     const query = `
+//         UPDATE admins 
+//         SET password_reset_requested = 1 
+//         WHERE id = ?
+//     `;
+
+//     db.query(query, [adminId], (err, results) => {
+//         if (err) {
+//             console.error('Error updating password reset request:', err);
+//             return res.status(500).send('Error updating password reset request');
+//         }
+
+//         if (results.affectedRows === 0) {
+//             return res.status(404).send('Admin not found');
+//         }
+//         // Optionally: Here you can send an email to the admin with a new password or instructions
+//         res.send('Password reset request processed successfully');
+//     });
+// });
 
 
+
+
+
+app.post('/requestPasswordReset', (req, res) => {
+    const { pf_number } = req.body;
+
+    // SQL query to check if PF number exists and if a reset has already been requested
+    const query = `SELECT id, password_reset_requested FROM admins WHERE pf_number = ?`;
+
+    db.query(query, [pf_number], (err, results) => {
+        if (err) {
+            console.error('Error querying the database:', err);
+            return res.status(500).json({ success: false, message: 'Database error' });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ success: false, message: 'PF number not found.' });
+        }
+
+        const admin = results[0];
+
+        // Check if the password reset has already been requested
+        if (admin.password_reset_requested === 1) {
+            return res.status(200).json({ success: false, message: 'Your request has already been submitted, Wait for the admin to reset' });
+        }
+
+        // Update the password_reset_requested field to 1
+        const updateQuery = `UPDATE admins SET password_reset_requested = 1 WHERE id = ?`;
+
+        db.query(updateQuery, [admin.id], (err) => {
+            if (err) {
+                console.error('Error updating password reset status:', err);
+                return res.status(500).json({ success: false, message: 'Failed to submit request.' });
+            }
+
+            res.json({ success: true, message: 'Password reset request submitted successfully.' });
+        });
+    });
+});
 
 
 // Start server

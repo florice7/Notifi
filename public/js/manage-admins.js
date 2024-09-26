@@ -90,7 +90,7 @@ function fetchAdmins() {
         .catch(error => console.error('Error fetching admin data:', error));
 }
 
-function renderActions(status, pf_number, loggedInPFNumber, adminId) {
+function renderActions(status, pf_number, loggedInPFNumber, adminId, passwordResetRequested) {
     const firstLevelAdminPF = '43290'; 
 
     // Don't render action buttons if it's the first level admin or logged-in admin
@@ -99,13 +99,11 @@ function renderActions(status, pf_number, loggedInPFNumber, adminId) {
     }
 
     // Render action buttons based on the status
-    if (status === 'active') {
+    if (status === 'active' && parseInt(passwordResetRequested) === 1) { 
         return `
             <button class="reset-password-btn" data-pf="${adminId}">Reset Password</button>
         `;
-    // } else if (status === 'inactive') {
-    //     return `<button class="activate-btn" data-pf="${adminId}">Activate</button>`;
-      } else if (status === 'pending') {
+    } else if (status === 'pending') {
         return `
             <button class="approve-btn" data-id="${adminId}">Approve</button>
             <button class="reject-btn" data-id="${adminId}">Reject</button>
@@ -134,7 +132,7 @@ function populateAdminTable(admins) {
             <td>${admin.phone_number}</td>
             <td>${getRoleName(admin.role)}</td>
             <td>${admin.status}</td>
-            <td>${renderActions(admin.status, admin.pf_number, loggedInPFNumber, admin.id)}</td>
+             <td>${renderActions(admin.status, admin.pf_number, loggedInPFNumber, admin.id, admin.password_reset_requested)}</td>
         `;
 
         tableBody.appendChild(row);
@@ -145,10 +143,9 @@ function populateAdminTable(admins) {
     // Add event listener for each checkbox
     adminCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('click', function () {
-            // Ensure only one checkbox can be selected at a time
             adminCheckboxes.forEach(cb => {
                 if (cb !== this) {
-                    cb.checked = false; // Deselect all others
+                    cb.checked = false; 
                 }
             });
 
@@ -156,13 +153,12 @@ function populateAdminTable(admins) {
 
             // Check if the logged-in admin's checkbox is checked
             if (pfNumber === loggedInPFNumber) {
-                hideAdminActionsModal(); // Hide actions modal
-                return; // Do not show modal for logged-in admin
+                hideAdminActionsModal(); 
+                return; 
             }
 
-            // Show actions modal only if another admin is selected
             const selectedCount = Array.from(adminCheckboxes).filter(cb => cb.checked).length;
-            document.getElementById('adminSelectedCount').textContent = `${selectedCount} Admin(s) selected`;
+            document.getElementById('adminSelectedCount').textContent = `${selectedCount} Admin selected`;
             if (selectedCount > 0) {
                 showAdminActionsModal();
             } else {

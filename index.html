@@ -94,6 +94,21 @@ wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,4
         </div>
 
 
+        <div id="forgotPasswordModal" class="forgot-password-modal" style="display: none;">
+            <div class="fpmodal-content">
+                <span class="close-modal">&times;</span> <!-- Cross button -->
+                <h2>Forgot Password</h2>
+                <form id="forgotPasswordForm">
+                    <!-- <label for="pfNumber">Enter your PF Number:</label> -->
+                    <input type="text" id="pfNumber" name="pfNumber" placeholder="Enter your PF number" required>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="forgot-password-message"></p>
+            </div>
+        </div>
+        
+
+
         <!-- Modal (SignUp Page) -->
         <div id="signup-modal" class="overlay">
             <div class="login-popup">

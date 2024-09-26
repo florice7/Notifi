@@ -120,7 +120,22 @@ header .right {
 header .right i {
     font-size: 1.5rem;
     margin-right: 30px;
-    /* opacity: 0.8;  Adjust the value as needed */
+    /* background-color: #2a9d8f; */
+    position: relative; /* Ensure the circle is positioned relative to the icon */
+}
+
+.notification-circle {
+    position: absolute;
+    top: -5px; 
+    right: -8px; 
+    background-color: #c4091b; 
+    color: white; 
+    border-radius: 50%; 
+    padding: 3px 7px; 
+    font-size: 10px; 
+    display: none; 
+    min-width: 20px; 
+    text-align: center; 
 }
 
 #dateTime {
@@ -1287,7 +1302,9 @@ canvas {
 }
 
 
-.reset-password-btn {
+.reset-password-btn,
+.approve-btn,
+.reject-btn {
     /* background-color: white; */
     border-radius: 0.2rem;
     border: none;
@@ -1298,7 +1315,9 @@ canvas {
     transition: 0.4s ease;
 }
 
-.reset-password-btn:hover {
+.reset-password-btn:hover,
+.approve-btn:hover,
+.reject-btn:hover {
     background-color:#333;
     color: White;
 }
@@ -1448,3 +1467,6 @@ canvas {
 .save-btn:hover {
     background-color: #9d0208;
 }
+
+
+

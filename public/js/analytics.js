@@ -565,3 +565,27 @@ fetch('/session')
        
         updateEmailStatusCards();
         
+
+        fetch('/getAdmins')
+        .then(response => response.json())
+        .then(data => {
+            const pendingCount = data.length > 0 ? data[0].pendingCount : 0;
+            const resetRequestCount = data.length > 0 ? data[0].resetRequestCount : 0;
+    
+            const totalNotifications = pendingCount + resetRequestCount; // Combine both counts
+    
+            const notificationCircle = document.querySelector('.notification-circle');
+    
+            if (totalNotifications > 0) {
+                // Show the red circle with the total notifications count
+                notificationCircle.style.display = 'inline-block';
+                notificationCircle.textContent = totalNotifications;
+            } else {
+                // Hide the red circle if there are no pending notifications
+                notificationCircle.style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Error fetching admin data:', error));
+    
+    
+
